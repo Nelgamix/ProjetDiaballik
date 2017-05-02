@@ -1,19 +1,21 @@
 package sample;
 
 import javafx.application.Application;
-import javafx.fxml.FXMLLoader;
-import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
+import sample.controller.TerrainController;
+import sample.model.Terrain;
 
 public class Main extends Application {
 
     @Override
     public void start(Stage primaryStage) throws Exception {
-        //Parent root = FXMLLoader.load(getClass().getResource("sample.fxml"));
         Terrain terrain = new Terrain();
+
+        TerrainController terrainController = new TerrainController(terrain);
+
         primaryStage.setTitle("Hello World");
-        primaryStage.setScene(new Scene(terrain, 350, 350));
+        primaryStage.setScene(new Scene(terrainController.getTerrainView(), 350, 350));
         primaryStage.show();
     }
 
