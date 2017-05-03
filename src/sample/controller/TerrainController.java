@@ -38,7 +38,8 @@ public class TerrainController {
             } else {
                 System.out.println("Déplacement");
                 this.caseSelectionne.getPion().setSelectionne(false);
-                this.caseSelectionne.getPion().deplacer(caseCliquee);
+                this.jeu.deplacement(this.caseSelectionne.getPion(), caseCliquee);
+                //this.caseSelectionne.getPion().deplacer(caseCliquee);
                 this.caseSelectionne = null;
             }
         }

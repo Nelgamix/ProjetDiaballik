@@ -48,10 +48,10 @@ public class PionView extends Circle implements Observer {
         if (pion.isSelectionne())
             sf = Color.GOLD;
         else
-        if (pion.getCouleur() == Joueur.COULEUR_VERT)
-            sf = Color.GREEN;
-        else
-            sf = Color.RED;
+            if (pion.getCouleur() == Joueur.COULEUR_VERT)
+                sf = Color.GREEN;
+            else
+                sf = Color.RED;
 
         return sf;
     }

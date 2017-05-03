@@ -13,7 +13,7 @@ public class Jeu extends Observable {
     public Jeu() {
         this.terrain = new Terrain();
         this.joueurs = new Joueur[NOMBRE_JOUEURS];
-        this.tour = 0;
+        this.tour = 1;
 
         this.joueurs[0] = new Joueur(this, Joueur.COULEUR_VERT);
         this.joueurs[1] = new Joueur(this, Joueur.COULEUR_ROUGE);
@@ -23,6 +23,18 @@ public class Jeu extends Observable {
 
     public Terrain getTerrain() {
         return this.terrain;
+    }
+
+    public void deplacement(Pion p, Case c) {
+        p.deplacer(c);
+        if (!this.getJoueurActuel().moinsAction()) {
+            this.tour++;
+            System.out.println("Tour " + tour);
+        }
+    }
+
+    private Joueur getJoueurActuel() {
+        return this.joueurs[tour-1 % NOMBRE_JOUEURS];
     }
 
     private void classNotifyObservers() {
