@@ -6,10 +6,12 @@ package sample.model;
  * Created by Nico (23:58).
  */
 public class Case {
-    public Pion pion;
+    private Pion pion;
+    private Point point;
 
-    public Case(Pion pion) {
+    public Case(Pion pion, Point point) {
         this.pion = pion;
+        this.point = point;
     }
 
     public void setPion(Pion pion) {
