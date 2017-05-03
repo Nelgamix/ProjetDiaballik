@@ -32,7 +32,7 @@ public class TerrainView extends Pane implements Observer {
         int a = 0;
         for (int i = 0; i < Terrain.HAUTEUR; i++) {
             for (int j = 0; j < Terrain.LARGEUR; j++) {
-                CaseView cv = new CaseView(this.terrainController, new Point(i, j), (a++ % 2 == 0 ? Color.BLUE : Color.ORANGE));
+                CaseView cv = new CaseView(this.terrainController, new Point(i, j), (a++ % 2 == 0 ? Color.BEIGE : Color.GRAY));
                 this.cases[i][j] = cv;
 
                 this.getChildren().add(cv);

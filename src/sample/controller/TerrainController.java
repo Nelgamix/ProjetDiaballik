@@ -25,18 +25,21 @@ public class TerrainController {
         Case caseCliquee = this.getJeu().getTerrain().getCaseAt(point);
         if (this.caseSelectionne == null) {
             // pas de pion encore sélectionné, la case qu'on a sélectionné en contient un
-            if (caseCliquee.getPion() != null) {
+            if (caseCliquee.getPion() != null && caseCliquee.getPion().getCouleur() == this.jeu.getJoueurActuel().getCouleur()) {
                 this.caseSelectionne = caseCliquee;
                 this.caseSelectionne.getPion().setSelectionne(true);
-                System.out.println("Pion sélectionné");
+                //System.out.println("Pion sélectionné");
             } else {
-                System.out.println("Case vide");
+                //System.out.println("Case vide");
             }
         } else {
-            if (caseCliquee.getPion() != null) {
-                System.out.println("Case déjà occupée");
+            if (caseCliquee.getPion() != null && caseCliquee.getPion().getCouleur() == this.jeu.getJoueurActuel().getCouleur()) {
+                //System.out.println("Case déjà occupée");
+                this.caseSelectionne.getPion().setSelectionne(false);
+                this.jeu.passe(this.caseSelectionne.getPion(), caseCliquee);
+                this.caseSelectionne = null;
             } else {
-                System.out.println("Déplacement");
+                //System.out.println("Déplacement");
                 this.caseSelectionne.getPion().setSelectionne(false);
                 this.jeu.deplacement(this.caseSelectionne.getPion(), caseCliquee);
                 //this.caseSelectionne.getPion().deplacer(caseCliquee);

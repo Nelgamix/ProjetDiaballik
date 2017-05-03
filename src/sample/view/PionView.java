@@ -16,7 +16,8 @@ public class PionView extends Circle implements Observer {
     private Pion pion;
     private TerrainController terrainController;
 
-    private final static int RAYON = 10;
+    private final static int RAYON = CaseView.HAUTEUR / 5;
+    private final static int RAYON_BALLE = RAYON * 2;
 
     public PionView(TerrainController terrainController, Pion pion) {
         super(RAYON);
@@ -37,9 +38,14 @@ public class PionView extends Circle implements Observer {
     @Override
     public void update(Observable o, Object arg) {
         Point p = this.pion.getPosition().getPoint();
-        this.setCenterX(p.getX() * 50 + 25);
-        this.setCenterY(p.getY() * 50 + 25);
+        this.setCenterX(p.getX() * CaseView.HAUTEUR + CaseView.HAUTEUR / 2);
+        this.setCenterY(p.getY() * CaseView.LARGEUR + CaseView.LARGEUR / 2);
         this.setFill(getColor());
+        this.setRadius(getRayon());
+    }
+
+    private int getRayon() {
+        return (this.pion.aLaBalle() ? RAYON_BALLE : RAYON);
     }
 
     private Color getColor() {

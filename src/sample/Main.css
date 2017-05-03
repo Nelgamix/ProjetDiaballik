@@ -1,0 +1,13 @@
+#actionsView {
+    -fx-pref-width: 150px;
+    -fx-background-color: #3cb0fd;
+}
+
+#affichageView {
+    -fx-pref-height: 50px;
+    -fx-background-color: coral;
+}
+
+#affichageView > .label {
+    -fx-font-size: 20px;
+}

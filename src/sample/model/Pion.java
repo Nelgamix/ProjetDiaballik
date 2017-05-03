@@ -27,7 +27,11 @@ public class Pion extends Observable {
         return selectionne;
     }
 
-    public boolean isaLaBalle() {
+    public void setaLaBalle(boolean aLaBalle) {
+        this.aLaBalle = aLaBalle;
+    }
+
+    public boolean aLaBalle() {
         return aLaBalle;
     }
 
@@ -53,6 +57,23 @@ public class Pion extends Observable {
         nouvellePosition.setPion(this); // la nouvelle case doit savoir que le pion est celui ci
         this.position = nouvellePosition; // on change donc la position
 
+        updateListeneners();
+    }
+
+    public void passe(Case caseAlliee) {
+        if (caseAlliee.getPion() == null) { // prérequis: la case où on pass doit être occupée
+            System.err.println("Pion (passe): Case destination libre");
+            return;
+        }
+
+        this.setaLaBalle(false); // on n'a plus la balle
+        caseAlliee.getPion().setaLaBalle(true); // la balle est au pion de la case alliée
+        caseAlliee.getPion().updateListeneners();
+
+        updateListeneners();
+    }
+
+    public void updateListeneners() {
         this.setChanged();
         this.notifyObservers();
     }

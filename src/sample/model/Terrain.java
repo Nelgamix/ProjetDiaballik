@@ -1,8 +1,5 @@
 package sample.model;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-
 public class Terrain {
     private final Case cases[][];
     private final Pion pions[][];
@@ -34,6 +31,9 @@ public class Terrain {
             this.cases[i][6].setPion(pion);
             this.pions[Joueur.COULEUR_ROUGE][i] = pion;
         }
+
+        getCaseAt(new Point(3, 0)).getPion().setaLaBalle(true);
+        getCaseAt(new Point(3, 6)).getPion().setaLaBalle(true);
     }
 
     public Pion getPionAt(Point point) {

@@ -13,8 +13,8 @@ public class CaseView extends Rectangle {
     private final TerrainController terrainController;
     private final Point point;
 
-    private final static int HAUTEUR = 50;
-    private final static int LARGEUR = 50;
+    public final static int HAUTEUR = 60;
+    public final static int LARGEUR = 60;
 
     public CaseView(TerrainController terrainController, Point point, Color color) {
         super(HAUTEUR, LARGEUR);
