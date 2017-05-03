@@ -1,7 +1,10 @@
 package sample.view;
 
+import javafx.event.EventHandler;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
+import javafx.scene.shape.Circle;
 import javafx.scene.shape.Rectangle;
 import sample.controller.TerrainController;
 import sample.model.*;
@@ -15,61 +18,45 @@ public class TerrainView extends Pane implements Observer {
     private final TerrainController terrainController;
     private final Terrain terrain;
 
-    private final ArrayList<CaseView> cases = new ArrayList<>(); // Représentation visuelle du terrain (l'UI)
-    private final ArrayList<PionView> pions = new ArrayList<>(); // Les pions
+    private final CaseView[][] cases; // Représentation visuelle du terrain (l'UI)
+    private final PionView[][] pions;
 
     public TerrainView(TerrainController terrainController) {
         this.terrainController = terrainController;
         this.terrain = terrainController.getJeu().getTerrain();
         this.terrainController.getJeu().addObserver(this);
 
+        this.cases = new CaseView[Terrain.HAUTEUR][Terrain.LARGEUR];
+        this.pions = new PionView[Jeu.NOMBRE_JOUEURS][Joueur.NOMBRE_PIONS];
+
         int a = 0;
-        CaseView c;
         for (int i = 0; i < Terrain.HAUTEUR; i++) {
             for (int j = 0; j < Terrain.LARGEUR; j++) {
-                c = new CaseView(this.terrainController, new Point(i, j), (a++ % 2 == 0 ? Color.BLUE : Color.ORANGE));
-                this.cases.add(c);
+                CaseView cv = new CaseView(this.terrainController, new Point(i, j), (a++ % 2 == 0 ? Color.BLUE : Color.ORANGE));
+                this.cases[i][j] = cv;
 
-                this.getChildren().add(c);
+                this.getChildren().add(cv);
             }
         }
 
-        PionView p;
+        PionView pv;
         for (int i = 0; i < Jeu.NOMBRE_JOUEURS; i++) {
             for (int j = 0; j < Joueur.NOMBRE_PIONS; j++) {
-                p = new PionView(this.terrainController, this.terrainController.getJeu().joueurs[i].getPion(j), null);
-                this.pions.add(p);
-
-                this.getChildren().add(p);
+                pv = new PionView(this.terrainController, this.terrain.getPionAt(new Point(i, j)));
+                this.pions[i][j] = pv;
+                this.getChildren().add(pv);
             }
         }
 
-        update(null, null);
+        update();
+    }
+
+    public void update() {
+        this.update(null, null);
     }
 
     public void update(Observable observable, Object o) {
-        Point point;
-        for (int i = 0; i < Terrain.HAUTEUR; i++) {
-            for (int j = 0; j < Terrain.LARGEUR; j++) {
-                point = new Point(i, j);
-                Pion pion = this.terrain.getCase(point).getPion();
-                if (pion != null) this.placerPion(pion, point);
-            }
-        }
-    }
 
-    public void placerPion(Pion pion, Point point) {
-        PionView pv = getPionView(pion.getCouleur(), pion.getNumero());
-        pv.setX(12 + point.getX() * 50);
-        pv.setY(12 + point.getY() * 50);
-    }
-
-    public CaseView getCaseView(Point point) {
-        return this.cases.get(point.getX() * Terrain.HAUTEUR + point.getY());
-    }
-
-    public PionView getPionView(int couleur, int numero) {
-        return this.pions.get(couleur * Jeu.NOMBRE_JOUEURS + numero);
     }
 
 }

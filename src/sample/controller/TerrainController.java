@@ -1,15 +1,12 @@
 package sample.controller;
 
-import sample.model.Jeu;
-import sample.model.Pion;
-import sample.model.Point;
-import sample.model.Terrain;
+import sample.model.*;
 import sample.view.TerrainView;
 
 public class TerrainController {
     private final Jeu jeu;
     private final TerrainView terrainView;
-    private Pion pionSelected;
+    public Case caseSelectionne;
 
     public TerrainController(Jeu jeu) {
         this.jeu = jeu;
@@ -24,27 +21,26 @@ public class TerrainController {
         return terrainView;
     }
 
-    public void mouseClick(int i, int j) {
-        System.out.println("Click on " + i + " " + j);
-    }
-
-    public void setPionSelected(Pion pion) {
-        this.pionSelected = pion;
-    }
-
-    public void caseClicked(Point point) {
-        if (this.pionSelected == null) {
-            System.out.println("Pas de pion sélectionné");
-            return;
-        }
-
-        if (this.jeu.getTerrain().getCase(point).getPion() == null) {
-            System.out.println("Changement de coordonnées");
-
-            this.jeu.deplacerPion(pionSelected, point);
-            this.setPionSelected(null);
+    public void mouseClicked(Point point) {
+        Case caseCliquee = this.getJeu().getTerrain().getCaseAt(point);
+        if (this.caseSelectionne == null) {
+            // pas de pion encore sélectionné, la case qu'on a sélectionné en contient un
+            if (caseCliquee.getPion() != null) {
+                this.caseSelectionne = caseCliquee;
+                this.caseSelectionne.getPion().setSelectionne(true);
+                System.out.println("Pion sélectionné");
+            } else {
+                System.out.println("Case vide");
+            }
         } else {
-            System.out.println("Pion déjà présent");
+            if (caseCliquee.getPion() != null) {
+                System.out.println("Case déjà occupée");
+            } else {
+                System.out.println("Déplacement");
+                this.caseSelectionne.getPion().setSelectionne(false);
+                this.caseSelectionne.getPion().deplacer(caseCliquee);
+                this.caseSelectionne = null;
+            }
         }
     }
 }

@@ -1,17 +1,16 @@
 package sample.model;
 
-/**
- * Package ${PACKAGE} / Project JavaFXML.
- * Date 2017 05 02.
- * Created by Nico (23:58).
- */
 public class Case {
+    private final Point point;
     private Pion pion;
-    private Point point;
 
-    public Case(Pion pion, Point point) {
-        this.pion = pion;
+    public Case(Point point) {
+        this(point, null);
+    }
+
+    public Case(Point point, Pion pion) {
         this.point = point;
+        this.pion = pion;
     }
 
     public void setPion(Pion pion) {
@@ -19,6 +18,10 @@ public class Case {
     }
 
     public Pion getPion() {
-        return this.pion;
+        return pion;
+    }
+
+    public Point getPoint() {
+        return point;
     }
 }

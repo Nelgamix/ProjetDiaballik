@@ -24,6 +24,6 @@ public class CaseView extends Rectangle {
         this.setX(HAUTEUR * point.getX());
         this.setY(LARGEUR * point.getY());
         this.setFill(color);
-        this.setOnMouseClicked(e -> terrainController.caseClicked(point));
+        this.setOnMouseClicked(e -> terrainController.mouseClicked(point));
     }
 }
