@@ -29,8 +29,9 @@ public class Jeu extends Observable {
         return this.terrain;
     }
 
+    // Effectue un déplacement (le pion p se déplace sur la case c)
     public void deplacement(Pion p, Case c) {
-        if (deplacementPossible(p.getPosition(), c) && this.getJoueurActuel().actionPossible(Joueur.ACTION_DEPLACEMENT)) {
+        if (!p.aLaBalle() && deplacementPossible(p.getPosition(), c) && this.getJoueurActuel().actionPossible(Joueur.ACTION_DEPLACEMENT)) {
             System.out.println("Déplacement!");
 
             p.deplacer(c);
@@ -40,6 +41,7 @@ public class Jeu extends Observable {
         }
     }
 
+    // Vérifie la possibilité d'un déplacement (uniquement par rapport aux coordonnées)
     private boolean deplacementPossible(Case c1, Case c2) {
         Point p = c1.getPoint();
         Point p2 = c2.getPoint();
@@ -58,6 +60,7 @@ public class Jeu extends Observable {
         return false;
     }
 
+    // Vérifie la possibilité d'une passe (uniquement dans les axes, la couleur n'est pas vérifiée, ...)
     private boolean passePossible(Case c1, Case c2) {
         Point p = c1.getPoint();
         Point p2 = c2.getPoint();
@@ -66,6 +69,7 @@ public class Jeu extends Observable {
         if (p.getX() == p2.getX()) { // en ligne
             int yMax = Math.max(p.getY(), p2.getY());
             int yMin = Math.min(p.getY(), p2.getY());
+
             for (int y = yMax - 1; y > yMin; y--) {
                 Pion pionPresent = getTerrain().getCaseAt(new Point(p.getX(), y)).getPion();
                 if (pionPresent != null && pionPresent.getCouleur() != getJoueurActuel().getCouleur()) {
@@ -75,6 +79,7 @@ public class Jeu extends Observable {
         } else if (p.getY() == p2.getY()) { // colonne
             int xMax = Math.max(p.getX(), p2.getX());
             int xMin = Math.min(p.getX(), p2.getX());
+
             for (int x = xMax - 1; x > xMin; x--) {
                 Pion pionPresent = getTerrain().getCaseAt(new Point(x, p.getY())).getPion();
                 if (pionPresent != null && pionPresent.getCouleur() != getJoueurActuel().getCouleur()) {
@@ -100,17 +105,29 @@ public class Jeu extends Observable {
         return true;
     }
 
+    // Effectue une passe d'un pion p vers un pion positionné sur une case c
     public void passe(Pion p, Case c) {
         if (p.aLaBalle() && passePossible(p.getPosition(), c) && this.getJoueurActuel().actionPossible(Joueur.ACTION_PASSE)) {
             System.out.println("Passe!");
 
             p.passe(c);
+
+            if (partieTerminee()) {
+                // la partie est terminée (le vainqueur est joueurActuel())
+            }
+
             if (!this.getJoueurActuel().moinsAction(Joueur.ACTION_PASSE)) {
                 changerTour();
             }
         }
     }
 
+    // retourne vrai si la partie est terminée (le vainqueur est le joueur actuel)
+    public boolean partieTerminee() {
+        return false;
+    }
+
+    // Change le tour actuel (change aussi le joueur actuel)
     public void changerTour() {
         getJoueurActuel().reset_actions();
         this.tour++;
