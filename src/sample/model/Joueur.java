@@ -89,6 +89,19 @@ public class Joueur {
         }
     }
 
+    public void plusAction(int action) {
+        switch (action) {
+            case ACTION_PASSE:
+                this.passesRestantes++;
+                break;
+            case ACTION_DEPLACEMENT:
+                this.deplacementsRestants++;
+                break;
+            default:
+                System.err.println("Action non reconnue");
+        }
+    }
+
     public void reset_actions() {
         this.deplacementsRestants = NOMBRE_DEPLACEMENTS_MAX;
         this.passesRestantes = NOMBRE_PASSES_MAX;

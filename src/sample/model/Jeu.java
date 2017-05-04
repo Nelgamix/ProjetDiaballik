@@ -210,10 +210,11 @@ public class Jeu extends Observable {
         switch (a.getAction()) {
             case Joueur.ACTION_DEPLACEMENT:
                 a.getPion().deplacer(a.getCaseAvant());
-
+                getJoueurActuel().plusAction(Joueur.ACTION_DEPLACEMENT);
                 break;
             case Joueur.ACTION_PASSE:
                 a.getPion().passe(a.getCaseAvant());
+                getJoueurActuel().plusAction(Joueur.ACTION_PASSE);
 
                 break;
             default:
