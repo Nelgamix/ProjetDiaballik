@@ -22,7 +22,7 @@ import java.io.File;
 public class Diaballik extends Application {
     public Stage stage;
 
-    public final static String DEFAULT_TERRAIN_PATH = "terrain.txt";
+    public final static String DEFAULT_TERRAIN_PATH = "defaultTerrain.txt";
 
     private Scene sceneJeu;
     private Scene sceneMenu;
