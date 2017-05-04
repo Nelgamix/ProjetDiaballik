@@ -3,11 +3,17 @@
     -fx-background-color: #3cb0fd;
 }
 
-#affichageView {
+#affichageViewRed {
     -fx-pref-height: 50px;
-    -fx-background-color: coral;
+    -fx-background-color: red;
 }
 
-#affichageView > .label {
+#affichageViewGreen {
+    -fx-pref-height: 50px;
+    -fx-background-color: green;
+}
+
+.affichageView > .label {
     -fx-font-size: 20px;
+    -fx-text-fill: white;
 }

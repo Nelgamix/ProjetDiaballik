@@ -93,4 +93,12 @@ public class Joueur {
         this.deplacementsRestants = NOMBRE_DEPLACEMENTS_MAX;
         this.passesRestantes = NOMBRE_PASSES_MAX;
     }
+
+    public int getDeplacementsRestants() {
+        return deplacementsRestants;
+    }
+
+    public int getPassesRestantes() {
+        return passesRestantes;
+    }
 }

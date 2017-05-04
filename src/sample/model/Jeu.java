@@ -18,9 +18,9 @@ public class Jeu extends Observable {
         this.joueurActuel = 0;
 
         this.joueurs[0] = new Joueur(this, Joueur.COULEUR_VERT);
-        this.joueurs[0].setNom("Joueur A");
+        this.joueurs[0].setNom("Espece de FDP");
         this.joueurs[1] = new Joueur(this, Joueur.COULEUR_ROUGE);
-        this.joueurs[1].setNom("Joueur B");
+        this.joueurs[1].setNom("Pavid la dute");
 
         updateListeners();
     }
@@ -35,9 +35,12 @@ public class Jeu extends Observable {
             System.out.println("Déplacement!");
 
             p.deplacer(c);
+
             if (!this.getJoueurActuel().moinsAction(Joueur.ACTION_DEPLACEMENT)) {
                 changerTour();
             }
+
+            updateListeners();
         }
     }
 
@@ -90,16 +93,18 @@ public class Jeu extends Observable {
             int xMax = Math.max(p.getX(), p2.getX());
             int xMin = Math.min(p.getX(), p2.getX());
             int yMax = Math.max(p.getY(), p2.getY());
-            int yMin = Math.min(p.getY(), p2.getY());
+            //int yMin = Math.min(p.getY(), p2.getY());
 
+            int y = yMax;
             for (int x = xMax - 1; x > xMin; x--) {
-                for (int y = yMax - 1; y > yMin; y--) {
-                    Pion pionPresent = getTerrain().getCaseAt(new Point(x, y)).getPion();
-                    if (pionPresent != null && pionPresent.getCouleur() != getJoueurActuel().getCouleur()) {
-                        return false;
-                    }
+                y--;
+                Pion pionPresent = getTerrain().getCaseAt(new Point(x, y)).getPion();
+                if (pionPresent != null && pionPresent.getCouleur() != getJoueurActuel().getCouleur()) {
+                    return false;
                 }
             }
+        } else {
+            return false;
         }
 
         return true;
@@ -119,6 +124,8 @@ public class Jeu extends Observable {
             if (!this.getJoueurActuel().moinsAction(Joueur.ACTION_PASSE)) {
                 changerTour();
             }
+
+            updateListeners();
         }
     }
 
@@ -143,5 +150,9 @@ public class Jeu extends Observable {
     private void updateListeners() {
         this.setChanged();
         this.notifyObservers();
+    }
+
+    public int getTour() {
+        return tour;
     }
 }

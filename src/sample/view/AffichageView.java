@@ -25,7 +25,8 @@ public class AffichageView extends BorderPane implements Observer {
         this.jeu = affichageController.getJeu();
         this.jeu.addObserver(this);
 
-        this.setId("affichageView");
+        //this.setId("affichageView");
+        this.getStyleClass().add("affichageView");
 
         joueurActuel = new Label("Joueur");
         this.setCenter(joueurActuel);
@@ -36,5 +37,6 @@ public class AffichageView extends BorderPane implements Observer {
     @Override
     public void update(Observable o, Object arg) {
         joueurActuel.setText(jeu.getJoueurActuel().getNom());
+        this.setId(jeu.getTour() % 2 == 0 ? "affichageViewRed" : "affichageViewGreen");
     }
 }
