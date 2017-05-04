@@ -24,4 +24,9 @@ public class Case {
     public Point getPoint() {
         return point;
     }
+
+    @Override
+    public String toString() {
+        return this.point.toString();
+    }
 }

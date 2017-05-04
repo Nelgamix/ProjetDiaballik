@@ -1,10 +1,42 @@
 package sample.model;
 
+import java.util.ArrayList;
 import java.util.Observable;
 
 public class Jeu extends Observable {
+    private class Action {
+        Pion pion;
+        int action;
+        Case caseAvant;
+
+        public Action(Pion pion, int action, Case caseAvant) {
+            this.pion = pion;
+            this.action = action;
+            this.caseAvant = caseAvant;
+        }
+
+        public Pion getPion() {
+            return pion;
+        }
+
+        public int getAction() {
+            return action;
+        }
+
+        public Case getCaseAvant() {
+            return caseAvant;
+        }
+
+        @Override
+        public String toString() {
+            return action + ": " + pion + " était sur " + caseAvant;
+        }
+    }
+
     private final Terrain terrain;
     private final Joueur[] joueurs;
+
+    private final ArrayList<Action> historique = new ArrayList<>();
 
     private int tour;
     private int joueurActuel;
@@ -34,7 +66,11 @@ public class Jeu extends Observable {
         if (!p.aLaBalle() && deplacementPossible(p.getPosition(), c) && this.getJoueurActuel().actionPossible(Joueur.ACTION_DEPLACEMENT)) {
             System.out.println("Déplacement!");
 
+            Case cv = p.getPosition();
+
             p.deplacer(c);
+
+            historique.add(new Action(p, Joueur.ACTION_DEPLACEMENT, cv));
 
             if (!this.getJoueurActuel().moinsAction(Joueur.ACTION_DEPLACEMENT)) {
                 changerTour();
@@ -115,7 +151,11 @@ public class Jeu extends Observable {
         if (p.aLaBalle() && passePossible(p.getPosition(), c) && this.getJoueurActuel().actionPossible(Joueur.ACTION_PASSE)) {
             System.out.println("Passe!");
 
+            Case cv = p.getPosition();
+
             p.passe(c);
+
+            historique.add(new Action(c.getPion(), Joueur.ACTION_PASSE, cv));
 
             if (partieTerminee()) {
                 // la partie est terminée (le vainqueur est joueurActuel())
@@ -130,12 +170,13 @@ public class Jeu extends Observable {
     }
 
     // retourne vrai si la partie est terminée (le vainqueur est le joueur actuel)
-    public boolean partieTerminee() {
+    private boolean partieTerminee() {
         return false;
     }
 
     // Change le tour actuel (change aussi le joueur actuel)
     public void changerTour() {
+        historique.clear();
         getJoueurActuel().reset_actions();
         this.tour++;
         joueurActuel = (joueurActuel + 1 >= Jeu.NOMBRE_JOUEURS ? 0 : joueurActuel + 1);
@@ -147,6 +188,10 @@ public class Jeu extends Observable {
         return this.joueurs[(tour-1) % NOMBRE_JOUEURS];
     }
 
+    public ArrayList<Action> getHistorique() {
+        return historique;
+    }
+
     private void updateListeners() {
         this.setChanged();
         this.notifyObservers();
@@ -154,5 +199,27 @@ public class Jeu extends Observable {
 
     public int getTour() {
         return tour;
+    }
+
+    public void rollwack() {
+        if (historique.size() == 0) return;
+
+        Action a = historique.get(historique.size() - 1);
+        historique.remove(historique.size() - 1);
+
+        switch (a.getAction()) {
+            case Joueur.ACTION_DEPLACEMENT:
+                a.getPion().deplacer(a.getCaseAvant());
+
+                break;
+            case Joueur.ACTION_PASSE:
+                a.getPion().passe(a.getCaseAvant());
+
+                break;
+            default:
+                System.err.println("Action non reconnue");
+        }
+
+        updateListeners();
     }
 }

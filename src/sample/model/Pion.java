@@ -77,4 +77,9 @@ public class Pion extends Observable {
         this.setChanged();
         this.notifyObservers();
     }
+
+    @Override
+    public String toString() {
+        return this.getPosition().getPoint().toString();
+    }
 }

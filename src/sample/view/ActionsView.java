@@ -37,9 +37,14 @@ public class ActionsView extends VBox implements Observer {
         passerTour.setOnAction(e -> jeu.changerTour());
         passerTour.setMaxWidth(Double.MAX_VALUE);
 
+        Button rollwack = new Button("Rollwack");
+        rollwack.setOnAction(e -> jeu.rollwack());
+        rollwack.setMaxWidth(Double.MAX_VALUE);
+
         this.getChildren().add(deplacements);
         this.getChildren().add(passe);
         this.getChildren().add(passerTour);
+        this.getChildren().add(rollwack);
 
         this.setAlignment(Pos.CENTER);
         this.setPadding(new Insets(20));
