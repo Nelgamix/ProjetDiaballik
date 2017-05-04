@@ -1,4 +1,4 @@
-package sample.model;
+package diaballik.model;
 
 import java.util.ArrayList;
 import java.util.Observable;
@@ -44,14 +44,14 @@ public class Jeu extends Observable {
     public final static int NOMBRE_JOUEURS = 2;
 
     public Jeu() {
-        this.terrain = new Terrain();
+        this.terrain = new Terrain("terrain.txt");
         this.joueurs = new Joueur[NOMBRE_JOUEURS];
         this.tour = 1;
         this.joueurActuel = 0;
 
-        this.joueurs[0] = new Joueur(this, Joueur.COULEUR_VERT);
+        this.joueurs[0] = new Joueur(this, Joueur.JOUEUR_VERT);
         this.joueurs[0].setNom("Espece de FDP");
-        this.joueurs[1] = new Joueur(this, Joueur.COULEUR_ROUGE);
+        this.joueurs[1] = new Joueur(this, Joueur.JOUEUR_ROUGE);
         this.joueurs[1].setNom("Pavid la dute");
 
         updateListeners();

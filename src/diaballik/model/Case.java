@@ -1,4 +1,4 @@
-package sample.model;
+package diaballik.model;
 
 public class Case {
     private final Point point;

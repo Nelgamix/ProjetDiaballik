@@ -1,7 +1,7 @@
-package sample.controller;
+package diaballik.controller;
 
-import sample.model.*;
-import sample.view.TerrainView;
+import diaballik.model.*;
+import diaballik.view.TerrainView;
 
 public class TerrainController {
     private final Jeu jeu;

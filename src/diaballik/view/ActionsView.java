@@ -1,12 +1,12 @@
-package sample.view;
+package diaballik.view;
 
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.layout.VBox;
-import sample.controller.ActionsController;
-import sample.model.Jeu;
+import diaballik.controller.ActionsController;
+import diaballik.model.Jeu;
 
 import java.util.Observable;
 import java.util.Observer;
@@ -24,7 +24,7 @@ public class ActionsView extends VBox implements Observer {
     private Label passe = new Label("Passe");
 
     public ActionsView(ActionsController actionsController) {
-        super();
+        super(10);
 
         this.setId("actionsView");
 

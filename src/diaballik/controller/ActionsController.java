@@ -1,9 +1,7 @@
-package sample.controller;
+package diaballik.controller;
 
-import javafx.scene.control.Button;
-import javafx.scene.layout.VBox;
-import sample.model.Jeu;
-import sample.view.ActionsView;
+import diaballik.model.Jeu;
+import diaballik.view.ActionsView;
 
 /**
  * Package ${PACKAGE} / Project JavaFXML.

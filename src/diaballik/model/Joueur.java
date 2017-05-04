@@ -1,10 +1,6 @@
-package sample.model;
+package diaballik.model;
 
 import javafx.scene.paint.Color;
-
-import java.lang.reflect.Array;
-import java.util.ArrayList;
-import java.util.HashMap;
 
 public class Joueur {
     private Terrain terrain;
@@ -22,8 +18,11 @@ public class Joueur {
 
     public final static int NOMBRE_PIONS = 7;
 
-    public final static int COULEUR_VERT = 0;
-    public final static int COULEUR_ROUGE = 1;
+    // Joueurs et couleurs
+    public final static int JOUEUR_VERT = 0; // J vert
+    public final static int JOUEUR_ROUGE = 1; // J rouge
+    public final static Color COULEUR_VERT = Color.GREEN; // Couleur du J vert
+    public final static Color COULEUR_ROUGE = Color.RED; // Couleur du J rouge
 
     public Joueur(Jeu jeu, int couleur) {
         this.jeu = jeu;

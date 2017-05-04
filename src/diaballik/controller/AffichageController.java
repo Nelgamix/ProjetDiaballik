@@ -1,7 +1,7 @@
-package sample.controller;
+package diaballik.controller;
 
-import sample.model.Jeu;
-import sample.view.AffichageView;
+import diaballik.model.Jeu;
+import diaballik.view.AffichageView;
 
 /**
  * Package ${PACKAGE} / Project JavaFXML.

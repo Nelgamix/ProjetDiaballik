@@ -1,9 +1,10 @@
-package sample.view;
+package diaballik.view;
 
+import diaballik.model.Joueur;
 import javafx.scene.control.Label;
 import javafx.scene.layout.BorderPane;
-import sample.controller.AffichageController;
-import sample.model.Jeu;
+import diaballik.controller.AffichageController;
+import diaballik.model.Jeu;
 
 import java.util.Observable;
 import java.util.Observer;

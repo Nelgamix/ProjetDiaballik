@@ -1,16 +1,10 @@
-package sample.view;
+package diaballik.view;
 
-import javafx.event.EventHandler;
-import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
-import javafx.scene.shape.Circle;
-import javafx.scene.shape.Rectangle;
-import sample.controller.TerrainController;
-import sample.model.*;
+import diaballik.controller.TerrainController;
+import diaballik.model.*;
 
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Observable;
 import java.util.Observer;
 

@@ -1,13 +1,9 @@
-package sample.view;
+package diaballik.view;
 
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
-import sample.controller.TerrainController;
-import sample.model.Pion;
-import sample.model.Point;
-
-import java.util.Observable;
-import java.util.Observer;
+import diaballik.controller.TerrainController;
+import diaballik.model.Point;
 
 public class CaseView extends Rectangle {
     private final TerrainController terrainController;
