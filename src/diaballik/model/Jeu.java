@@ -1,5 +1,6 @@
 package diaballik.model;
 
+import java.io.*;
 import java.util.ArrayList;
 import java.util.Observable;
 
@@ -33,7 +34,7 @@ public class Jeu extends Observable {
         }
     }
 
-    private final Terrain terrain;
+    private Terrain terrain;
     private final Joueur[] joueurs;
 
     private final ArrayList<Action> historique = new ArrayList<>();
@@ -43,22 +44,89 @@ public class Jeu extends Observable {
 
     public final static int NOMBRE_JOUEURS = 2;
 
-    public Jeu() {
-        this.terrain = new Terrain("terrain.txt");
+    public Jeu(String path, boolean isSave) {
         this.joueurs = new Joueur[NOMBRE_JOUEURS];
-        this.tour = 1;
-        this.joueurActuel = 0;
-
         this.joueurs[0] = new Joueur(this, Joueur.JOUEUR_VERT);
-        this.joueurs[0].setNom("Espece de FDP");
         this.joueurs[1] = new Joueur(this, Joueur.JOUEUR_ROUGE);
-        this.joueurs[1].setNom("Pavid la dute");
+
+        load(path, isSave);
+
+        this.joueurActuel = this.getTour() - 1;
 
         updateListeners();
     }
 
+    public void load(String path, boolean isSave) {
+        try (BufferedReader br = new BufferedReader(new FileReader(path))) {
+            String sCurrentLine;
+            String parts[];
+            Joueur joueur;
+
+            if (isSave) {
+                // tour actuel
+                if ((sCurrentLine = br.readLine()) != null) {
+                    this.tour = Integer.parseInt(sCurrentLine);
+                }
+
+                // joueur 1
+                if ((sCurrentLine = br.readLine()) != null) {
+                    parts = sCurrentLine.split(":");
+                    joueur = this.joueurs[0];
+
+                    joueur.setNom(parts[0]);
+                    joueur.setDeplacementsRestants(Integer.parseInt(parts[1]));
+                    joueur.setPassesRestantes(Integer.parseInt(parts[2]));
+                }
+
+                // joueur 2
+                if ((sCurrentLine = br.readLine()) != null) {
+                    parts = sCurrentLine.split(":");
+                    joueur = this.joueurs[1];
+
+                    joueur.setNom(parts[0]);
+                    joueur.setDeplacementsRestants(Integer.parseInt(parts[1]));
+                    joueur.setPassesRestantes(Integer.parseInt(parts[2]));
+                }
+            } else {
+                this.tour = 1;
+
+                // TODO: piocher les noms aléatoirement ? les demander à l'utilisateur ?
+                this.joueurs[0].setNom("Pavid the dute");
+                this.joueurs[1].setNom("Poic the lute");
+            }
+
+            StringBuilder terrainString = new StringBuilder();
+            int y = 0;
+            while ((sCurrentLine = br.readLine()) != null && y < Terrain.HAUTEUR) {
+                terrainString.append(sCurrentLine).append("\n");
+                y++;
+            }
+
+            terrain = new Terrain(terrainString.toString());
+        } catch (IOException ioe) {
+            ioe.printStackTrace();
+        }
+    }
+
     public Terrain getTerrain() {
         return this.terrain;
+    }
+
+    // Save the game state into path
+    public void save(String path) {
+        // On écrit les infos suivantes (qui caractérisent l'état du jeu)
+        // tour
+        // nomJ1:depl:pass
+        // nomJ2:depl:pass
+        // terrain...
+        try (BufferedWriter bw = new BufferedWriter(new FileWriter(path))) {
+            bw.write(this.getTour() + "\n");
+            bw.write(this.joueurs[0].getSaveString());
+            bw.write(this.joueurs[1].getSaveString());
+            bw.write(this.getTerrain().getSaveString());
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     // Effectue un déplacement (le pion p se déplace sur la case c)
@@ -180,8 +248,8 @@ public class Jeu extends Observable {
         getJoueurActuel().reset_actions();
         this.tour++;
         joueurActuel = (joueurActuel + 1 >= Jeu.NOMBRE_JOUEURS ? 0 : joueurActuel + 1);
+
         updateListeners();
-        //System.out.println("Tour " + tour + ": " + getJoueurActuel().getNom());
     }
 
     public Joueur getJoueurActuel() {

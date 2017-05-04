@@ -1,15 +1,19 @@
 package diaballik.controller;
 
+import diaballik.Diaballik;
 import diaballik.model.*;
 import diaballik.view.TerrainView;
 
 public class TerrainController {
+    private final Diaballik diaballik;
+
     private final Jeu jeu;
     private final TerrainView terrainView;
     public Case caseSelectionne;
 
-    public TerrainController(Jeu jeu) {
-        this.jeu = jeu;
+    public TerrainController(Diaballik diaballik) {
+        this.diaballik = diaballik;
+        this.jeu = diaballik.getJeu();
         this.terrainView = new TerrainView(this);
     }
 

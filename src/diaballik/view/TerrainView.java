@@ -36,7 +36,7 @@ public class TerrainView extends Pane implements Observer {
         PionView pv;
         for (int i = 0; i < Jeu.NOMBRE_JOUEURS; i++) {
             for (int j = 0; j < Joueur.NOMBRE_PIONS; j++) {
-                pv = new PionView(this.terrainController, this.terrain.getPionAt(new Point(i, j)));
+                pv = new PionView(this.terrainController, this.terrain.getPionOf(i, j));
                 this.pions[i][j] = pv;
                 this.getChildren().add(pv);
             }

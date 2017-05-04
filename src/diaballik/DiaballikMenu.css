@@ -1,0 +1,9 @@
+.button {
+    -fx-max-width: 220px;
+    -fx-max-height: 30px;
+    -fx-font-size: 20px;
+}
+
+.label {
+    -fx-font-size: 42px;
+}

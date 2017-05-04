@@ -41,10 +41,20 @@ public class ActionsView extends VBox implements Observer {
         rollwack.setOnAction(e -> jeu.rollwack());
         rollwack.setMaxWidth(Double.MAX_VALUE);
 
+        Button save = new Button("Save");
+        save.setOnAction(e -> actionsController.saveGame());
+        save.setMaxWidth(Double.MAX_VALUE);
+
+        Button menu = new Button("Menu");
+        menu.setOnAction(e -> actionsController.menu());
+        menu.setMaxWidth(Double.MAX_VALUE);
+
         this.getChildren().add(deplacements);
         this.getChildren().add(passe);
         this.getChildren().add(passerTour);
         this.getChildren().add(rollwack);
+        this.getChildren().add(save);
+        this.getChildren().add(menu);
 
         this.setAlignment(Pos.CENTER);
         this.setPadding(new Insets(20));

@@ -4,6 +4,7 @@ import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
 
+// TODO: x et y *inversé*, ajouter méthodes propres pour l'accès
 public class Terrain {
     private final Case cases[][];
     private final Pion pions[][];
@@ -11,87 +12,114 @@ public class Terrain {
     public final static int HAUTEUR = 7;
     public final static int LARGEUR = 7;
 
-    public Terrain(String file) {
+    public Terrain(String terrainString) {
         this.cases = new Case[HAUTEUR][LARGEUR];
         this.pions = new Pion[Jeu.NOMBRE_JOUEURS][Joueur.NOMBRE_PIONS];
 
         for (int i = 0; i < HAUTEUR; i++) {
             for (int j = 0; j < LARGEUR; j++) {
-                this.cases[i][j] = new Case(new Point(i, j));
+                this.cases[i][j] = new Case(new Point(j, i));
             }
         }
 
-        try (BufferedReader br = new BufferedReader(new FileReader(file))) {
-            String sCurrentLine;
-            String parts[];
+        int x, y = 0;
+        Pion pion; // le pion qu'on va créer à chaque lecture
+        boolean estPion = true; // pour marquer une lecture erronée ou un vide
+        int couleur = -1;
+        boolean pionBalle = false;
 
-            int y, x; // pour se repérer et arrêter la boucle
-            Pion pion; // le pion qu'on va créer à chaque lecture
-            boolean estPion = true; // pour marquer une lecture erronée ou un vide
-            int couleur = -1;
-            boolean pionBalle = false;
+        String[] lines = terrainString.split("\n"), parts;
 
-            y = 0;
-            while ((sCurrentLine = br.readLine()) != null && y < HAUTEUR) {
-                parts = sCurrentLine.split(";");
+        while (y < HAUTEUR) {
+            parts = lines[y].split(";");
 
-                x = 0;
-                for (String c : parts) {
-                    if (x == LARGEUR) break;
+            x = 0;
+            for (String c : parts) {
+                if (x == LARGEUR) break;
 
-                    switch (c) {
-                        case "V":
-                            couleur = Joueur.JOUEUR_VERT;
-                            break;
-                        case "R":
-                            couleur = Joueur.JOUEUR_ROUGE;
-                            break;
-                        case "BV":
-                            couleur = Joueur.JOUEUR_VERT;
-                            pionBalle = true;
-                            break;
-                        case "BR":
-                            couleur = Joueur.JOUEUR_ROUGE;
-                            pionBalle = true;
-                            break;
-                        default:
-                            estPion = false;
-                            break;
-                    }
-
-                    if (estPion) {
-                        pion = new Pion(couleur, x, this.cases[x][y]);
-                        this.cases[x][y].setPion(pion);
-                        this.pions[couleur][x] = pion;
-
-                        if (pionBalle) {
-                            pion.setaLaBalle(true);
-                            pionBalle = false;
-                        }
-                    } else {
-                        estPion = true;
-                    }
-
-                    x++;
+                switch (c) {
+                    case "V":
+                        couleur = Joueur.JOUEUR_VERT;
+                        break;
+                    case "R":
+                        couleur = Joueur.JOUEUR_ROUGE;
+                        break;
+                    case "BV":
+                        couleur = Joueur.JOUEUR_VERT;
+                        pionBalle = true;
+                        break;
+                    case "BR":
+                        couleur = Joueur.JOUEUR_ROUGE;
+                        pionBalle = true;
+                        break;
+                    default:
+                        estPion = false;
+                        break;
                 }
 
-                y++;
+                if (estPion) {
+                    Case ct = this.cases[y][x];
+
+                    pion = new Pion(couleur, x, ct);
+                    this.cases[y][x].setPion(pion);
+                    this.pions[couleur][x] = pion;
+
+                    if (pionBalle) {
+                        pion.setaLaBalle(true);
+                        pionBalle = false;
+                    }
+                } else {
+                    estPion = true;
+                }
+
+                x++;
             }
-        } catch (IOException ioe) {
-            ioe.printStackTrace();
+
+            y++;
         }
     }
 
-    public Pion getPionAt(Point point) {
-        return this.pions[point.getX()][point.getY()];
+    public Pion getPionOf(int joueur, int num) {
+        return this.pions[joueur][num];
     }
 
     public Case getCaseAt(Point point) {
-        return this.cases[point.getX()][point.getY()];
+        return this.cases[point.getY()][point.getX()];
     }
 
-    public void setPionOnCase(Point point, Pion pion) {
-        this.cases[point.getX()][point.getY()].setPion(pion);
+    public String getPionRepr(Pion pion) {
+        String res = "";
+
+        if (pion == null)
+            return "0";
+
+        if (pion.aLaBalle())
+            res += "B";
+
+        if (pion.getCouleur() == Joueur.JOUEUR_VERT)
+            res += "V";
+        else
+            res += "R";
+
+        return res;
     }
 
+    public String getSaveString() {
+        StringBuilder sb = new StringBuilder();
+        boolean skip = true;
+
+        for (Case[] cs : cases) {
+            for (Case c : cs) {
+                if (!skip)
+                    sb.append(";");
+                else
+                    skip = false;
+                sb.append(getPionRepr(c.getPion()));
+            }
+            skip = true;
+            sb.append("\n");
+        }
+
+        return sb.toString();
+    }
 }

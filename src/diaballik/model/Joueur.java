@@ -101,6 +101,14 @@ public class Joueur {
         }
     }
 
+    public void setDeplacementsRestants(int deplacementsRestants) {
+        this.deplacementsRestants = deplacementsRestants;
+    }
+
+    public void setPassesRestantes(int passesRestantes) {
+        this.passesRestantes = passesRestantes;
+    }
+
     public void reset_actions() {
         this.deplacementsRestants = NOMBRE_DEPLACEMENTS_MAX;
         this.passesRestantes = NOMBRE_PASSES_MAX;
@@ -112,5 +120,13 @@ public class Joueur {
 
     public int getPassesRestantes() {
         return passesRestantes;
+    }
+
+    public String getSaveString() {
+        StringBuilder sb = new StringBuilder();
+
+        sb.append(this.getNom()).append(":").append(this.getDeplacementsRestants()).append(":").append(this.getPassesRestantes()).append("\n");
+
+        return sb.toString();
     }
 }
