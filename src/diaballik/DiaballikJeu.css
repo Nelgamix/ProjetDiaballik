@@ -1,24 +1,89 @@
+/* ACTIONS VIEW */
 #actionsView {
-    -fx-pref-width: 150px;
-    -fx-background-color: #3cb0fd;
+    -fx-pref-width: 200px;
+    -fx-background-color: linear-gradient(to top, #88848a, #d2d2d2);
+    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.8), 10, 0, 0, 0);
+    -fx-scale-z: -1;
 }
 
-#affichageViewRed {
+.indicateurActionsRestantes {
+    -fx-font-size: 250%;
+    -fx-padding: -10px 0;
+}
+
+.vBoxIndicateurs {
+    -fx-alignment: center;
+    -fx-text-alignment: center;
+    -fx-font-size: 175%;
+}
+
+#actionsView > VBox > .button {
+    -fx-background-color:
+            linear-gradient(#f2f2f2, #d6d6d6),
+            linear-gradient(#fcfcfc 0%, #d9d9d9 20%, #d6d6d6 100%),
+            linear-gradient(#dddddd 0%, #f6f6f6 50%);
+    -fx-background-radius: 8,7,6;
+    -fx-background-insets: 0,1,2;
+    -fx-text-fill: black;
+    -fx-font-size: 130%;
+    -fx-effect: dropshadow( three-pass-box , rgba(0,0,0,0.6) , 5, 0.0 , 0 , 1 );
+    -fx-font-family: "Verdana", "Noto Sans";
+    -fx-padding: 10px;
+}
+
+#actionsView > VBox > #passerTour {
+    -fx-font-weight: bold;
+    -fx-font-size: 150%;
+}
+
+#actionsView > VBox > .button:hover {
+    -fx-background-color:
+            linear-gradient(#d2d2d2, #b4b4b4),
+            linear-gradient(#e6e6e6 0%, #c0c0c0 20%, #a1a1a1 100%),
+            linear-gradient(#bebebe 0%, #d6d6d6 50%);
+}
+
+/* AFFICHAGE VIEW */
+#affichageView {
     -fx-pref-height: 50px;
-    -fx-background-color: red;
+    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.8), 10, 0, 0, 0);
 }
 
-#affichageViewGreen {
-    -fx-pref-height: 50px;
-    -fx-background-color: green;
+#affichageView > .label {
+    -fx-font-size: 30px;
+    -fx-text-fill: black;
+    -fx-font-weight: bold;
+    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.3), 6, 0, 0, 0);
 }
 
-.affichageView > .label {
-    -fx-font-size: 26px;
-    -fx-text-fill: white;
+#terrainView {
+    -fx-alignment: center;
+    -fx-border-color: #4b4b4b;
+    -fx-border-width: 2px;
 }
 
-#actionsView > .label {
-    -fx-font-size: 16px;
-    -fx-text-fill: white;
+/* COULEURS */
+.couleurJoueurVert {
+    -fx-fill: linear-gradient(to bottom right, #00eb2f, #00cd2d);
+    -fx-background-color: linear-gradient(to top, #00eb2f, #00cd2d);
+    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.5), 10, 0, 0, 0);
+}
+
+.couleurJoueurRouge {
+    -fx-fill: linear-gradient(to bottom right, #eb8b00, #cd7200);
+    -fx-background-color: linear-gradient(to top, #eb8b00, #cd7200);
+    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.5), 10, 0, 0, 0);
+}
+
+.couleurSelection {
+    -fx-fill: linear-gradient(to bottom right, #a3ddeb, #88bfcd);
+    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.3), 20, 0, 0, 0);
+}
+
+.couleurCasePair {
+    -fx-fill: linear-gradient(to bottom right, #ebebeb, #e1e1e1);
+}
+
+.couleurCaseImpair {
+    -fx-fill: linear-gradient(to bottom right, #9b9b9b, #878787);
 }

@@ -14,8 +14,8 @@ public class PionView extends Circle implements Observer {
     private Pion pion;
     private TerrainController terrainController;
 
-    private final static int RAYON = CaseView.HAUTEUR / 5;
-    private final static int RAYON_BALLE = RAYON * 2;
+    private final static double RAYON = CaseView.HAUTEUR / 4;
+    private final static double RAYON_BALLE = RAYON * 1.5;
 
     public PionView(TerrainController terrainController, Pion pion) {
         super(RAYON);
@@ -38,14 +38,27 @@ public class PionView extends Circle implements Observer {
     @Override
     public void update(Observable o, Object arg) {
         Point p = this.pion.getPosition().getPoint();
-        this.setCenterX(p.getX() * CaseView.HAUTEUR + CaseView.HAUTEUR / 2);
-        this.setCenterY(p.getY() * CaseView.LARGEUR + CaseView.LARGEUR / 2);
-        this.setFill(getColor());
+        this.setCenterX(CaseView.DECALAGE_GAUCHE + p.getX() * CaseView.HAUTEUR + CaseView.HAUTEUR / 2);
+        this.setCenterY(CaseView.DECALAGE_HAUT + p.getY() * CaseView.LARGEUR + CaseView.LARGEUR / 2);
+        //this.setFill(getColor());
+        this.setClass();
         this.setRadius(getRayon());
     }
 
-    private int getRayon() {
+    private double getRayon() {
         return (this.pion.aLaBalle() ? RAYON_BALLE : RAYON);
+    }
+
+    private void setClass() {
+        this.getStyleClass().clear();
+
+        if (pion.isSelectionne())
+            this.getStyleClass().add("couleurSelection");
+        else
+        if (pion.getCouleur() == Joueur.JOUEUR_VERT)
+            this.getStyleClass().add("couleurJoueurVert");
+        else
+            this.getStyleClass().add("couleurJoueurRouge");
     }
 
     private Color getColor() {

@@ -1,6 +1,10 @@
 package diaballik.view;
 
+import javafx.geometry.Pos;
+import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Pane;
+import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
 import diaballik.controller.TerrainController;
 import diaballik.model.*;
@@ -16,9 +20,14 @@ public class TerrainView extends Pane implements Observer {
     private final PionView[][] pions;
 
     public TerrainView(TerrainController terrainController) {
+        super();
+
         this.terrainController = terrainController;
         this.terrain = terrainController.getJeu().getTerrain();
         this.terrainController.getJeu().addObserver(this);
+        this.setId("terrainView");
+        this.setMaxWidth(CaseView.LARGEUR * Terrain.LARGEUR + 4);
+        this.setMaxHeight(CaseView.HAUTEUR * Terrain.HAUTEUR + 4);
 
         this.cases = new CaseView[Terrain.HAUTEUR][Terrain.LARGEUR];
         this.pions = new PionView[Jeu.NOMBRE_JOUEURS][Joueur.NOMBRE_PIONS];
@@ -26,7 +35,13 @@ public class TerrainView extends Pane implements Observer {
         int a = 0;
         for (int i = 0; i < Terrain.HAUTEUR; i++) {
             for (int j = 0; j < Terrain.LARGEUR; j++) {
-                CaseView cv = new CaseView(this.terrainController, new Point(i, j), (a++ % 2 == 0 ? Color.BEIGE : Color.GRAY));
+                CaseView cv = new CaseView(this.terrainController, new Point(i, j));
+
+                if (a++ % 2 == 0)
+                    cv.getStyleClass().add("couleurCasePair");
+                else
+                    cv.getStyleClass().add("couleurCaseImpair");
+
                 this.cases[i][j] = cv;
 
                 this.getChildren().add(cv);

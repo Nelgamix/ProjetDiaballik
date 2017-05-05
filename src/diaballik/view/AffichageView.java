@@ -2,9 +2,13 @@ package diaballik.view;
 
 import diaballik.model.Joueur;
 import javafx.scene.control.Label;
+import javafx.scene.effect.Bloom;
+import javafx.scene.effect.BlurType;
+import javafx.scene.effect.InnerShadow;
 import javafx.scene.layout.BorderPane;
 import diaballik.controller.AffichageController;
 import diaballik.model.Jeu;
+import javafx.scene.paint.Color;
 
 import java.util.Observable;
 import java.util.Observer;
@@ -26,8 +30,7 @@ public class AffichageView extends BorderPane implements Observer {
         this.jeu = affichageController.getJeu();
         this.jeu.addObserver(this);
 
-        //this.setId("affichageView");
-        this.getStyleClass().add("affichageView");
+        this.setId("affichageView");
 
         joueurActuel = new Label("Joueur");
         this.setCenter(joueurActuel);
@@ -38,6 +41,8 @@ public class AffichageView extends BorderPane implements Observer {
     @Override
     public void update(Observable o, Object arg) {
         joueurActuel.setText(jeu.getJoueurActuel().getNom());
-        this.setId(jeu.getTour() % 2 == 0 ? "affichageViewRed" : "affichageViewGreen");
+        this.getStyleClass().clear();
+        this.getStyleClass().add(jeu.getJoueurActuel().getCouleur() == Joueur.JOUEUR_VERT ? "couleurJoueurVert" : "couleurJoueurRouge");
+        //this.setId(jeu.getTour() % 2 == 0 ? "affichageViewRed" : "affichageViewGreen");
     }
 }

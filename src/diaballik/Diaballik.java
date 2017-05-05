@@ -79,7 +79,7 @@ public class Diaballik extends Application {
         root.setRight(actionsController.getActionsView());
         root.setTop(affichageController.getAffichageView());
 
-        sceneJeu = new Scene(root, CaseView.LARGEUR * Terrain.LARGEUR + 150, CaseView.HAUTEUR * Terrain.HAUTEUR + 50);
+        sceneJeu = new Scene(root, CaseView.LARGEUR * Terrain.LARGEUR + 225, CaseView.HAUTEUR * Terrain.HAUTEUR + 75);
         sceneJeu.getStylesheets().add(getClass().getResource("DiaballikJeu.css").toExternalForm());
     }
     private void initSceneMenu() {
