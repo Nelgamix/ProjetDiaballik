@@ -61,7 +61,7 @@ public class ActionsView extends BorderPane implements Observer {
 
         this.jeu.addObserver(this);
 
-        Button passerTour = new Button("Passer");
+        Button passerTour = new Button("Fin tour");
         passerTour.setOnAction(e -> jeu.changerTour());
         passerTour.setMaxWidth(Double.MAX_VALUE);
         passerTour.setId("passerTour");
@@ -70,7 +70,7 @@ public class ActionsView extends BorderPane implements Observer {
         rollback.setOnAction(e -> actionsController.rollback());
         rollback.setMaxWidth(Double.MAX_VALUE);
 
-        Button save = new Button("Save");
+        Button save = new Button("Sauvegarder");
         save.setOnAction(e -> actionsController.saveGame(Diaballik.SAVES_DIRECTORY));
         save.setMaxWidth(Double.MAX_VALUE);
 

@@ -56,7 +56,7 @@ public class Dialogs {
         ArrayList<Pair<String, String>> noms = new ArrayList<>(
                 Arrays.asList(
                         new Pair<>("Nicolas Huchet", "Domaine"),
-                        new Pair<>("Houdebine Loïc", "Domaine"),
+                        new Pair<>("Loïc Houdebine", "Domaine"),
                         new Pair<>("Paul Reynaud", "Domaine"),
                         new Pair<>("Rana Sherif", "Domaine"),
                         new Pair<>("Anis Belahadji", "Domaine"),

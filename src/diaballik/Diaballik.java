@@ -11,6 +11,7 @@ import diaballik.view.CaseView;
 import diaballik.view.Dialogs;
 import javafx.application.Application;
 import javafx.application.Platform;
+import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
@@ -103,6 +104,7 @@ public class Diaballik extends Application {
         // TODO: séparer menuScene dans une autre classe
 
         Label titre = new Label("Diaballik");
+        titre.setPadding(new Insets(0, 0, 25, 0));
 
         Button newGame = new Button("Nouvelle partie");
         newGame.setOnAction(e -> newGame());
@@ -123,6 +125,11 @@ public class Diaballik extends Application {
             }*/
         });
 
+        Button regles = new Button("Règles");
+        regles.setOnAction(e -> {
+            getHostServices().showDocument("http://inf362.forge.imag.fr/Projet/Regles/diaballik/");
+        });
+
         Button credits = new Button("Crédits");
         credits.setOnAction(e -> Dialogs.showCredits());
 
@@ -132,6 +139,7 @@ public class Diaballik extends Application {
         vBox.getChildren().add(titre);
         vBox.getChildren().add(newGame);
         vBox.getChildren().add(loadGame);
+        vBox.getChildren().add(regles);
         vBox.getChildren().add(credits);
         vBox.getChildren().add(quitter);
 
