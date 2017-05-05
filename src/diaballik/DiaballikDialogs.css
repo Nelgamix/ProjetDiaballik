@@ -1,0 +1,18 @@
+#dialogCredits > .label {
+    -fx-font-size: 20px;
+}
+
+#dialogCredits > GridPane > .label {
+    -fx-font-size: 14px;
+}
+
+#dialogCredits > VBox > .label {
+    -fx-font-size: 16px;
+}
+
+#dialogLoadName > .label {
+    -fx-padding: 0 0 10px 0;
+    -fx-font-size: 18px;
+}
+
+#dialogNewGame {}

@@ -1,31 +1,40 @@
 package diaballik;
 
+import diaballik.controller.ActionsController;
+import diaballik.controller.AffichageController;
+import diaballik.controller.TerrainController;
+import diaballik.model.ConfigurationPartie;
+import diaballik.model.Jeu;
 import diaballik.model.Joueur;
+import diaballik.model.Terrain;
+import diaballik.view.CaseView;
 import diaballik.view.Dialogs;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
-import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyCodeCombination;
+import javafx.scene.input.KeyCombination;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.VBox;
-import javafx.stage.FileChooser;
 import javafx.stage.Stage;
-import diaballik.controller.ActionsController;
-import diaballik.controller.AffichageController;
-import diaballik.controller.TerrainController;
-import diaballik.model.Jeu;
-import diaballik.model.Terrain;
-import diaballik.view.CaseView;
 
-import java.io.File;
+import java.util.Optional;
 
 public class Diaballik extends Application {
     public Stage stage;
 
-    public final static String DEFAULT_TERRAIN_PATH = "defaultTerrains/defaultTerrain.txt";
+    public final static String CSS_MENU_FILE = "DiaballikMenu.css";
+    public final static String CSS_JEU_FILE = "DiaballikJeu.css";
+    public final static String CSS_DIALOG_FILE = "DiaballikDialogs.css";
+
+    public final static String SAVES_DIRECTORY = "saves";
+
+    private final KeyCombination ctrlS = new KeyCodeCombination(KeyCode.S, KeyCombination.CONTROL_DOWN); // save
+    private final KeyCombination ctrlZ = new KeyCodeCombination(KeyCode.Z, KeyCombination.CONTROL_DOWN); // rollback
 
     private Scene sceneJeu;
     private Scene sceneMenu;
@@ -41,25 +50,25 @@ public class Diaballik extends Application {
     }
 
     public void newGame() {
-        newGame(DEFAULT_TERRAIN_PATH, false);
+        Optional<ConfigurationPartie> cp = Dialogs.showNewGameDialog();
+        if (cp.isPresent()) {
+            initSceneJeu(cp.get());
+            showSceneJeu();
+        }
     }
 
-    public void newGame(String path) {
+    /*public void newGame(String path) {
         newGame(path, false);
-    }
+    }*/
 
     public void newGame(String path, boolean isSave) {
-        initSceneJeu(path, isSave);
+        ConfigurationPartie cp = new ConfigurationPartie(path, isSave);
+        initSceneJeu(cp);
         showSceneJeu();
     }
 
-    public void finJeu(Joueur gagnant) {
-        Alert alert = new Alert(Alert.AlertType.INFORMATION);
-        alert.setTitle("Information Dialog");
-        alert.setHeaderText("Look, an Information Dialog");
-        alert.setContentText("I have a great message for you!\nJoueur " + gagnant.getNom() + " won!!!");
-
-        alert.showAndWait();
+    public void endGame(Joueur gagnant) {
+        Dialogs.showEndGame(gagnant);
 
         showSceneMenu();
     }
@@ -68,8 +77,8 @@ public class Diaballik extends Application {
         Platform.exit();
     }
 
-    private void initSceneJeu(String path, boolean isSave) {
-        jeu = new Jeu(path, isSave, this);
+    private void initSceneJeu(ConfigurationPartie cp) {
+        jeu = new Jeu(cp, this);
 
         TerrainController terrainController = new TerrainController(this);
         ActionsController actionsController = new ActionsController(this);
@@ -81,7 +90,14 @@ public class Diaballik extends Application {
         root.setTop(affichageController.getAffichageView());
 
         sceneJeu = new Scene(root, CaseView.LARGEUR * Terrain.LARGEUR + 225, CaseView.HAUTEUR * Terrain.HAUTEUR + 75);
-        sceneJeu.getStylesheets().add(getClass().getResource("DiaballikJeu.css").toExternalForm());
+        sceneJeu.setOnKeyPressed(k -> {
+            if (ctrlS.match(k)) {
+                actionsController.saveGame(SAVES_DIRECTORY);
+            } else if (ctrlZ.match(k)) {
+                actionsController.rollback();
+            }
+        });
+        sceneJeu.getStylesheets().add(getClass().getResource(CSS_JEU_FILE).toExternalForm());
     }
     private void initSceneMenu() {
         BorderPane root = new BorderPane();
@@ -97,13 +113,18 @@ public class Diaballik extends Application {
 
         Button loadGame = new Button("Charger une partie");
         loadGame.setOnAction(e -> {
-            FileChooser fileChooser = new FileChooser();
+            Optional<String> ofilename = Dialogs.showLoadName(SAVES_DIRECTORY);
+            ofilename.ifPresent(s -> newGame(SAVES_DIRECTORY + "/" + s, true));
+
+            // Méthode avec Filechooser
+            // Plus souple mais complexifie le choix pour l'utilisateur
+            /*FileChooser fileChooser = new FileChooser();
             fileChooser.setInitialDirectory(new File("."));
             fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Diaballik sauvegarde", "*.txt"));
             File file = fileChooser.showOpenDialog(stage);
             if (file != null) {
                 newGame(file.getAbsolutePath(), true);
-            }
+            }*/
         });
 
         Button credits = new Button("Crédits");
@@ -123,7 +144,7 @@ public class Diaballik extends Application {
         Platform.runLater(root::requestFocus);
 
         sceneMenu = new Scene(root, 600, 400);
-        sceneMenu.getStylesheets().add(getClass().getResource("DiaballikMenu.css").toExternalForm());
+        sceneMenu.getStylesheets().add(getClass().getResource(CSS_MENU_FILE).toExternalForm());
     }
 
     @Override

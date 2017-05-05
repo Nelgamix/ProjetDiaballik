@@ -47,22 +47,27 @@ public class Jeu extends Observable {
     private int tour;
     private int joueurActuel;
 
+    private final static String nomsDisponiblesPath = "nomsDisponibles.txt";
+    private final ArrayList<String> nomsDisponibles = new ArrayList<>();
+
     private final Diaballik diaballik;
 
     public final static int NOMBRE_JOUEURS = 2;
 
-    public Jeu(String path, boolean isSave, Diaballik diaballik) {
+    public Jeu(ConfigurationPartie cp, Diaballik diaballik) {
         this.diaballik = diaballik;
+
+        initArrivee();
+        initNomsDisponibles();
 
         this.joueurs = new Joueur[NOMBRE_JOUEURS];
         this.joueurs[0] = new Joueur(this, Joueur.JOUEUR_VERT);
         this.joueurs[1] = new Joueur(this, Joueur.JOUEUR_ROUGE);
 
-        load(path, isSave);
+        load(cp);
 
         this.joueurActuel = this.getTour() - 1;
 
-        initArrivee();
         updateListeners();
     }
 
@@ -73,13 +78,29 @@ public class Jeu extends Observable {
         }
     }
 
-    public void load(String path, boolean isSave) {
-        try (BufferedReader br = new BufferedReader(new FileReader(path))) {
+    private void initNomsDisponibles() {
+        try (BufferedReader br = new BufferedReader(new FileReader(nomsDisponiblesPath))) {
+            String sCurrentLine;
+            while ((sCurrentLine = br.readLine()) != null) {
+                nomsDisponibles.add(sCurrentLine);
+            }
+        } catch (IOException ignored) {}
+    }
+
+    public String getNomAleatoire() {
+        int index = (int)Math.floor(Math.random() * nomsDisponibles.size());
+        String nomChoisi = nomsDisponibles.get(index);
+        nomsDisponibles.remove(index);
+        return nomChoisi;
+    }
+
+    public void load(ConfigurationPartie cp) {
+        try (BufferedReader br = new BufferedReader(new FileReader(cp.path))) {
             String sCurrentLine;
             String parts[];
             Joueur joueur;
 
-            if (isSave) {
+            if (cp.isSave) {
                 // tour actuel
                 if ((sCurrentLine = br.readLine()) != null) {
                     this.tour = Integer.parseInt(sCurrentLine);
@@ -107,9 +128,8 @@ public class Jeu extends Observable {
             } else {
                 this.tour = 1;
 
-                // TODO: piocher les noms aléatoirement ? les demander à l'utilisateur ?
-                this.joueurs[0].setNom("Pavid the dute");
-                this.joueurs[1].setNom("Poic the lute");
+                while (!this.joueurs[0].setNom(cp.nomJoueur1) && !this.joueurs[0].setNom(getNomAleatoire()));
+                while (!this.joueurs[1].setNom(cp.nomJoueur2) && !this.joueurs[1].setNom(getNomAleatoire()));
             }
 
             StringBuilder terrainString = new StringBuilder();
@@ -243,7 +263,7 @@ public class Jeu extends Observable {
 
             if (partieTerminee(c.getPion())) {
                 // la partie est terminée (le vainqueur est joueurActuel())
-                diaballik.finJeu(getJoueurActuel());
+                diaballik.endGame(getJoueurActuel());
             }
 
             if (!this.getJoueurActuel().moinsAction(Joueur.ACTION_PASSE)) {

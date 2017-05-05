@@ -33,8 +33,17 @@ public class Joueur {
         reset_actions();
     }
 
-    public void setNom(String nom) {
+    public boolean setNom(String nom) {
+        if (nom.length() > 30) {
+            System.err.println("(Joueur.setNom) Nom \"" + nom.substring(0, 10) + "...\" trop long (> 30 char.)");
+            return false;
+        } else if (nom.length() < 3) {
+            System.err.println("(Joueur.setNom) Nom \"" + nom + "\" trop court (< 3 char.)");
+            return false;
+        }
+
         this.nom = nom;
+        return true;
     }
 
     public String getNom() {

@@ -6,7 +6,6 @@ import diaballik.view.ActionsView;
 import diaballik.view.Dialogs;
 import javafx.stage.FileChooser;
 
-import java.awt.*;
 import java.io.File;
 
 /**
@@ -39,10 +38,10 @@ public class ActionsController {
         }
     }
 
-    public void saveGame() {
+    public void saveGame(String directory) {
         String filename;
         final FileChooser fileChooser = new FileChooser();
-        fileChooser.setInitialDirectory(new File("."));
+        fileChooser.setInitialDirectory(new File(directory));
         fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Diaballik Sauvegarde", "*.txt"));
         File file = fileChooser.showSaveDialog(this.diaballik.stage);
         if (file != null) {
