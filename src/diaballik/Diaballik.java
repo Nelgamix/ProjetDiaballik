@@ -126,9 +126,7 @@ public class Diaballik extends Application {
         });
 
         Button regles = new Button("Règles");
-        regles.setOnAction(e -> {
-            getHostServices().showDocument("http://inf362.forge.imag.fr/Projet/Regles/diaballik/");
-        });
+        regles.setOnAction(e -> getHostServices().showDocument("http://inf362.forge.imag.fr/Projet/Regles/diaballik/"));
 
         Button credits = new Button("Crédits");
         credits.setOnAction(e -> Dialogs.showCredits());

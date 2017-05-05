@@ -4,6 +4,7 @@ import diaballik.Diaballik;
 import diaballik.model.ConfigurationPartie;
 import diaballik.model.IA;
 import diaballik.model.Joueur;
+import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.geometry.Insets;
@@ -118,9 +119,15 @@ public class Dialogs {
         content.setVgap(10);
 
         // Header row
-        content.add(new Label("Joueur"), 0, 0);
-        content.add(new Label("Nom"), 1, 0);
-        content.add(new Label("IA"), 2, 0);
+        Label l = new Label("Joueur");
+        l.getStyleClass().add("dialogNewGameHeader");
+        content.add(l, 0, 0);
+        l = new Label("Nom");
+        l.getStyleClass().add("dialogNewGameHeader");
+        content.add(l, 1, 0);
+        l = new Label("IA");
+        l.getStyleClass().add("dialogNewGameHeader");
+        content.add(l, 2, 0);
 
         // Row joueur 1
         TextField nomJoueur1 = new TextField();
@@ -154,6 +161,8 @@ public class Dialogs {
 
             return null;
         });
+
+        Platform.runLater(nomJoueur1::requestFocus);
 
         return config.showAndWait();
     }

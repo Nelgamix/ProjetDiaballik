@@ -15,4 +15,7 @@
     -fx-font-size: 18px;
 }
 
-#dialogNewGame {}
+#dialogNewGame > .dialogNewGameHeader {
+    -fx-font-weight: bold;
+    -fx-font-size: 14px;
+}
