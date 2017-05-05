@@ -3,22 +3,27 @@
 ## To do
 
 Par ordre de priorité:
-* Popup config nouvelle partie
 * Popup règles
-* Popup crédits
 * Système de sauvegarde: géré en interne plutôt que 
-faire manipuler les fichiers à l'utilisateur
+faire manipuler les fichiers à l'utilisateur (charger fait, voir pour
+la sauvegarde)
+* IA (aléatoire, minimax)
 * Améliorer visuel et IHM de la partie jeu (couleurs, effets, anims, images pions)
 * (Jeu en réseau) ?
 
 ## Images
+IHM réalisées par Loïc Houdebine (voir lien dans la dernière section)
 ### Menu
-![Menu](screenshots/MainWindow.PNG)
+![Menu](screenshots/menu.png)
+### Nouvelle partie
+![Menu](screenshots/newGame.png)
+### Charger partie
+![Menu](screenshots/loadGame.png)
 ### Jeu
-![Menu](screenshots/Jeu.PNG)
-
+![Menu](screenshots/jeu.png)
+### Crédits
+![Menu](screenshots/credits.png)
 ## Liens
-
 [Site projet](http://inf362.forge.imag.fr/Projet/)
 
 [Règles Diaballik](http://inf362.forge.imag.fr/Projet/Regles/diaballik/)
