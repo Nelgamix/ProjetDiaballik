@@ -8,7 +8,7 @@
 
 .indicateurActionsRestantes {
     -fx-font-size: 250%;
-    -fx-padding: -10px 0;
+    -fx-padding: -10px 0 -16px 0;
 }
 
 .vBoxIndicateurs {

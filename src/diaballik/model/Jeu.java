@@ -302,7 +302,7 @@ public class Jeu extends Observable {
         return tour;
     }
 
-    public void rollwack() {
+    public void rollback() {
         if (historique.size() == 0) return;
 
         Action a = historique.get(historique.size() - 1);

@@ -11,6 +11,12 @@ faire manipuler les fichiers à l'utilisateur
 * Améliorer visuel et IHM de la partie jeu (couleurs, effets, anims, images pions)
 * (Jeu en réseau) ?
 
+## Images
+### Menu
+![Menu](screenshots/MainWindow.PNG)
+### Jeu
+![Menu](screenshots/Jeu.PNG)
+
 ## Liens
 
 [Site projet](http://inf362.forge.imag.fr/Projet/)

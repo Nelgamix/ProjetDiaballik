@@ -3,8 +3,10 @@ package diaballik.controller;
 import diaballik.Diaballik;
 import diaballik.model.Jeu;
 import diaballik.view.ActionsView;
+import diaballik.view.Dialogs;
 import javafx.stage.FileChooser;
 
+import java.awt.*;
 import java.io.File;
 
 /**
@@ -32,7 +34,9 @@ public class ActionsController {
     }
 
     public void menu() {
-        diaballik.showSceneMenu();
+        if (Dialogs.confirmByDialog("Vous allez quitter le jeu. La partie sera perdue. Voulez-vous continuer?")) {
+            diaballik.showSceneMenu();
+        }
     }
 
     public void saveGame() {
@@ -50,5 +54,9 @@ public class ActionsController {
             System.out.println("Save to " + filename);
             this.jeu.save(filename);
         }
+    }
+
+    public void rollback() {
+        jeu.rollback();
     }
 }

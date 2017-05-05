@@ -21,8 +21,6 @@ public class ActionsView extends BorderPane implements Observer {
     private final ActionsController actionsController;
     private final Jeu jeu;
 
-    /*private Label deplacements = new Label("Deplacement");
-    private Label passe = new Label("Passe");*/
     private final Label depl;
     private final Label pass;
 
@@ -30,7 +28,7 @@ public class ActionsView extends BorderPane implements Observer {
         super();
 
         // Infos
-        VBox vBoxInfos = new VBox(10);
+        VBox vBoxInfos = new VBox(20);
         vBoxInfos.setAlignment(Pos.CENTER);
         vBoxInfos.setPadding(new Insets(20));
 
@@ -69,9 +67,9 @@ public class ActionsView extends BorderPane implements Observer {
         passerTour.setMaxWidth(Double.MAX_VALUE);
         passerTour.setId("passerTour");
 
-        Button rollwack = new Button("Rollwack");
-        rollwack.setOnAction(e -> jeu.rollwack());
-        rollwack.setMaxWidth(Double.MAX_VALUE);
+        Button rollback = new Button("Rollwack");
+        rollback.setOnAction(e -> actionsController.rollback());
+        rollback.setMaxWidth(Double.MAX_VALUE);
 
         Button save = new Button("Save");
         save.setOnAction(e -> actionsController.saveGame());
@@ -82,7 +80,7 @@ public class ActionsView extends BorderPane implements Observer {
         menu.setMaxWidth(Double.MAX_VALUE);
 
         vBoxActions.getChildren().add(passerTour);
-        vBoxActions.getChildren().add(rollwack);
+        vBoxActions.getChildren().add(rollback);
         vBoxActions.getChildren().add(save);
         vBoxActions.getChildren().add(menu);
 

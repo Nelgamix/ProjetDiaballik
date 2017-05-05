@@ -1,6 +1,7 @@
 package diaballik;
 
 import diaballik.model.Joueur;
+import diaballik.view.Dialogs;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.geometry.Pos;
@@ -24,7 +25,7 @@ import java.io.File;
 public class Diaballik extends Application {
     public Stage stage;
 
-    public final static String DEFAULT_TERRAIN_PATH = "defaultTerrain.txt";
+    public final static String DEFAULT_TERRAIN_PATH = "defaultTerrains/defaultTerrain.txt";
 
     private Scene sceneJeu;
     private Scene sceneMenu;
@@ -106,7 +107,7 @@ public class Diaballik extends Application {
         });
 
         Button credits = new Button("Crédits");
-        credits.setOnAction(e -> System.out.println("Non implémenté"));
+        credits.setOnAction(e -> Dialogs.showCredits());
 
         Button quitter = new Button("Quitter");
         quitter.setOnAction(e -> exit());
