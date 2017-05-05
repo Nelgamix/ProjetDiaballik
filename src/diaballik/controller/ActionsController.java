@@ -8,11 +8,6 @@ import javafx.stage.FileChooser;
 
 import java.io.File;
 
-/**
- * Package ${PACKAGE} / Project JavaFXML.
- * Date 2017 05 03.
- * Created by Nico (22:00).
- */
 public class ActionsController {
     private final Jeu jeu;
     private final ActionsView actionsView;

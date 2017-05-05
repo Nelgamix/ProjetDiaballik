@@ -1,10 +1,5 @@
 package diaballik.model;
 
-/**
- * Package ${PACKAGE} / Project JavaFXML.
- * Date 2017 05 05.
- * Created by Nico (22:07).
- */
 public class ConfigurationPartie {
     String path;
     boolean isSave;

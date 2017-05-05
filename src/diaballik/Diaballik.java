@@ -57,10 +57,6 @@ public class Diaballik extends Application {
         }
     }
 
-    /*public void newGame(String path) {
-        newGame(path, false);
-    }*/
-
     public void newGame(String path, boolean isSave) {
         ConfigurationPartie cp = new ConfigurationPartie(path, isSave);
         initSceneJeu(cp);

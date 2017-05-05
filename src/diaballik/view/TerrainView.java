@@ -1,18 +1,13 @@
 package diaballik.view;
 
-import javafx.geometry.Pos;
-import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.GridPane;
-import javafx.scene.layout.Pane;
-import javafx.scene.layout.StackPane;
-import javafx.scene.paint.Color;
 import diaballik.controller.TerrainController;
-import diaballik.model.*;
+import diaballik.model.Jeu;
+import diaballik.model.Joueur;
+import diaballik.model.Point;
+import diaballik.model.Terrain;
+import javafx.scene.layout.Pane;
 
-import java.util.Observable;
-import java.util.Observer;
-
-public class TerrainView extends Pane implements Observer {
+public class TerrainView extends Pane {
     private final TerrainController terrainController;
     private final Terrain terrain;
 
@@ -24,7 +19,6 @@ public class TerrainView extends Pane implements Observer {
 
         this.terrainController = terrainController;
         this.terrain = terrainController.getJeu().getTerrain();
-        this.terrainController.getJeu().addObserver(this);
         this.setId("terrainView");
         this.setMaxWidth(CaseView.LARGEUR * Terrain.LARGEUR + 4);
         this.setMaxHeight(CaseView.HAUTEUR * Terrain.HAUTEUR + 4);
@@ -56,16 +50,5 @@ public class TerrainView extends Pane implements Observer {
                 this.getChildren().add(pv);
             }
         }
-
-        update();
     }
-
-    public void update() {
-        this.update(null, null);
-    }
-
-    public void update(Observable observable, Object o) {
-
-    }
-
 }

@@ -21,11 +21,6 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
-/**
- * Package ${PACKAGE} / Project JavaFXML.
- * Date 2017 05 05.
- * Created by Nico (19:29).
- */
 public class Dialogs {
     public static boolean confirmByDialog(String message) {
         Alert alert = new Alert(Alert.AlertType.CONFIRMATION);

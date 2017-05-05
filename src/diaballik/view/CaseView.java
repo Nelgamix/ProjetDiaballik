@@ -1,9 +1,8 @@
 package diaballik.view;
 
-import javafx.scene.paint.Color;
-import javafx.scene.shape.Rectangle;
 import diaballik.controller.TerrainController;
 import diaballik.model.Point;
+import javafx.scene.shape.Rectangle;
 
 public class CaseView extends Rectangle {
     private final TerrainController terrainController;

@@ -1,23 +1,14 @@
 package diaballik.view;
 
-import diaballik.model.Joueur;
-import javafx.scene.control.Label;
-import javafx.scene.effect.Bloom;
-import javafx.scene.effect.BlurType;
-import javafx.scene.effect.InnerShadow;
-import javafx.scene.layout.BorderPane;
 import diaballik.controller.AffichageController;
 import diaballik.model.Jeu;
-import javafx.scene.paint.Color;
+import diaballik.model.Joueur;
+import javafx.scene.control.Label;
+import javafx.scene.layout.BorderPane;
 
 import java.util.Observable;
 import java.util.Observer;
 
-/**
- * Package ${PACKAGE} / Project JavaFXML.
- * Date 2017 05 03.
- * Created by Nico (22:18).
- */
 public class AffichageView extends BorderPane implements Observer {
     private final AffichageController affichageController;
     private final Jeu jeu;

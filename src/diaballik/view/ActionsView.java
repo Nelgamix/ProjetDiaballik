@@ -13,11 +13,6 @@ import javafx.scene.layout.VBox;
 import java.util.Observable;
 import java.util.Observer;
 
-/**
- * Package ${PACKAGE} / Project JavaFXML.
- * Date 2017 05 03.
- * Created by Nico (22:09).
- */
 public class ActionsView extends BorderPane implements Observer {
     private final ActionsController actionsController;
     private final Jeu jeu;

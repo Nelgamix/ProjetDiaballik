@@ -1,7 +1,5 @@
 # ProjetDiaballik
-
 ## To do
-
 Par ordre de priorité:
 * Popup règles
 * Système de sauvegarde: géré en interne plutôt que 
@@ -20,9 +18,10 @@ IHM réalisées par Loïc Houdebine (voir lien dans la dernière section)
 ### Charger partie
 ![Menu](screenshots/loadGame.png)
 ### Jeu
-![Menu](screenshots/jeu.png)
+![Menu](screenshots/game.png)
 ### Crédits
 ![Menu](screenshots/credits.png)
+
 ## Liens
 [Site projet](http://inf362.forge.imag.fr/Projet/)
 

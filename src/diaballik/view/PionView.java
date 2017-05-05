@@ -1,11 +1,11 @@
 package diaballik.view;
 
-import javafx.scene.paint.Color;
-import javafx.scene.shape.Circle;
 import diaballik.controller.TerrainController;
 import diaballik.model.Joueur;
 import diaballik.model.Pion;
 import diaballik.model.Point;
+import javafx.scene.paint.Color;
+import javafx.scene.shape.Circle;
 
 import java.util.Observable;
 import java.util.Observer;
@@ -24,7 +24,6 @@ public class PionView extends Circle implements Observer {
         this.terrainController = terrainController;
         pion.addObserver(this);
 
-        this.setFill(getColor());
         this.setStroke(Color.BLACK);
         this.setOnMouseClicked(e -> terrainController.mouseClicked(pion.getPosition().getPoint()));
 
@@ -40,7 +39,6 @@ public class PionView extends Circle implements Observer {
         Point p = this.pion.getPosition().getPoint();
         this.setCenterX(CaseView.DECALAGE_GAUCHE + p.getX() * CaseView.HAUTEUR + CaseView.HAUTEUR / 2);
         this.setCenterY(CaseView.DECALAGE_HAUT + p.getY() * CaseView.LARGEUR + CaseView.LARGEUR / 2);
-        //this.setFill(getColor());
         this.setClass();
         this.setRadius(getRayon());
     }
@@ -59,19 +57,5 @@ public class PionView extends Circle implements Observer {
             this.getStyleClass().add("couleurJoueurVert");
         else
             this.getStyleClass().add("couleurJoueurRouge");
-    }
-
-    private Color getColor() {
-        Color sf;
-
-        if (pion.isSelectionne())
-            sf = Color.GOLD;
-        else
-            if (pion.getCouleur() == Joueur.JOUEUR_VERT)
-                sf = Joueur.COULEUR_VERT;
-            else
-                sf = Joueur.COULEUR_ROUGE;
-
-        return sf;
     }
 }

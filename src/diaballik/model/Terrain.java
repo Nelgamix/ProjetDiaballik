@@ -1,9 +1,5 @@
 package diaballik.model;
 
-import java.io.BufferedReader;
-import java.io.FileReader;
-import java.io.IOException;
-
 // TODO: x et y *inversé*, ajouter méthodes propres pour l'accès
 public class Terrain {
     private final Case cases[][];
