@@ -1,5 +1,7 @@
 package diaballik.model;
 
+import diaballik.Diaballik;
+
 import java.io.*;
 import java.util.ArrayList;
 import java.util.Observable;
@@ -39,12 +41,19 @@ public class Jeu extends Observable {
 
     private final ArrayList<Action> historique = new ArrayList<>();
 
+    private final ArrayList<Point> arriveeJoueurVert = new ArrayList<>();
+    private final ArrayList<Point> arriveeJoueurRouge = new ArrayList<>();
+
     private int tour;
     private int joueurActuel;
 
+    private final Diaballik diaballik;
+
     public final static int NOMBRE_JOUEURS = 2;
 
-    public Jeu(String path, boolean isSave) {
+    public Jeu(String path, boolean isSave, Diaballik diaballik) {
+        this.diaballik = diaballik;
+
         this.joueurs = new Joueur[NOMBRE_JOUEURS];
         this.joueurs[0] = new Joueur(this, Joueur.JOUEUR_VERT);
         this.joueurs[1] = new Joueur(this, Joueur.JOUEUR_ROUGE);
@@ -53,7 +62,15 @@ public class Jeu extends Observable {
 
         this.joueurActuel = this.getTour() - 1;
 
+        initArrivee();
         updateListeners();
+    }
+
+    private void initArrivee() {
+        for (int i = 0; i < Terrain.LARGEUR; i++) {
+            arriveeJoueurVert.add(new Point(i, 0));
+            arriveeJoueurRouge.add(new Point(i, 6));
+        }
     }
 
     public void load(String path, boolean isSave) {
@@ -197,7 +214,6 @@ public class Jeu extends Observable {
             int xMax = Math.max(p.getX(), p2.getX());
             int xMin = Math.min(p.getX(), p2.getX());
             int yMax = Math.max(p.getY(), p2.getY());
-            //int yMin = Math.min(p.getY(), p2.getY());
 
             int y = yMax;
             for (int x = xMax - 1; x > xMin; x--) {
@@ -225,8 +241,9 @@ public class Jeu extends Observable {
 
             historique.add(new Action(c.getPion(), Joueur.ACTION_PASSE, cv));
 
-            if (partieTerminee()) {
+            if (partieTerminee(c.getPion())) {
                 // la partie est terminée (le vainqueur est joueurActuel())
+                diaballik.finJeu(getJoueurActuel());
             }
 
             if (!this.getJoueurActuel().moinsAction(Joueur.ACTION_PASSE)) {
@@ -238,7 +255,23 @@ public class Jeu extends Observable {
     }
 
     // retourne vrai si la partie est terminée (le vainqueur est le joueur actuel)
-    private boolean partieTerminee() {
+    private boolean partieTerminee(Pion pion) {
+        Point p = pion.getPosition().getPoint();
+
+        if (this.getJoueurActuel().getCouleur() == Joueur.JOUEUR_VERT) {
+            for (Point e : arriveeJoueurRouge) {
+                if (e.getX() == p.getX() && e.getY() == p.getY()) {
+                    return true;
+                }
+            }
+        } else {
+            for (Point e : arriveeJoueurVert) {
+                if (e.getX() == p.getX() && e.getY() == p.getY()) {
+                    return true;
+                }
+            }
+        }
+
         return false;
     }
 

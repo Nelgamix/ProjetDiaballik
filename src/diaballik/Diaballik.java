@@ -1,9 +1,11 @@
 package diaballik;
 
+import diaballik.model.Joueur;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
+import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.layout.BorderPane;
@@ -50,12 +52,23 @@ public class Diaballik extends Application {
         showSceneJeu();
     }
 
+    public void finJeu(Joueur gagnant) {
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setTitle("Information Dialog");
+        alert.setHeaderText("Look, an Information Dialog");
+        alert.setContentText("I have a great message for you!\nJoueur " + gagnant.getNom() + " won!!!");
+
+        alert.showAndWait();
+
+        showSceneMenu();
+    }
+
     public void exit() {
         Platform.exit();
     }
 
     private void initSceneJeu(String path, boolean isSave) {
-        jeu = new Jeu(path, isSave);
+        jeu = new Jeu(path, isSave, this);
 
         TerrainController terrainController = new TerrainController(this);
         ActionsController actionsController = new ActionsController(this);

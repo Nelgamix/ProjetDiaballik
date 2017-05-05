@@ -28,6 +28,8 @@ public class Terrain {
         int couleur = -1;
         boolean pionBalle = false;
 
+        int nbv = 0, nbr = 0;
+
         String[] lines = terrainString.split("\n"), parts;
 
         while (y < HAUTEUR) {
@@ -62,7 +64,11 @@ public class Terrain {
 
                     pion = new Pion(couleur, x, ct);
                     this.cases[y][x].setPion(pion);
-                    this.pions[couleur][x] = pion;
+
+                    if (couleur == Joueur.JOUEUR_VERT)
+                        this.pions[couleur][nbv++] = pion;
+                    else
+                        this.pions[couleur][nbr++] = pion;
 
                     if (pionBalle) {
                         pion.setaLaBalle(true);

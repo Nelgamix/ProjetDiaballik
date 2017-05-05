@@ -43,6 +43,10 @@ public class ActionsController {
         File file = fileChooser.showSaveDialog(this.diaballik.stage);
         if (file != null) {
             filename = file.getAbsolutePath();
+
+            if (!filename.endsWith(".txt"))
+                filename += ".txt";
+
             System.out.println("Save to " + filename);
             this.jeu.save(filename);
         }
