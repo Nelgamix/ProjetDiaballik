@@ -9,6 +9,17 @@ public class Point {
         this.y = y;
     }
 
+    public Point(String s) {
+        String parts[];
+        parts = s.split(";");
+        this.x = Integer.parseInt(parts[0]);
+        this.y = Integer.parseInt(parts[1]);
+    }
+
+    public String getSaveString() {
+        return this.getX() + ";" + this.getY();
+    }
+
     public int getX() {
         return x;
     }

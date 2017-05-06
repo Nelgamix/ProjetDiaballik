@@ -71,7 +71,8 @@ public class TerrainView extends GridPane implements Observer {
             for (PionView p : pions[Joueur.JOUEUR_VERT]) p.disable();
         }
 
-        if (getTerrainController().diaballik.getSceneJeu() != null)
+        int changed_type = (arg != null ? (int)arg : 0);
+        if (getTerrainController().diaballik.getSceneJeu() != null && changed_type == Jeu.CHANGED_TOUR)
             getTerrainController().diaballik.getSceneJeu().setCursor(Cursor.DEFAULT);
     }
 }

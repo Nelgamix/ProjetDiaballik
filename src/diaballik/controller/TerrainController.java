@@ -43,13 +43,7 @@ public class TerrainController {
             if (caseCliquee.getPion() != null && caseCliquee.getPion().getCouleur() == this.jeu.getJoueurActuel().getCouleur()) {
                 this.caseSelectionne = caseCliquee;
                 this.caseSelectionne.getPion().setSelectionne(true);
-                if (!caseCliquee.getPion().aLaBalle()) {
-                    casesMarquees = jeu.getDeplacementsPossibles(caseCliquee.getPion());
-                    for (Case c : casesMarquees) c.setMarque(true);
-                } else {
-                    pionsMarques = jeu.getPassesPossibles(caseCliquee.getPion());
-                    for (Pion p : pionsMarques) p.setMarque(true);
-                }
+                marquerAll(caseCliquee);
             }
         } else {
             if (caseCliquee.getPion() != null) {
@@ -57,18 +51,33 @@ public class TerrainController {
                     if (caseCliquee == this.caseSelectionne) {
                         this.caseSelectionne.getPion().setSelectionne(false);
                         finSelection();
-                        return;
+                    } else if (this.caseSelectionne.getPion().aLaBalle()) {
+                        this.caseSelectionne.getPion().setSelectionne(false);
+                        this.jeu.passe(this.caseSelectionne.getPion(), caseCliquee);
+                        finSelection();
+                    } else {
+                        this.caseSelectionne.getPion().setSelectionne(false);
+                        finSelection();
+                        this.caseSelectionne = caseCliquee;
+                        this.caseSelectionne.getPion().setSelectionne(true);
+                        marquerAll(caseCliquee);
                     }
-
-                    this.caseSelectionne.getPion().setSelectionne(false);
-                    this.jeu.passe(this.caseSelectionne.getPion(), caseCliquee);
-                    finSelection();
                 }
             } else {
                 this.caseSelectionne.getPion().setSelectionne(false);
                 this.jeu.deplacement(this.caseSelectionne.getPion(), caseCliquee);
                 finSelection();
             }
+        }
+    }
+
+    private void marquerAll(Case caseCliquee) {
+        if (!caseCliquee.getPion().aLaBalle()) {
+            casesMarquees = jeu.getDeplacementsPossibles(caseCliquee.getPion());
+            for (Case c : casesMarquees) c.setMarque(true);
+        } else {
+            pionsMarques = jeu.getPassesPossibles(caseCliquee.getPion());
+            for (Pion p : pionsMarques) p.setMarque(true);
         }
     }
 

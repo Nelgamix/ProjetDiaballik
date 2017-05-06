@@ -92,6 +92,7 @@
 .couleurMarquage {
     -fx-fill: linear-gradient(to bottom right, #ebeb00, #cdcd00);
     -fx-background-color: linear-gradient(to bottom right, #ebeb00, #cdcd00);
+    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.3), 10, 0, 0, 0);
 }
 
 .couleurAdversaire {
@@ -99,6 +100,7 @@
 }
 
 .couleurSurvol {
-    -fx-fill: #8059ff;
-    -fx-background-color: #8059ff;
+    -fx-fill: linear-gradient(to bottom right, #7857eb, #6752cd);
+    -fx-background-color: linear-gradient(to bottom right, #7857eb, #6752cd);
+    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.5), 20, 0, 0, 0);
 }

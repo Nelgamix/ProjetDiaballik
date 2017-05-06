@@ -18,6 +18,27 @@ public class Jeu extends Observable {
             this.caseAvant = caseAvant;
         }
 
+        public Action(Jeu jeu, String s) {
+            String[] parts = s.split(":");
+            Point pointPion = new Point(parts[0]);
+            this.pion = jeu.getTerrain().getCaseAt(pointPion).getPion();
+            this.action = Integer.parseInt(parts[1]);
+            Point pointCaseAvant = new Point(parts[2]);
+            this.caseAvant = jeu.getTerrain().getCaseAt(pointCaseAvant);
+        }
+
+        public String getSaveString() {
+            StringBuilder sb = new StringBuilder();
+
+            sb.append(this.pion.getPosition().getPoint().getSaveString())
+                    .append(":")
+                    .append(action)
+                    .append(":")
+                    .append(this.caseAvant.getPoint().getSaveString());
+
+            return sb.toString();
+        }
+
         public Pion getPion() {
             return pion;
         }
@@ -54,6 +75,10 @@ public class Jeu extends Observable {
 
     public final static int NOMBRE_JOUEURS = 2;
 
+    public final static int CHANGED_INFOS = 1;
+    public final static int CHANGED_TOUR = 2;
+    public final static int CHANGED_ALL = 3;
+
     public Jeu(ConfigurationPartie cp, Diaballik diaballik) {
         this.diaballik = diaballik;
 
@@ -68,7 +93,7 @@ public class Jeu extends Observable {
 
         this.joueurActuel = this.getTour() - 1;
 
-        updateListeners();
+        updateListeners(CHANGED_ALL);
     }
 
     private void initArrivee() {
@@ -134,12 +159,18 @@ public class Jeu extends Observable {
 
             StringBuilder terrainString = new StringBuilder();
             int y = 0;
-            while ((sCurrentLine = br.readLine()) != null && y < Terrain.HAUTEUR) {
+            while (y < Terrain.HAUTEUR && (sCurrentLine = br.readLine()) != null) {
                 terrainString.append(sCurrentLine).append("\n");
                 y++;
             }
 
             terrain = new Terrain(terrainString.toString());
+
+            Action a;
+            while ((sCurrentLine = br.readLine()) != null) { // on lit les configurations
+                a = new Action(this, sCurrentLine);
+                historique.add(a);
+            }
         } catch (IOException ioe) {
             ioe.printStackTrace();
         }
@@ -161,6 +192,7 @@ public class Jeu extends Observable {
             bw.write(this.joueurs[0].getSaveString());
             bw.write(this.joueurs[1].getSaveString());
             bw.write(this.getTerrain().getSaveString());
+            for (Action a : historique) bw.write(a.getSaveString());
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -181,7 +213,7 @@ public class Jeu extends Observable {
                 changerTour();
             }
 
-            //updateListeners();
+            updateListeners(CHANGED_INFOS);
         }
     }
 
@@ -351,7 +383,7 @@ public class Jeu extends Observable {
                 changerTour();
             }
 
-            //updateListeners();
+            updateListeners(CHANGED_INFOS);
         }
     }
 
@@ -383,7 +415,7 @@ public class Jeu extends Observable {
         this.tour++;
         joueurActuel = (joueurActuel + 1 >= Jeu.NOMBRE_JOUEURS ? 0 : joueurActuel + 1);
 
-        updateListeners();
+        updateListeners(CHANGED_TOUR);
     }
 
     public Joueur getJoueurActuel() {
@@ -394,9 +426,9 @@ public class Jeu extends Observable {
         return historique;
     }
 
-    private void updateListeners() {
+    private void updateListeners(Object o) {
         this.setChanged();
-        this.notifyObservers();
+        this.notifyObservers(o);
     }
 
     public int getTour() {
@@ -423,7 +455,7 @@ public class Jeu extends Observable {
                 System.err.println("Action non reconnue");
         }
 
-        updateListeners();
+        updateListeners(CHANGED_ALL);
     }
 
     public boolean pionAllie(Pion pion) {
