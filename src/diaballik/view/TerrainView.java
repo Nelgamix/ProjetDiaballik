@@ -7,7 +7,10 @@ import diaballik.model.Point;
 import diaballik.model.Terrain;
 import javafx.scene.layout.Pane;
 
-public class TerrainView extends Pane {
+import java.util.Observable;
+import java.util.Observer;
+
+public class TerrainView extends Pane implements Observer {
     private final TerrainController terrainController;
     private final Terrain terrain;
 
@@ -19,6 +22,7 @@ public class TerrainView extends Pane {
 
         this.terrainController = terrainController;
         this.terrain = terrainController.getJeu().getTerrain();
+        terrainController.getJeu().addObserver(this);
         this.setId("terrainView");
         this.setMaxWidth(CaseView.LARGEUR * Terrain.LARGEUR + 4);
         this.setMaxHeight(CaseView.HAUTEUR * Terrain.HAUTEUR + 4);
@@ -29,7 +33,7 @@ public class TerrainView extends Pane {
         int a = 0;
         for (int i = 0; i < Terrain.HAUTEUR; i++) {
             for (int j = 0; j < Terrain.LARGEUR; j++) {
-                CaseView cv = new CaseView(this.terrainController, new Point(i, j));
+                CaseView cv = new CaseView(this, terrain.getCaseAt(new Point(i, j)));
 
                 if (a++ % 2 == 0)
                     cv.getStyleClass().add("couleurCasePair");
@@ -45,10 +49,31 @@ public class TerrainView extends Pane {
         PionView pv;
         for (int i = 0; i < Jeu.NOMBRE_JOUEURS; i++) {
             for (int j = 0; j < Joueur.NOMBRE_PIONS; j++) {
-                pv = new PionView(this.terrainController, this.terrain.getPionOf(i, j));
+                pv = new PionView(this, this.terrain.getPionOf(i, j));
                 this.pions[i][j] = pv;
                 this.getChildren().add(pv);
             }
+        }
+
+        update(null, null);
+    }
+
+    public CaseView getCaseAt(Point p) {
+        return cases[p.getY()][p.getX()];
+    }
+
+    public TerrainController getTerrainController() {
+        return terrainController;
+    }
+
+    @Override
+    public void update(Observable o, Object arg) {
+        if (terrainController.getJeu().getJoueurActuel().getCouleur() == Joueur.JOUEUR_VERT) {
+            for (PionView p : pions[Joueur.JOUEUR_ROUGE]) p.disable();
+            for (PionView p : pions[Joueur.JOUEUR_VERT]) p.enable();
+        } else {
+            for (PionView p : pions[Joueur.JOUEUR_ROUGE]) p.enable();
+            for (PionView p : pions[Joueur.JOUEUR_VERT]) p.disable();
         }
     }
 }

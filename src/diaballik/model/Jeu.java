@@ -204,6 +204,79 @@ public class Jeu extends Observable {
         return false;
     }
 
+    // TODO: améliorer ce truc!!
+    public ArrayList<Case> getDeplacementsPossibles(Pion pion) {
+        ArrayList<Case> c = new ArrayList<>();
+
+        if (getJoueurActuel().getDeplacementsRestants() < 1) return c;
+
+        Point pbase = pion.getPosition().getPoint();
+        Case ca;
+
+        ca = getTerrain().getCaseAt(new Point(pbase.getX() + 1, pbase.getY()));
+        if (ca != null && ca.getPion() == null) c.add(ca);
+        ca = getTerrain().getCaseAt(new Point(pbase.getX(), pbase.getY() + 1));
+        if (ca != null && ca.getPion() == null) c.add(ca);
+        ca = getTerrain().getCaseAt(new Point(pbase.getX() - 1, pbase.getY()));
+        if (ca != null && ca.getPion() == null) c.add(ca);
+        ca = getTerrain().getCaseAt(new Point(pbase.getX(), pbase.getY() - 1));
+        if (ca != null && ca.getPion() == null) c.add(ca);
+
+        return c;
+    }
+
+    public ArrayList<Pion> getPassesPossibles(Pion pion) {
+        ArrayList<Pion> pions = new ArrayList<>();
+
+        if (getJoueurActuel().getPassesRestantes() < 1) return pions;
+
+        Case c;
+        int couleur = getJoueurActuel().getCouleur();
+        Point p = pion.getPosition().getPoint();
+
+        int i = 0;
+        while ((c = getTerrain().getCaseAt(new Point(p.getX() - ++i, p.getY()))) != null) {
+            if (c.getPion() != null && c.getPion().getCouleur() == couleur) pions.add(c.getPion());
+        }
+
+        i = 0;
+        while ((c = getTerrain().getCaseAt(new Point(p.getX() + ++i, p.getY()))) != null) {
+            if (c.getPion() != null && c.getPion().getCouleur() == couleur) pions.add(c.getPion());
+        }
+
+        i = 0;
+        while ((c = getTerrain().getCaseAt(new Point(p.getX(), p.getY() + --i))) != null) {
+            if (c.getPion() != null && c.getPion().getCouleur() == couleur) pions.add(c.getPion());
+        }
+
+        i = 0;
+        while ((c = getTerrain().getCaseAt(new Point(p.getX(), p.getY() + ++i))) != null) {
+            if (c.getPion() != null && c.getPion().getCouleur() == couleur) pions.add(c.getPion());
+        }
+
+        i = 0;
+        while ((c = getTerrain().getCaseAt(new Point(p.getX() + ++i, p.getY() + i))) != null) {
+            if (c.getPion() != null && c.getPion().getCouleur() == couleur) pions.add(c.getPion());
+        }
+
+        i = 0;
+        while ((c = getTerrain().getCaseAt(new Point(p.getX() + ++i, p.getY() - i))) != null) {
+            if (c.getPion() != null && c.getPion().getCouleur() == couleur) pions.add(c.getPion());
+        }
+
+        i = 0;
+        while ((c = getTerrain().getCaseAt(new Point(p.getX() + --i, p.getY() + i))) != null) {
+            if (c.getPion() != null && c.getPion().getCouleur() == couleur) pions.add(c.getPion());
+        }
+
+        i = 0;
+        while ((c = getTerrain().getCaseAt(new Point(p.getX() + --i, p.getY() - i))) != null) {
+            if (c.getPion() != null && c.getPion().getCouleur() == couleur) pions.add(c.getPion());
+        }
+
+        return pions;
+    }
+
     // Vérifie la possibilité d'une passe (uniquement dans les axes, la couleur n'est pas vérifiée, ...)
     private boolean passePossible(Case c1, Case c2) {
         Point p = c1.getPoint();

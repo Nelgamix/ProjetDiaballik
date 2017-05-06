@@ -8,6 +8,7 @@ public class Pion extends Observable {
     private int numero;
     private Case position;
     private boolean selectionne;
+    private boolean marque;
 
     public Pion(int couleur, int numero, Case position) {
         this.aLaBalle = false;
@@ -15,12 +16,17 @@ public class Pion extends Observable {
         this.numero = numero;
         this.position = position;
         this.selectionne = false;
+        this.marque = false;
     }
 
     public void setSelectionne(boolean b) {
         this.selectionne = b;
-        this.setChanged();
-        this.notifyObservers();
+        updateListeneners();
+    }
+
+    public void setMarque(boolean b) {
+        this.marque = b;
+        updateListeneners();
     }
 
     public boolean isSelectionne() {
@@ -76,6 +82,10 @@ public class Pion extends Observable {
     public void updateListeneners() {
         this.setChanged();
         this.notifyObservers();
+    }
+
+    public boolean isMarque() {
+        return marque;
     }
 
     @Override

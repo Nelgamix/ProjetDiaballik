@@ -3,15 +3,20 @@ package diaballik.controller;
 import diaballik.Diaballik;
 import diaballik.model.Case;
 import diaballik.model.Jeu;
+import diaballik.model.Pion;
 import diaballik.model.Point;
 import diaballik.view.TerrainView;
+
+import java.util.ArrayList;
 
 public class TerrainController {
     private final Diaballik diaballik;
 
     private final Jeu jeu;
     private final TerrainView terrainView;
-    public Case caseSelectionne;
+    private Case caseSelectionne;
+    private ArrayList<Case> casesMarquees = new ArrayList<>();
+    private ArrayList<Pion> pionsMarques = new ArrayList<>();
 
     public TerrainController(Diaballik diaballik) {
         this.diaballik = diaballik;
@@ -27,31 +32,45 @@ public class TerrainController {
         return terrainView;
     }
 
+    // TODO: rework ça
     public void mouseClicked(Point point) {
         Case caseCliquee = this.getJeu().getTerrain().getCaseAt(point);
         if (this.caseSelectionne == null) {
             if (caseCliquee.getPion() != null && caseCliquee.getPion().getCouleur() == this.jeu.getJoueurActuel().getCouleur()) {
                 this.caseSelectionne = caseCliquee;
                 this.caseSelectionne.getPion().setSelectionne(true);
+                if (!caseCliquee.getPion().aLaBalle()) {
+                    casesMarquees = jeu.getDeplacementsPossibles(caseCliquee.getPion());
+                    for (Case c : casesMarquees) c.setMarque(true);
+                } else {
+                    pionsMarques = jeu.getPassesPossibles(caseCliquee.getPion());
+                    for (Pion p : pionsMarques) p.setMarque(true);
+                }
             }
         } else {
             if (caseCliquee.getPion() != null) {
                 if (caseCliquee.getPion().getCouleur() == this.jeu.getJoueurActuel().getCouleur()) {
                     if (caseCliquee == this.caseSelectionne) {
                         this.caseSelectionne.getPion().setSelectionne(false);
-                        this.caseSelectionne = null;
+                        finSelection();
                         return;
                     }
 
                     this.caseSelectionne.getPion().setSelectionne(false);
                     this.jeu.passe(this.caseSelectionne.getPion(), caseCliquee);
-                    this.caseSelectionne = null;
+                    finSelection();
                 }
             } else {
                 this.caseSelectionne.getPion().setSelectionne(false);
                 this.jeu.deplacement(this.caseSelectionne.getPion(), caseCliquee);
-                this.caseSelectionne = null;
+                finSelection();
             }
         }
+    }
+
+    private void finSelection() {
+        this.caseSelectionne = null;
+        for (Case c : casesMarquees) c.setMarque(false);
+        for (Pion p : pionsMarques) p.setMarque(false);
     }
 }

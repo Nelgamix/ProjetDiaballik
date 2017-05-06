@@ -1,7 +1,6 @@
 # ProjetDiaballik
 ## To do
 Par ordre de priorité:
-* Popup règles
 * Système de sauvegarde: géré en interne plutôt que 
 faire manipuler les fichiers à l'utilisateur (charger fait, voir pour
 la sauvegarde)

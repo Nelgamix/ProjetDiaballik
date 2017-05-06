@@ -86,7 +86,12 @@ public class Terrain {
     }
 
     public Case getCaseAt(Point point) {
-        return this.cases[point.getY()][point.getX()];
+        if (estValide(point)) return this.cases[point.getY()][point.getX()];
+        else return null;
+    }
+
+    private boolean estValide(Point point) {
+        return point.getX() >= 0 && point.getX() < LARGEUR && point.getY() >= 0 && point.getY() < HAUTEUR;
     }
 
     public String getPionRepr(Pion pion) {

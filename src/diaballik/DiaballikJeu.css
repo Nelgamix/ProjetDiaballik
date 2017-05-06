@@ -87,3 +87,11 @@
 .couleurCaseImpair {
     -fx-fill: linear-gradient(to bottom right, #9b9b9b, #878787);
 }
+
+.couleurMarquage {
+    -fx-fill: linear-gradient(to bottom right, #ebeb00, #cdcd00);
+}
+
+.couleurAdversaire {
+    -fx-fill: linear-gradient(to bottom right, #5f5f5f, #414141);
+}

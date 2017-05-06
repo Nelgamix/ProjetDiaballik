@@ -20,6 +20,9 @@ public class ActionsView extends BorderPane implements Observer {
     private final Label depl;
     private final Label pass;
 
+    private final Label deplInd;
+    private final Label passInd;
+
     public ActionsView(ActionsController actionsController) {
         super();
 
@@ -32,12 +35,12 @@ public class ActionsView extends BorderPane implements Observer {
         VBox vBoxInfosPass = new VBox();
         vBoxInfosDepl.getStyleClass().add("vBoxIndicateurs");
         vBoxInfosPass.getStyleClass().add("vBoxIndicateurs");
-        depl = new Label("2");
+        depl = new Label();
         depl.getStyleClass().add("indicateurActionsRestantes");
-        Label deplInd = new Label("déplacements");
-        pass = new Label("1");
+        deplInd = new Label();
+        pass = new Label();
         pass.getStyleClass().add("indicateurActionsRestantes");
-        Label passInd = new Label("passes");
+        passInd = new Label();
 
         vBoxInfosDepl.getChildren().add(depl);
         vBoxInfosDepl.getChildren().add(deplInd);
@@ -70,6 +73,10 @@ public class ActionsView extends BorderPane implements Observer {
         rollback.setOnAction(e -> actionsController.rollback());
         rollback.setMaxWidth(Double.MAX_VALUE);
 
+        Button antijeu = new Button("Antijeu");
+        antijeu.setOnAction(e -> System.out.println("Antijeu?"));
+        antijeu.setMaxWidth(Double.MAX_VALUE);
+
         Button save = new Button("Sauvegarder");
         save.setOnAction(e -> actionsController.saveGame(Diaballik.SAVES_DIRECTORY));
         save.setMaxWidth(Double.MAX_VALUE);
@@ -80,6 +87,7 @@ public class ActionsView extends BorderPane implements Observer {
 
         vBoxActions.getChildren().add(passerTour);
         vBoxActions.getChildren().add(rollback);
+        vBoxActions.getChildren().add(antijeu);
         vBoxActions.getChildren().add(save);
         vBoxActions.getChildren().add(menu);
 
@@ -91,7 +99,16 @@ public class ActionsView extends BorderPane implements Observer {
 
     @Override
     public void update(Observable o, Object arg) {
-        depl.setText(jeu.getJoueurActuel().getDeplacementsRestants() + "");
-        pass.setText(jeu.getJoueurActuel().getPassesRestantes() + "");
+        int deplRest = jeu.getJoueurActuel().getDeplacementsRestants();
+        int passRest = jeu.getJoueurActuel().getPassesRestantes();
+
+        if (deplRest > 1) deplInd.setText("déplacements");
+        else deplInd.setText("déplacement");
+
+        if (passRest > 1) passInd.setText("passes");
+        else passInd.setText("passe");
+
+        depl.setText(deplRest + "");
+        pass.setText(passRest + "");
     }
 }
