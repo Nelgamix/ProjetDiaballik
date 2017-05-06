@@ -8,6 +8,7 @@ la sauvegarde)
 * Améliorer visuel et IHM de la partie jeu (couleurs, effets, anims, images pions)
 * (Jeu en réseau) ?
 
+Voir README.md
 ## Images
 IHM réalisées par Loïc Houdebine (voir lien dans la dernière section)
 ### Menu

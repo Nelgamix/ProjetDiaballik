@@ -5,12 +5,13 @@ import diaballik.model.Jeu;
 import diaballik.model.Joueur;
 import diaballik.model.Point;
 import diaballik.model.Terrain;
-import javafx.scene.layout.Pane;
+import javafx.scene.Cursor;
+import javafx.scene.layout.GridPane;
 
 import java.util.Observable;
 import java.util.Observer;
 
-public class TerrainView extends Pane implements Observer {
+public class TerrainView extends GridPane implements Observer {
     private final TerrainController terrainController;
     private final Terrain terrain;
 
@@ -24,8 +25,8 @@ public class TerrainView extends Pane implements Observer {
         this.terrain = terrainController.getJeu().getTerrain();
         terrainController.getJeu().addObserver(this);
         this.setId("terrainView");
-        this.setMaxWidth(CaseView.LARGEUR * Terrain.LARGEUR + 4);
-        this.setMaxHeight(CaseView.HAUTEUR * Terrain.HAUTEUR + 4);
+
+        this.setMaxSize(CaseView.LARGEUR * Terrain.LARGEUR, CaseView.HAUTEUR * Terrain.HAUTEUR);
 
         this.cases = new CaseView[Terrain.HAUTEUR][Terrain.LARGEUR];
         this.pions = new PionView[Jeu.NOMBRE_JOUEURS][Joueur.NOMBRE_PIONS];
@@ -33,16 +34,11 @@ public class TerrainView extends Pane implements Observer {
         int a = 0;
         for (int i = 0; i < Terrain.HAUTEUR; i++) {
             for (int j = 0; j < Terrain.LARGEUR; j++) {
-                CaseView cv = new CaseView(this, terrain.getCaseAt(new Point(i, j)));
-
-                if (a++ % 2 == 0)
-                    cv.getStyleClass().add("couleurCasePair");
-                else
-                    cv.getStyleClass().add("couleurCaseImpair");
+                CaseView cv = new CaseView(this, terrain.getCaseAt(new Point(j, i)));
 
                 this.cases[i][j] = cv;
 
-                this.getChildren().add(cv);
+                this.add(cv, j, i);
             }
         }
 
@@ -51,7 +47,6 @@ public class TerrainView extends Pane implements Observer {
             for (int j = 0; j < Joueur.NOMBRE_PIONS; j++) {
                 pv = new PionView(this, this.terrain.getPionOf(i, j));
                 this.pions[i][j] = pv;
-                this.getChildren().add(pv);
             }
         }
 
@@ -75,5 +70,8 @@ public class TerrainView extends Pane implements Observer {
             for (PionView p : pions[Joueur.JOUEUR_ROUGE]) p.enable();
             for (PionView p : pions[Joueur.JOUEUR_VERT]) p.disable();
         }
+
+        if (getTerrainController().diaballik.getSceneJeu() != null)
+            getTerrainController().diaballik.getSceneJeu().setCursor(Cursor.DEFAULT);
     }
 }

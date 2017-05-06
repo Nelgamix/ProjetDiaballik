@@ -181,7 +181,7 @@ public class Jeu extends Observable {
                 changerTour();
             }
 
-            updateListeners();
+            //updateListeners();
         }
     }
 
@@ -235,43 +235,51 @@ public class Jeu extends Observable {
         Point p = pion.getPosition().getPoint();
 
         int i = 0;
-        while ((c = getTerrain().getCaseAt(new Point(p.getX() - ++i, p.getY()))) != null) {
-            if (c.getPion() != null && c.getPion().getCouleur() == couleur) pions.add(c.getPion());
+        while ((c = getTerrain().getCaseAt(new Point(p.getX() - ++i, p.getY()))) != null && (c.getPion() == null || pionAllie(c.getPion()))) {
+            if (c.getPion() != null && pionAllie(c.getPion()))
+            pions.add(c.getPion());
         }
 
         i = 0;
-        while ((c = getTerrain().getCaseAt(new Point(p.getX() + ++i, p.getY()))) != null) {
-            if (c.getPion() != null && c.getPion().getCouleur() == couleur) pions.add(c.getPion());
+        while ((c = getTerrain().getCaseAt(new Point(p.getX() + ++i, p.getY()))) != null && (c.getPion() == null || pionAllie(c.getPion()))) {
+            if (c.getPion() != null && pionAllie(c.getPion()))
+            pions.add(c.getPion());
         }
 
         i = 0;
-        while ((c = getTerrain().getCaseAt(new Point(p.getX(), p.getY() + --i))) != null) {
-            if (c.getPion() != null && c.getPion().getCouleur() == couleur) pions.add(c.getPion());
+        while ((c = getTerrain().getCaseAt(new Point(p.getX(), p.getY() + --i))) != null && (c.getPion() == null || pionAllie(c.getPion()))) {
+            if (c.getPion() != null && pionAllie(c.getPion()))
+            pions.add(c.getPion());
         }
 
         i = 0;
-        while ((c = getTerrain().getCaseAt(new Point(p.getX(), p.getY() + ++i))) != null) {
-            if (c.getPion() != null && c.getPion().getCouleur() == couleur) pions.add(c.getPion());
+        while ((c = getTerrain().getCaseAt(new Point(p.getX(), p.getY() + ++i))) != null && (c.getPion() == null || pionAllie(c.getPion()))) {
+            if (c.getPion() != null && pionAllie(c.getPion()))
+            pions.add(c.getPion());
         }
 
         i = 0;
-        while ((c = getTerrain().getCaseAt(new Point(p.getX() + ++i, p.getY() + i))) != null) {
-            if (c.getPion() != null && c.getPion().getCouleur() == couleur) pions.add(c.getPion());
+        while ((c = getTerrain().getCaseAt(new Point(p.getX() + ++i, p.getY() + i))) != null && (c.getPion() == null || pionAllie(c.getPion()))) {
+            if (c.getPion() != null && pionAllie(c.getPion()))
+            pions.add(c.getPion());
         }
 
         i = 0;
-        while ((c = getTerrain().getCaseAt(new Point(p.getX() + ++i, p.getY() - i))) != null) {
-            if (c.getPion() != null && c.getPion().getCouleur() == couleur) pions.add(c.getPion());
+        while ((c = getTerrain().getCaseAt(new Point(p.getX() + ++i, p.getY() - i))) != null && (c.getPion() == null || pionAllie(c.getPion()))) {
+            if (c.getPion() != null && pionAllie(c.getPion()))
+            pions.add(c.getPion());
         }
 
         i = 0;
-        while ((c = getTerrain().getCaseAt(new Point(p.getX() + --i, p.getY() + i))) != null) {
-            if (c.getPion() != null && c.getPion().getCouleur() == couleur) pions.add(c.getPion());
+        while ((c = getTerrain().getCaseAt(new Point(p.getX() + --i, p.getY() + i))) != null && (c.getPion() == null || pionAllie(c.getPion()))) {
+            if (c.getPion() != null && pionAllie(c.getPion()))
+            pions.add(c.getPion());
         }
 
         i = 0;
-        while ((c = getTerrain().getCaseAt(new Point(p.getX() + --i, p.getY() - i))) != null) {
-            if (c.getPion() != null && c.getPion().getCouleur() == couleur) pions.add(c.getPion());
+        while ((c = getTerrain().getCaseAt(new Point(p.getX() + --i, p.getY() - i))) != null && (c.getPion() == null || pionAllie(c.getPion()))) {
+            if (c.getPion() != null && pionAllie(c.getPion()))
+            pions.add(c.getPion());
         }
 
         return pions;
@@ -343,7 +351,7 @@ public class Jeu extends Observable {
                 changerTour();
             }
 
-            updateListeners();
+            //updateListeners();
         }
     }
 
@@ -416,5 +424,9 @@ public class Jeu extends Observable {
         }
 
         updateListeners();
+    }
+
+    public boolean pionAllie(Pion pion) {
+        return pion.getCouleur() == getJoueurActuel().getCouleur();
     }
 }

@@ -168,4 +168,8 @@ public class Diaballik extends Application {
     public Jeu getJeu() {
         return this.jeu;
     }
+
+    public Scene getSceneJeu() {
+        return sceneJeu;
+    }
 }

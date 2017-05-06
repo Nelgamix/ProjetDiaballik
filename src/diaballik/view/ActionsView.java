@@ -74,7 +74,7 @@ public class ActionsView extends BorderPane implements Observer {
         rollback.setMaxWidth(Double.MAX_VALUE);
 
         Button antijeu = new Button("Antijeu");
-        antijeu.setOnAction(e -> System.out.println("Antijeu?"));
+        antijeu.setOnAction(e -> actionsController.antijeu());
         antijeu.setMaxWidth(Double.MAX_VALUE);
 
         Button save = new Button("Sauvegarder");

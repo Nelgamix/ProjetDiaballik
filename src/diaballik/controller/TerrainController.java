@@ -10,7 +10,7 @@ import diaballik.view.TerrainView;
 import java.util.ArrayList;
 
 public class TerrainController {
-    private final Diaballik diaballik;
+    public final Diaballik diaballik;
 
     private final Jeu jeu;
     private final TerrainView terrainView;
@@ -22,6 +22,10 @@ public class TerrainController {
         this.diaballik = diaballik;
         this.jeu = diaballik.getJeu();
         this.terrainView = new TerrainView(this);
+    }
+
+    public boolean caseEstMarquee(Case c) {
+        return casesMarquees.contains(c);
     }
 
     public Jeu getJeu() {
@@ -72,5 +76,7 @@ public class TerrainController {
         this.caseSelectionne = null;
         for (Case c : casesMarquees) c.setMarque(false);
         for (Pion p : pionsMarques) p.setMarque(false);
+        casesMarquees.clear();
+        pionsMarques.clear();
     }
 }

@@ -15,6 +15,7 @@ public class PionView extends Circle implements Observer {
     private TerrainView terrainView;
 
     private boolean enabled = true;
+    private boolean hover = false;
 
     private final static double RAYON = CaseView.HAUTEUR / 4;
     private final static double RAYON_BALLE = RAYON * 1.5;
@@ -28,13 +29,22 @@ public class PionView extends Circle implements Observer {
         pion.addObserver(this);
 
         this.setStroke(Color.BLACK);
-        this.setOnMouseClicked(e -> terrainView.getTerrainController().mouseClicked(pion.getPosition().getPoint()));
 
         this.update();
     }
 
     public void update() {
         this.update(null, null);
+    }
+
+    public void hover(boolean enter) {
+        hover = enter;
+        updateStyleClass();
+    }
+
+    public void resetState() {
+        this.getPion().setMarque(false);
+        this.hover = false;
     }
 
     @Override
@@ -45,9 +55,7 @@ public class PionView extends Circle implements Observer {
         this.caseView = this.terrainView.getCaseAt(p);
         this.caseView.setPionView(this);
 
-        this.setCenterX(CaseView.DECALAGE_GAUCHE + p.getX() * CaseView.HAUTEUR + CaseView.HAUTEUR / 2);
-        this.setCenterY(CaseView.DECALAGE_HAUT + p.getY() * CaseView.LARGEUR + CaseView.LARGEUR / 2);
-        this.setClass();
+        this.updateStyleClass();
         this.setRadius(getRayon());
     }
 
@@ -55,11 +63,13 @@ public class PionView extends Circle implements Observer {
         return (this.pion.aLaBalle() ? RAYON_BALLE : RAYON);
     }
 
-    private void setClass() {
+    private void updateStyleClass() {
         this.getStyleClass().clear();
 
         if (!enabled) {
             this.getStyleClass().add("couleurAdversaire");
+        } else if (hover) {
+            this.getStyleClass().add("couleurSurvol");
         } else if (pion.isSelectionne()) {
             this.getStyleClass().add("couleurSelection");
         } else if (pion.isMarque()) {
@@ -74,11 +84,16 @@ public class PionView extends Circle implements Observer {
 
     public void disable() {
         this.enabled = false;
+        resetState();
         update();
     }
 
     public void enable() {
         this.enabled = true;
         update();
+    }
+
+    public Pion getPion() {
+        return pion;
     }
 }

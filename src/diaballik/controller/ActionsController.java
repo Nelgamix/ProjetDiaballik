@@ -50,6 +50,10 @@ public class ActionsController {
         }
     }
 
+    public void antijeu() {
+        System.out.println("Antijeu");
+    }
+
     public void rollback() {
         jeu.rollback();
     }
