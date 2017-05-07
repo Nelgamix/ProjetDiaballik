@@ -67,6 +67,11 @@ public class TerrainController {
                 this.caseSelectionne.getPion().setSelectionne(false);
                 this.jeu.deplacement(this.caseSelectionne.getPion(), caseCliquee);
                 finSelection();
+                if (jeu.getJoueurActuel().getDeplacementsRestants() > 0) {
+                    this.caseSelectionne = caseCliquee;
+                    this.caseSelectionne.getPion().setSelectionne(true);
+                    marquerAll(caseCliquee);
+                }
             }
         }
     }

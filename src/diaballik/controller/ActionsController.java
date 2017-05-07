@@ -51,7 +51,7 @@ public class ActionsController {
     }
 
     public void antijeu() {
-        System.out.println("Antijeu");
+        System.out.println("Antijeu : " + jeu.antijeu());
     }
 
     public void rollback() {

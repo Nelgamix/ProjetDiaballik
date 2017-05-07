@@ -3,6 +3,7 @@ package diaballik.view;
 import diaballik.Diaballik;
 import diaballik.model.ConfigurationPartie;
 import diaballik.model.IA;
+import diaballik.model.Jeu;
 import diaballik.model.Joueur;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
@@ -233,11 +234,23 @@ public class Dialogs {
         return results;
     }
 
-    public static void showEndGame(Joueur gagnant) {
+    public static void showEndGame(Joueur gagnant, int victoireType) {
+        String victoireMessage = "Type de victoire: ";
+        switch (victoireType) {
+            case Jeu.VICTOIRE_NORMALE:
+                victoireMessage += "normale.";
+                break;
+            case Jeu.VICTOIRE_ANTIJEU:
+                victoireMessage += "par antijeu.";
+                break;
+            default:
+                victoireMessage += "inconnue.";
+        }
+
         Alert alert = new Alert(Alert.AlertType.INFORMATION);
         alert.setTitle("Partie terminée");
         alert.setHeaderText("Fin de la partie");
-        alert.setContentText("Partie terminée!\nJoueur " + gagnant.getNom() + " l'emporte!");
+        alert.setContentText("Partie terminée!\nJoueur " + gagnant.getNom() + " l'emporte!\n" + victoireMessage);
 
         alert.showAndWait();
     }

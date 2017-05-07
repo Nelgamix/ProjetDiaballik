@@ -79,6 +79,9 @@ public class Jeu extends Observable {
     public final static int CHANGED_TOUR = 2;
     public final static int CHANGED_ALL = 3;
 
+    public final static int VICTOIRE_NORMALE = 1;
+    public final static int VICTOIRE_ANTIJEU = 2;
+
     public Jeu(ConfigurationPartie cp, Diaballik diaballik) {
         this.diaballik = diaballik;
 
@@ -195,6 +198,77 @@ public class Jeu extends Observable {
             for (Action a : historique) bw.write(a.getSaveString());
         } catch (IOException e) {
             e.printStackTrace();
+        }
+    }
+
+    public boolean antijeu() {
+        // 1: On vérifie si ils sont tous sur une colonne différente
+        Pion[] tab = new Pion[7]; // on se souvient de la ligne des pions
+        for (Pion p : getTerrain().getPions()[getJoueurAdverse().getCouleur()]) { // pour chaque pion du joueur adversaire
+            if (tab[p.getPosition().getPoint().getX()] != null) {
+                System.out.println("Antijeu: etape 1 non valide");
+                return false;
+            } else {
+                tab[p.getPosition().getPoint().getX()] = p;
+            }
+        }
+
+        // 2: On vérifie qu'ils bloquent le passage (qu'ils sont côte à côte, direct ou en diagonal)
+        int i = 1;
+        Pion p1 = tab[0], p2 = tab[i];
+        while (++i < 7) {
+            if (Math.abs(p1.getPosition().getPoint().getY() - p2.getPosition().getPoint().getY()) > 1) {
+                System.out.println("Antijeu: etape 2 non valide");
+                return false;
+            }
+
+            p1 = p2;
+            p2 = tab[i];
+        }
+
+        // 3: on vérifie que le joueur qui a appelé antijeu a bien 3 pions collés au mur
+        int n = 0;
+        Point po;
+        Case c;
+        for (Pion p : getTerrain().getPions()[getJoueurActuel().getCouleur()]) { // pour chaque pion du joueur actuel
+            po = p.getPosition().getPoint();
+
+            if (n >= 3) break;
+
+            // vérif case de gauche
+            c = getTerrain().getCaseAt(new Point(po.getX() - 1, po.getY()));
+            if (c != null && c.getPion() != null && c.getPion().getCouleur() == getJoueurAdverse().getCouleur()) {
+                n++;
+                continue;
+            }
+
+            // vérif case du haut
+            c = getTerrain().getCaseAt(new Point(po.getX(), po.getY() + 1));
+            if (c != null && c.getPion() != null && c.getPion().getCouleur() == getJoueurAdverse().getCouleur()) {
+                n++;
+                continue;
+            }
+
+            // vérif case de droite
+            c = getTerrain().getCaseAt(new Point(po.getX() + 1, po.getY()));
+            if (c != null && c.getPion() != null && c.getPion().getCouleur() == getJoueurAdverse().getCouleur()) {
+                n++;
+                continue;
+            }
+
+            // vérif case du bas
+            c = getTerrain().getCaseAt(new Point(po.getX(), po.getY() - 1));
+            if (c != null && c.getPion() != null && c.getPion().getCouleur() == getJoueurAdverse().getCouleur()) {
+                n++;
+            }
+        }
+
+        if (n >= 3) {
+            diaballik.endGame(getJoueurActuel(), VICTOIRE_ANTIJEU);
+            return true;
+        } else {
+            System.out.println("Antijeu: etape 3 non valide (n = " + n + ")");
+            return false;
         }
     }
 
@@ -376,7 +450,7 @@ public class Jeu extends Observable {
 
             if (partieTerminee(c.getPion())) {
                 // la partie est terminée (le vainqueur est joueurActuel())
-                diaballik.endGame(getJoueurActuel());
+                diaballik.endGame(getJoueurActuel(), VICTOIRE_NORMALE);
             }
 
             if (!this.getJoueurActuel().moinsAction(Joueur.ACTION_PASSE)) {
@@ -413,13 +487,18 @@ public class Jeu extends Observable {
         historique.clear();
         getJoueurActuel().reset_actions();
         this.tour++;
-        joueurActuel = (joueurActuel + 1 >= Jeu.NOMBRE_JOUEURS ? 0 : joueurActuel + 1);
+        joueurActuel = ++joueurActuel % Jeu.NOMBRE_JOUEURS;
+        //joueurActuel = (joueurActuel + 1 >= Jeu.NOMBRE_JOUEURS ? 0 : joueurActuel + 1);
 
         updateListeners(CHANGED_TOUR);
     }
 
     public Joueur getJoueurActuel() {
-        return this.joueurs[(tour-1) % NOMBRE_JOUEURS];
+        return this.joueurs[joueurActuel % NOMBRE_JOUEURS];
+    }
+
+    public Joueur getJoueurAdverse() {
+        return this.joueurs[(joueurActuel + 1) % NOMBRE_JOUEURS];
     }
 
     public ArrayList<Action> getHistorique() {

@@ -1,7 +1,5 @@
 package diaballik.model;
 
-import javafx.scene.paint.Color;
-
 public class Joueur {
     private Terrain terrain;
     private Jeu jeu;
@@ -21,8 +19,6 @@ public class Joueur {
     // Joueurs et couleurs
     public final static int JOUEUR_VERT = 0; // J vert
     public final static int JOUEUR_ROUGE = 1; // J rouge
-    public final static Color COULEUR_VERT = Color.GREEN; // Couleur du J vert
-    public final static Color COULEUR_ROUGE = Color.RED; // Couleur du J rouge
 
     public Joueur(Jeu jeu, int couleur) {
         this.jeu = jeu;

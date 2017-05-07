@@ -64,8 +64,8 @@ public class Diaballik extends Application {
         showSceneJeu();
     }
 
-    public void endGame(Joueur gagnant) {
-        Dialogs.showEndGame(gagnant);
+    public void endGame(Joueur gagnant, int victoireType) {
+        Dialogs.showEndGame(gagnant, victoireType);
 
         showSceneMenu();
     }

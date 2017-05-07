@@ -17,7 +17,7 @@
     -fx-font-size: 175%;
 }
 
-#actionsView > VBox > .button {
+/*#actionsView > VBox > .button {
     -fx-background-color:
             linear-gradient(#f2f2f2, #d6d6d6),
             linear-gradient(#fcfcfc 0%, #d9d9d9 20%, #d6d6d6 100%),
@@ -31,17 +31,35 @@
     -fx-padding: 10px;
 }
 
-#actionsView > VBox > #passerTour {
-    -fx-font-weight: bold;
-    -fx-font-size: 150%;
-}
-
 #actionsView > VBox > .button:hover {
     -fx-background-color:
             linear-gradient(#d2d2d2, #b4b4b4),
             linear-gradient(#e6e6e6 0%, #c0c0c0 20%, #a1a1a1 100%),
             linear-gradient(#bebebe 0%, #d6d6d6 50%);
     -fx-cursor: hand;
+}*/
+
+#actionsView > VBox > .button {
+    -fx-background-color: linear-gradient(to bottom, #3498db, #2980b9);
+    -fx-background-radius: 4px;
+    -fx-background-insets: 2px;
+    -fx-font-family: "Arial";
+    -fx-text-fill: white;
+    -fx-font-size: 140%;
+    -fx-padding: 10px;
+    -fx-border-radius: 4px;
+    -fx-border-color: black;
+    -fx-border-width: 2px;
+}
+
+#actionsView > VBox > .button:hover {
+    -fx-background-color: linear-gradient(to bottom, #3cb0fd, #3498db);
+    -fx-cursor: hand;
+}
+
+#actionsView > VBox > #passerTour {
+    -fx-font-weight: bold;
+    -fx-font-size: 175%;
 }
 
 /* AFFICHAGE VIEW */

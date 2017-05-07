@@ -129,4 +129,8 @@ public class Terrain {
 
         return sb.toString();
     }
+
+    public Pion[][] getPions() {
+        return pions;
+    }
 }
