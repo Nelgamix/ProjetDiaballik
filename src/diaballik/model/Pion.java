@@ -7,30 +7,12 @@ public class Pion extends Observable {
     private int couleur;
     private int numero;
     private Case position;
-    private boolean selectionne;
-    private boolean marque;
 
     public Pion(int couleur, int numero, Case position) {
         this.aLaBalle = false;
         this.couleur = couleur;
         this.numero = numero;
         this.position = position;
-        this.selectionne = false;
-        this.marque = false;
-    }
-
-    public void setSelectionne(boolean b) {
-        this.selectionne = b;
-        updateListeneners();
-    }
-
-    public void setMarque(boolean b) {
-        this.marque = b;
-        updateListeneners();
-    }
-
-    public boolean isSelectionne() {
-        return selectionne;
     }
 
     public void setaLaBalle(boolean aLaBalle) {
@@ -66,15 +48,10 @@ public class Pion extends Observable {
         updateListeneners();
     }
 
-    public void passe(Case caseAlliee) {
-        if (caseAlliee.getPion() == null) { // prérequis: la case où on pass doit être occupée
-            System.err.println("Pion (passe): Case destination libre");
-            return;
-        }
-
+    public void passe(Pion receptionneur) {
         this.setaLaBalle(false); // on n'a plus la balle
-        caseAlliee.getPion().setaLaBalle(true); // la balle est au pion de la case alliée
-        caseAlliee.getPion().updateListeneners();
+        receptionneur.setaLaBalle(true); // la balle est au pion de la case alliée
+        receptionneur.updateListeneners();
 
         updateListeneners();
     }
@@ -82,10 +59,6 @@ public class Pion extends Observable {
     public void updateListeneners() {
         this.setChanged();
         this.notifyObservers();
-    }
-
-    public boolean isMarque() {
-        return marque;
     }
 
     @Override

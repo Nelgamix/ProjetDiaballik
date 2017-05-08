@@ -1,4 +1,4 @@
-package diaballik.view;
+package diaballik.vue;
 
 import diaballik.Diaballik;
 import diaballik.model.ConfigurationPartie;
@@ -24,7 +24,7 @@ import java.util.List;
 import java.util.Optional;
 
 public class Dialogs {
-    public static boolean confirmByDialog(String message) {
+    public static boolean dialogConfirmation(String message) {
         Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
         alert.setTitle("Confirmer l'action");
         alert.setContentText(message);
@@ -33,7 +33,7 @@ public class Dialogs {
         return result.get() == ButtonType.OK;
     }
 
-    public static void showCredits() {
+    public static void montrerCredits() {
         int i = 0;
 
         Dialog<Boolean> credits = new Dialog<>();
@@ -84,19 +84,19 @@ public class Dialogs {
         corps.setBottom(infos);
 
         credits.getDialogPane().setContent(corps);
-        credits.getDialogPane().getStylesheets().add(Diaballik.class.getResource(Diaballik.CSS_DIALOG_FILE).toExternalForm());
+        credits.getDialogPane().getStylesheets().add(Diaballik.class.getResource(Diaballik.CSS_DIALOG).toExternalForm());
         credits.getDialogPane().getButtonTypes().add(ButtonType.CANCEL);
         credits.getDialogPane().setPrefSize(400, 250);
 
         credits.showAndWait();
     }
 
-    public static Optional<ConfigurationPartie> showNewGameDialog() {
+    public static Optional<ConfigurationPartie> montrerDialogNouvellePartie() {
         Dialogs d = new Dialogs();
-        return d.getNewGameDialog();
+        return d.getDialogNouvellePartie();
     }
 
-    private Optional<ConfigurationPartie> getNewGameDialog() {
+    private Optional<ConfigurationPartie> getDialogNouvellePartie() {
         ObservableList<String> iaDifficultes = FXCollections.observableArrayList(
                 "Non",
                 "Facile",
@@ -149,14 +149,14 @@ public class Dialogs {
         content.add(iaJoueur2, 2, 2);
 
         config.getDialogPane().setContent(content);
-        config.getDialogPane().getStylesheets().add(Diaballik.class.getResource(Diaballik.CSS_DIALOG_FILE).toExternalForm());
+        config.getDialogPane().getStylesheets().add(Diaballik.class.getResource(Diaballik.CSS_DIALOG).toExternalForm());
         config.getDialogPane().getButtonTypes().addAll(ButtonType.OK, ButtonType.CANCEL);
         config.getDialogPane().setPrefSize(400, 150);
 
         config.setResultConverter(b -> {
             if (b == ButtonType.OK) {
-                int ia1 = convertDifficulte(iaJoueur1.getValue());
-                int ia2 = convertDifficulte(iaJoueur2.getValue());
+                int ia1 = convertirDifficulte(iaJoueur1.getValue());
+                int ia2 = convertirDifficulte(iaJoueur2.getValue());
                 return new ConfigurationPartie(nomJoueur1.getText(), nomJoueur2.getText(), ia1, ia2);
             }
 
@@ -168,7 +168,7 @@ public class Dialogs {
         return config.showAndWait();
     }
 
-    private static int convertDifficulte(String difficulte) {
+    private static int convertirDifficulte(String difficulte) {
         switch (difficulte) {
             case "Facile":
                 return IA.DIFFICULTE_FACILE;
@@ -181,13 +181,19 @@ public class Dialogs {
         }
     }
 
-    public static Optional<String> showLoadName(String directory) {
+    public static Optional<String> montrerDialogChoisirFichier(String directory) {
         Dialogs d = new Dialogs();
-        return d.getLoadName(directory);
+        return d.getDialogChoisirFichier(directory);
     }
 
-    private Optional<String> getLoadName(String directory) {
-        ObservableList<String> obs = FXCollections.observableArrayList(getFilesInDir(directory));
+    private Optional<String> getDialogChoisirFichier(String directory) {
+        List<String> fichiersDispo = getFichiersDansDossier(directory);
+        ObservableList<String> obs;
+
+        if (fichiersDispo != null)
+            obs = FXCollections.observableArrayList(fichiersDispo);
+        else
+            return null;
 
         Dialog<String> dialog = new Dialog<>();
         dialog.setTitle("Charger une partie");
@@ -210,15 +216,16 @@ public class Dialogs {
         });
 
         dialog.getDialogPane().setContent(content);
-        dialog.getDialogPane().getStylesheets().add(Diaballik.class.getResource(Diaballik.CSS_DIALOG_FILE).toExternalForm());
+        dialog.getDialogPane().getStylesheets().add(Diaballik.class.getResource(Diaballik.CSS_DIALOG).toExternalForm());
         dialog.getDialogPane().getButtonTypes().addAll(ButtonType.OK, ButtonType.CANCEL);
         dialog.getDialogPane().setPrefSize(400, 400);
         return dialog.showAndWait();
     }
 
-    private List<String> getFilesInDir(String directory) {
+    private List<String> getFichiersDansDossier(String directory) {
         List<String> results = new ArrayList<>();
 
+        System.out.println("ff " + new File(directory).getAbsolutePath());
         File[] files = new File(directory).listFiles((dir, name) -> name.endsWith(".txt"));
 
         if (files != null) {
@@ -234,7 +241,7 @@ public class Dialogs {
         return results;
     }
 
-    public static void showEndGame(Joueur gagnant, int victoireType) {
+    public static void montrerFinJeu(Joueur gagnant, int victoireType) {
         String victoireMessage = "Type de victoire: ";
         switch (victoireType) {
             case Jeu.VICTOIRE_NORMALE:

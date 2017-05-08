@@ -1,6 +1,6 @@
-package diaballik.view;
+package diaballik.vue;
 
-import diaballik.controller.AffichageController;
+import diaballik.controleur.AffichageControleur;
 import diaballik.model.Jeu;
 import diaballik.model.Joueur;
 import javafx.scene.control.Label;
@@ -9,16 +9,16 @@ import javafx.scene.layout.BorderPane;
 import java.util.Observable;
 import java.util.Observer;
 
-public class AffichageView extends BorderPane implements Observer {
-    private final AffichageController affichageController;
+public class AffichageVue extends BorderPane implements Observer {
+    private final AffichageControleur affichageControleur;
     private final Jeu jeu;
     private final Label joueurActuel;
 
-    public AffichageView(AffichageController affichageController) {
+    public AffichageVue(AffichageControleur affichageControleur) {
         super();
 
-        this.affichageController = affichageController;
-        this.jeu = affichageController.getJeu();
+        this.affichageControleur = affichageControleur;
+        this.jeu = affichageControleur.getJeu();
         this.jeu.addObserver(this);
 
         this.setId("affichageView");

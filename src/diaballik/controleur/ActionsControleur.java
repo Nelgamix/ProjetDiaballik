@@ -1,39 +1,39 @@
-package diaballik.controller;
+package diaballik.controleur;
 
 import diaballik.Diaballik;
 import diaballik.model.Jeu;
-import diaballik.view.ActionsView;
-import diaballik.view.Dialogs;
+import diaballik.vue.ActionsVue;
+import diaballik.vue.Dialogs;
 import javafx.stage.FileChooser;
 
 import java.io.File;
 
-public class ActionsController {
+public class ActionsControleur {
     private final Jeu jeu;
-    private final ActionsView actionsView;
+    private final ActionsVue actionsVue;
     private final Diaballik diaballik;
 
-    public ActionsController(Diaballik diaballik) {
+    public ActionsControleur(Diaballik diaballik) {
         this.diaballik = diaballik;
         this.jeu = diaballik.getJeu();
-        this.actionsView = new ActionsView(this);
+        this.actionsVue = new ActionsVue(this);
     }
 
     public Jeu getJeu() {
         return jeu;
     }
 
-    public ActionsView getActionsView() {
-        return actionsView;
+    public ActionsVue getActionsVue() {
+        return actionsVue;
     }
 
-    public void menu() {
-        if (Dialogs.confirmByDialog("Vous allez quitter le jeu. La partie sera perdue. Voulez-vous continuer?")) {
+    public void actionMenu() {
+        if (Dialogs.dialogConfirmation("Vous allez quitter le jeu. La partie sera perdue. Voulez-vous continuer?")) {
             diaballik.showSceneMenu();
         }
     }
 
-    public void saveGame(String directory) {
+    public void actionSauvegarderJeu(String directory) {
         String filename;
         final FileChooser fileChooser = new FileChooser();
         fileChooser.setInitialDirectory(new File(directory));
@@ -45,16 +45,16 @@ public class ActionsController {
             if (!filename.endsWith(".txt"))
                 filename += ".txt";
 
-            System.out.println("Save to " + filename);
-            this.jeu.save(filename);
+            System.out.println("Sauvegarde vers " + filename);
+            this.jeu.sauvegarde(filename);
         }
     }
 
-    public void antijeu() {
+    public void actionAntijeu() {
         System.out.println("Antijeu : " + jeu.antijeu());
     }
 
-    public void rollback() {
-        jeu.rollback();
+    public void actionAnnuler() {
+        jeu.annuler();
     }
 }

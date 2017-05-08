@@ -21,10 +21,10 @@ public class Jeu extends Observable {
         public Action(Jeu jeu, String s) {
             String[] parts = s.split(":");
             Point pointPion = new Point(parts[0]);
-            this.pion = jeu.getTerrain().getCaseAt(pointPion).getPion();
+            this.pion = jeu.getTerrain().getCaseSur(pointPion).getPion();
             this.action = Integer.parseInt(parts[1]);
             Point pointCaseAvant = new Point(parts[2]);
-            this.caseAvant = jeu.getTerrain().getCaseAt(pointCaseAvant);
+            this.caseAvant = jeu.getTerrain().getCaseSur(pointCaseAvant);
         }
 
         public String getSaveString() {
@@ -68,16 +68,16 @@ public class Jeu extends Observable {
     private int tour;
     private int joueurActuel;
 
-    private final static String nomsDisponiblesPath = "nomsDisponibles.txt";
+    private final static String CHEMIN_NOM_DISPONIBLES = "nomsDisponibles.txt";
     private final ArrayList<String> nomsDisponibles = new ArrayList<>();
 
     private final Diaballik diaballik;
 
     public final static int NOMBRE_JOUEURS = 2;
 
-    public final static int CHANGED_INFOS = 1;
-    public final static int CHANGED_TOUR = 2;
-    public final static int CHANGED_ALL = 3;
+    public final static int CHANGEMENT_INFOS = 1;
+    public final static int CHANGEMENT_TOUR = 2;
+    public final static int CHANGEMENT_GLOBAL = 3;
 
     public final static int VICTOIRE_NORMALE = 1;
     public final static int VICTOIRE_ANTIJEU = 2;
@@ -92,11 +92,11 @@ public class Jeu extends Observable {
         this.joueurs[0] = new Joueur(this, Joueur.JOUEUR_VERT);
         this.joueurs[1] = new Joueur(this, Joueur.JOUEUR_ROUGE);
 
-        load(cp);
+        charger(cp);
 
         this.joueurActuel = this.getTour() - 1;
 
-        updateListeners(CHANGED_ALL);
+        updateListeners(CHANGEMENT_GLOBAL);
     }
 
     private void initArrivee() {
@@ -107,7 +107,7 @@ public class Jeu extends Observable {
     }
 
     private void initNomsDisponibles() {
-        try (BufferedReader br = new BufferedReader(new FileReader(nomsDisponiblesPath))) {
+        try (BufferedReader br = new BufferedReader(new FileReader(CHEMIN_NOM_DISPONIBLES))) {
             String sCurrentLine;
             while ((sCurrentLine = br.readLine()) != null) {
                 nomsDisponibles.add(sCurrentLine);
@@ -122,13 +122,13 @@ public class Jeu extends Observable {
         return nomChoisi;
     }
 
-    public void load(ConfigurationPartie cp) {
-        try (BufferedReader br = new BufferedReader(new FileReader(cp.path))) {
+    public void charger(ConfigurationPartie cp) {
+        try (BufferedReader br = new BufferedReader(new FileReader(cp.cheminFichier))) {
             String sCurrentLine;
             String parts[];
             Joueur joueur;
 
-            if (cp.isSave) {
+            if (cp.estUneSauvegarde) {
                 // tour actuel
                 if ((sCurrentLine = br.readLine()) != null) {
                     this.tour = Integer.parseInt(sCurrentLine);
@@ -183,14 +183,14 @@ public class Jeu extends Observable {
         return this.terrain;
     }
 
-    // Save the game state into path
-    public void save(String path) {
+    // Save the game state into cheminFichier
+    public void sauvegarde(String chemin) {
         // On écrit les infos suivantes (qui caractérisent l'état du jeu)
         // tour
         // nomJ1:depl:pass
         // nomJ2:depl:pass
         // terrain...
-        try (BufferedWriter bw = new BufferedWriter(new FileWriter(path))) {
+        try (BufferedWriter bw = new BufferedWriter(new FileWriter(chemin))) {
             bw.write(this.getTour() + "\n");
             bw.write(this.joueurs[0].getSaveString());
             bw.write(this.joueurs[1].getSaveString());
@@ -206,7 +206,7 @@ public class Jeu extends Observable {
         Pion[] tab = new Pion[7]; // on se souvient de la ligne des pions
         for (Pion p : getTerrain().getPions()[getJoueurAdverse().getCouleur()]) { // pour chaque pion du joueur adversaire
             if (tab[p.getPosition().getPoint().getX()] != null) {
-                System.out.println("Antijeu: etape 1 non valide");
+                System.out.println("Antijeu: étape 1 non valide (pions adverses ne prennent pas la largeur du terrain)");
                 return false;
             } else {
                 tab[p.getPosition().getPoint().getX()] = p;
@@ -218,7 +218,7 @@ public class Jeu extends Observable {
         Pion p1 = tab[0], p2 = tab[i];
         while (++i < 7) {
             if (Math.abs(p1.getPosition().getPoint().getY() - p2.getPosition().getPoint().getY()) > 1) {
-                System.out.println("Antijeu: etape 2 non valide");
+                System.out.println("Antijeu: étape 2 non valide (pions adverses non collés)");
                 return false;
             }
 
@@ -226,7 +226,7 @@ public class Jeu extends Observable {
             p2 = tab[i];
         }
 
-        // 3: on vérifie que le joueur qui a appelé antijeu a bien 3 pions collés au mur
+        // 3: on vérifie que le joueur qui a appelé actionAntijeu a bien 3 pions collés au mur
         int n = 0;
         Point po;
         Case c;
@@ -236,44 +236,44 @@ public class Jeu extends Observable {
             if (n >= 3) break;
 
             // vérif case de gauche
-            c = getTerrain().getCaseAt(new Point(po.getX() - 1, po.getY()));
+            c = getTerrain().getCaseSur(new Point(po.getX() - 1, po.getY()));
             if (c != null && c.getPion() != null && c.getPion().getCouleur() == getJoueurAdverse().getCouleur()) {
                 n++;
                 continue;
             }
 
             // vérif case du haut
-            c = getTerrain().getCaseAt(new Point(po.getX(), po.getY() + 1));
+            c = getTerrain().getCaseSur(new Point(po.getX(), po.getY() + 1));
             if (c != null && c.getPion() != null && c.getPion().getCouleur() == getJoueurAdverse().getCouleur()) {
                 n++;
                 continue;
             }
 
             // vérif case de droite
-            c = getTerrain().getCaseAt(new Point(po.getX() + 1, po.getY()));
+            c = getTerrain().getCaseSur(new Point(po.getX() + 1, po.getY()));
             if (c != null && c.getPion() != null && c.getPion().getCouleur() == getJoueurAdverse().getCouleur()) {
                 n++;
                 continue;
             }
 
             // vérif case du bas
-            c = getTerrain().getCaseAt(new Point(po.getX(), po.getY() - 1));
+            c = getTerrain().getCaseSur(new Point(po.getX(), po.getY() - 1));
             if (c != null && c.getPion() != null && c.getPion().getCouleur() == getJoueurAdverse().getCouleur()) {
                 n++;
             }
         }
 
         if (n >= 3) {
-            diaballik.endGame(getJoueurActuel(), VICTOIRE_ANTIJEU);
+            diaballik.finJeu(getJoueurActuel(), VICTOIRE_ANTIJEU);
             return true;
         } else {
-            System.out.println("Antijeu: etape 3 non valide (n = " + n + ")");
+            System.out.println("Antijeu: étape 3 non valide (pions alliés collés à la ligne adverse = " + n + "/3)");
             return false;
         }
     }
 
     // Effectue un déplacement (le pion p se déplace sur la case c)
-    public void deplacement(Pion p, Case c) {
+    public boolean deplacement(Pion p, Case c) {
         if (!p.aLaBalle() && deplacementPossible(p.getPosition(), c) && this.getJoueurActuel().actionPossible(Joueur.ACTION_DEPLACEMENT)) {
             System.out.println("Déplacement!");
 
@@ -283,11 +283,16 @@ public class Jeu extends Observable {
 
             historique.add(new Action(p, Joueur.ACTION_DEPLACEMENT, cv));
 
-            if (!this.getJoueurActuel().moinsAction(Joueur.ACTION_DEPLACEMENT)) {
-                changerTour();
-            }
+            this.getJoueurActuel().moinsAction(Joueur.ACTION_DEPLACEMENT);
+            //if (!this.getJoueurActuel().moinsAction(Joueur.ACTION_DEPLACEMENT)) {
+            //    changerTour();
+            //}
 
-            updateListeners(CHANGED_INFOS);
+            updateListeners(CHANGEMENT_INFOS);
+
+            return true;
+        } else {
+            return false;
         }
     }
 
@@ -319,13 +324,13 @@ public class Jeu extends Observable {
         Point pbase = pion.getPosition().getPoint();
         Case ca;
 
-        ca = getTerrain().getCaseAt(new Point(pbase.getX() + 1, pbase.getY()));
+        ca = getTerrain().getCaseSur(new Point(pbase.getX() + 1, pbase.getY()));
         if (ca != null && ca.getPion() == null) c.add(ca);
-        ca = getTerrain().getCaseAt(new Point(pbase.getX(), pbase.getY() + 1));
+        ca = getTerrain().getCaseSur(new Point(pbase.getX(), pbase.getY() + 1));
         if (ca != null && ca.getPion() == null) c.add(ca);
-        ca = getTerrain().getCaseAt(new Point(pbase.getX() - 1, pbase.getY()));
+        ca = getTerrain().getCaseSur(new Point(pbase.getX() - 1, pbase.getY()));
         if (ca != null && ca.getPion() == null) c.add(ca);
-        ca = getTerrain().getCaseAt(new Point(pbase.getX(), pbase.getY() - 1));
+        ca = getTerrain().getCaseSur(new Point(pbase.getX(), pbase.getY() - 1));
         if (ca != null && ca.getPion() == null) c.add(ca);
 
         return c;
@@ -341,49 +346,49 @@ public class Jeu extends Observable {
         Point p = pion.getPosition().getPoint();
 
         int i = 0;
-        while ((c = getTerrain().getCaseAt(new Point(p.getX() - ++i, p.getY()))) != null && (c.getPion() == null || pionAllie(c.getPion()))) {
+        while ((c = getTerrain().getCaseSur(new Point(p.getX() - ++i, p.getY()))) != null && (c.getPion() == null || pionAllie(c.getPion()))) {
             if (c.getPion() != null && pionAllie(c.getPion()))
             pions.add(c.getPion());
         }
 
         i = 0;
-        while ((c = getTerrain().getCaseAt(new Point(p.getX() + ++i, p.getY()))) != null && (c.getPion() == null || pionAllie(c.getPion()))) {
+        while ((c = getTerrain().getCaseSur(new Point(p.getX() + ++i, p.getY()))) != null && (c.getPion() == null || pionAllie(c.getPion()))) {
             if (c.getPion() != null && pionAllie(c.getPion()))
             pions.add(c.getPion());
         }
 
         i = 0;
-        while ((c = getTerrain().getCaseAt(new Point(p.getX(), p.getY() + --i))) != null && (c.getPion() == null || pionAllie(c.getPion()))) {
+        while ((c = getTerrain().getCaseSur(new Point(p.getX(), p.getY() + --i))) != null && (c.getPion() == null || pionAllie(c.getPion()))) {
             if (c.getPion() != null && pionAllie(c.getPion()))
             pions.add(c.getPion());
         }
 
         i = 0;
-        while ((c = getTerrain().getCaseAt(new Point(p.getX(), p.getY() + ++i))) != null && (c.getPion() == null || pionAllie(c.getPion()))) {
+        while ((c = getTerrain().getCaseSur(new Point(p.getX(), p.getY() + ++i))) != null && (c.getPion() == null || pionAllie(c.getPion()))) {
             if (c.getPion() != null && pionAllie(c.getPion()))
             pions.add(c.getPion());
         }
 
         i = 0;
-        while ((c = getTerrain().getCaseAt(new Point(p.getX() + ++i, p.getY() + i))) != null && (c.getPion() == null || pionAllie(c.getPion()))) {
+        while ((c = getTerrain().getCaseSur(new Point(p.getX() + ++i, p.getY() + i))) != null && (c.getPion() == null || pionAllie(c.getPion()))) {
             if (c.getPion() != null && pionAllie(c.getPion()))
             pions.add(c.getPion());
         }
 
         i = 0;
-        while ((c = getTerrain().getCaseAt(new Point(p.getX() + ++i, p.getY() - i))) != null && (c.getPion() == null || pionAllie(c.getPion()))) {
+        while ((c = getTerrain().getCaseSur(new Point(p.getX() + ++i, p.getY() - i))) != null && (c.getPion() == null || pionAllie(c.getPion()))) {
             if (c.getPion() != null && pionAllie(c.getPion()))
             pions.add(c.getPion());
         }
 
         i = 0;
-        while ((c = getTerrain().getCaseAt(new Point(p.getX() + --i, p.getY() + i))) != null && (c.getPion() == null || pionAllie(c.getPion()))) {
+        while ((c = getTerrain().getCaseSur(new Point(p.getX() + --i, p.getY() + i))) != null && (c.getPion() == null || pionAllie(c.getPion()))) {
             if (c.getPion() != null && pionAllie(c.getPion()))
             pions.add(c.getPion());
         }
 
         i = 0;
-        while ((c = getTerrain().getCaseAt(new Point(p.getX() + --i, p.getY() - i))) != null && (c.getPion() == null || pionAllie(c.getPion()))) {
+        while ((c = getTerrain().getCaseSur(new Point(p.getX() + --i, p.getY() - i))) != null && (c.getPion() == null || pionAllie(c.getPion()))) {
             if (c.getPion() != null && pionAllie(c.getPion()))
             pions.add(c.getPion());
         }
@@ -392,40 +397,40 @@ public class Jeu extends Observable {
     }
 
     // Vérifie la possibilité d'une passe (uniquement dans les axes, la couleur n'est pas vérifiée, ...)
-    private boolean passePossible(Case c1, Case c2) {
-        Point p = c1.getPoint();
-        Point p2 = c2.getPoint();
+    private boolean passePossible(Pion envoyeur, Pion receptionneur) {
+        Point pEnvoyeur = envoyeur.getPosition().getPoint();
+        Point pReceptionneur = receptionneur.getPosition().getPoint();
 
         // check alignement
-        if (p.getX() == p2.getX()) { // en ligne
-            int yMax = Math.max(p.getY(), p2.getY());
-            int yMin = Math.min(p.getY(), p2.getY());
+        if (pEnvoyeur.getX() == pReceptionneur.getX()) { // en ligne
+            int yMax = Math.max(pEnvoyeur.getY(), pReceptionneur.getY());
+            int yMin = Math.min(pEnvoyeur.getY(), pReceptionneur.getY());
 
             for (int y = yMax - 1; y > yMin; y--) {
-                Pion pionPresent = getTerrain().getCaseAt(new Point(p.getX(), y)).getPion();
+                Pion pionPresent = getTerrain().getCaseSur(new Point(pEnvoyeur.getX(), y)).getPion();
                 if (pionPresent != null && pionPresent.getCouleur() != getJoueurActuel().getCouleur()) {
                     return false;
                 }
             }
-        } else if (p.getY() == p2.getY()) { // colonne
-            int xMax = Math.max(p.getX(), p2.getX());
-            int xMin = Math.min(p.getX(), p2.getX());
+        } else if (pEnvoyeur.getY() == pReceptionneur.getY()) { // colonne
+            int xMax = Math.max(pEnvoyeur.getX(), pReceptionneur.getX());
+            int xMin = Math.min(pEnvoyeur.getX(), pReceptionneur.getX());
 
             for (int x = xMax - 1; x > xMin; x--) {
-                Pion pionPresent = getTerrain().getCaseAt(new Point(x, p.getY())).getPion();
+                Pion pionPresent = getTerrain().getCaseSur(new Point(x, pEnvoyeur.getY())).getPion();
                 if (pionPresent != null && pionPresent.getCouleur() != getJoueurActuel().getCouleur()) {
                     return false;
                 }
             }
-        } else if (Math.abs(p.getX() - p2.getX()) == Math.abs(p.getY() - p2.getY())) { // diagonale
-            int xMax = Math.max(p.getX(), p2.getX());
-            int xMin = Math.min(p.getX(), p2.getX());
-            int yMax = Math.max(p.getY(), p2.getY());
+        } else if (Math.abs(pEnvoyeur.getX() - pReceptionneur.getX()) == Math.abs(pEnvoyeur.getY() - pReceptionneur.getY())) { // diagonale
+            int xMax = Math.max(pEnvoyeur.getX(), pReceptionneur.getX());
+            int xMin = Math.min(pEnvoyeur.getX(), pReceptionneur.getX());
+            int yMax = Math.max(pEnvoyeur.getY(), pReceptionneur.getY());
 
             int y = yMax;
             for (int x = xMax - 1; x > xMin; x--) {
                 y--;
-                Pion pionPresent = getTerrain().getCaseAt(new Point(x, y)).getPion();
+                Pion pionPresent = getTerrain().getCaseSur(new Point(x, y)).getPion();
                 if (pionPresent != null && pionPresent.getCouleur() != getJoueurActuel().getCouleur()) {
                     return false;
                 }
@@ -438,26 +443,34 @@ public class Jeu extends Observable {
     }
 
     // Effectue une passe d'un pion p vers un pion positionné sur une case c
-    public void passe(Pion p, Case c) {
-        if (p.aLaBalle() && passePossible(p.getPosition(), c) && this.getJoueurActuel().actionPossible(Joueur.ACTION_PASSE)) {
+    public boolean passe(Pion envoyeur, Pion receptionneur) {
+        if (envoyeur.aLaBalle()
+                && passePossible(envoyeur, receptionneur)
+                && this.getJoueurActuel().actionPossible(Joueur.ACTION_PASSE)) {
+
             System.out.println("Passe!");
 
-            Case cv = p.getPosition();
+            Case cv = envoyeur.getPosition();
 
-            p.passe(c);
+            envoyeur.passe(receptionneur);
 
-            historique.add(new Action(c.getPion(), Joueur.ACTION_PASSE, cv));
+            historique.add(new Action(receptionneur, Joueur.ACTION_PASSE, cv));
 
-            if (partieTerminee(c.getPion())) {
+            if (partieTerminee(receptionneur)) {
                 // la partie est terminée (le vainqueur est joueurActuel())
-                diaballik.endGame(getJoueurActuel(), VICTOIRE_NORMALE);
+                diaballik.finJeu(getJoueurActuel(), VICTOIRE_NORMALE);
             }
 
-            if (!this.getJoueurActuel().moinsAction(Joueur.ACTION_PASSE)) {
-                changerTour();
-            }
+            this.getJoueurActuel().moinsAction(Joueur.ACTION_PASSE);
+            //if (!this.getJoueurActuel().moinsAction(Joueur.ACTION_PASSE)) {
+            //    changerTour();
+            //}
 
-            updateListeners(CHANGED_INFOS);
+            updateListeners(CHANGEMENT_INFOS);
+
+            return true;
+        } else {
+            return false;
         }
     }
 
@@ -490,7 +503,7 @@ public class Jeu extends Observable {
         joueurActuel = ++joueurActuel % Jeu.NOMBRE_JOUEURS;
         //joueurActuel = (joueurActuel + 1 >= Jeu.NOMBRE_JOUEURS ? 0 : joueurActuel + 1);
 
-        updateListeners(CHANGED_TOUR);
+        updateListeners(CHANGEMENT_TOUR);
     }
 
     public Joueur getJoueurActuel() {
@@ -514,7 +527,7 @@ public class Jeu extends Observable {
         return tour;
     }
 
-    public void rollback() {
+    public void annuler() {
         if (historique.size() == 0) return;
 
         Action a = historique.get(historique.size() - 1);
@@ -526,7 +539,7 @@ public class Jeu extends Observable {
                 getJoueurActuel().plusAction(Joueur.ACTION_DEPLACEMENT);
                 break;
             case Joueur.ACTION_PASSE:
-                a.getPion().passe(a.getCaseAvant());
+                a.getPion().passe(a.getCaseAvant().getPion());
                 getJoueurActuel().plusAction(Joueur.ACTION_PASSE);
 
                 break;
@@ -534,7 +547,7 @@ public class Jeu extends Observable {
                 System.err.println("Action non reconnue");
         }
 
-        updateListeners(CHANGED_ALL);
+        updateListeners(CHANGEMENT_GLOBAL);
     }
 
     public boolean pionAllie(Pion pion) {

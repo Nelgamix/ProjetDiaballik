@@ -1,7 +1,7 @@
-package diaballik.view;
+package diaballik.vue;
 
 import diaballik.Diaballik;
-import diaballik.controller.ActionsController;
+import diaballik.controleur.ActionsControleur;
 import diaballik.model.Jeu;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -9,12 +9,13 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.VBox;
+import javafx.scene.paint.Color;
 
 import java.util.Observable;
 import java.util.Observer;
 
-public class ActionsView extends BorderPane implements Observer {
-    private final ActionsController actionsController;
+public class ActionsVue extends BorderPane implements Observer {
+    private final ActionsControleur actionsControleur;
     private final Jeu jeu;
 
     private final Label depl;
@@ -23,7 +24,7 @@ public class ActionsView extends BorderPane implements Observer {
     private final Label deplInd;
     private final Label passInd;
 
-    public ActionsView(ActionsController actionsController) {
+    public ActionsVue(ActionsControleur actionsControleur) {
         super();
 
         // Infos
@@ -59,8 +60,8 @@ public class ActionsView extends BorderPane implements Observer {
 
         this.setId("actionsView");
 
-        this.actionsController = actionsController;
-        this.jeu = actionsController.getJeu();
+        this.actionsControleur = actionsControleur;
+        this.jeu = actionsControleur.getJeu();
 
         this.jeu.addObserver(this);
 
@@ -70,19 +71,19 @@ public class ActionsView extends BorderPane implements Observer {
         passerTour.setId("passerTour");
 
         Button rollback = new Button("Rollback");
-        rollback.setOnAction(e -> actionsController.rollback());
+        rollback.setOnAction(e -> actionsControleur.actionAnnuler());
         rollback.setMaxWidth(Double.MAX_VALUE);
 
         Button antijeu = new Button("Antijeu");
-        antijeu.setOnAction(e -> actionsController.antijeu());
+        antijeu.setOnAction(e -> actionsControleur.actionAntijeu());
         antijeu.setMaxWidth(Double.MAX_VALUE);
 
         Button save = new Button("Sauvegarder");
-        save.setOnAction(e -> actionsController.saveGame(Diaballik.SAVES_DIRECTORY));
+        save.setOnAction(e -> actionsControleur.actionSauvegarderJeu(Diaballik.DOSSIER_SAUVEGARDES));
         save.setMaxWidth(Double.MAX_VALUE);
 
         Button menu = new Button("Menu");
-        menu.setOnAction(e -> actionsController.menu());
+        menu.setOnAction(e -> actionsControleur.actionMenu());
         menu.setMaxWidth(Double.MAX_VALUE);
 
         vBoxActions.getChildren().add(passerTour);
@@ -109,6 +110,11 @@ public class ActionsView extends BorderPane implements Observer {
         else passInd.setText("passe");
 
         depl.setText(deplRest + "");
+        if (deplRest < 1) depl.setTextFill(Color.RED);
+        else depl.setTextFill(Color.BLACK);
+
         pass.setText(passRest + "");
+        if (passRest < 1) pass.setTextFill(Color.RED);
+        else pass.setTextFill(Color.BLACK);
     }
 }

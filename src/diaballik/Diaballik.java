@@ -1,18 +1,19 @@
 package diaballik;
 
-import diaballik.controller.ActionsController;
-import diaballik.controller.AffichageController;
-import diaballik.controller.TerrainController;
+import diaballik.controleur.ActionsControleur;
+import diaballik.controleur.AffichageControleur;
+import diaballik.controleur.TerrainControleur;
 import diaballik.model.ConfigurationPartie;
 import diaballik.model.Jeu;
 import diaballik.model.Joueur;
 import diaballik.model.Terrain;
-import diaballik.view.CaseView;
-import diaballik.view.Dialogs;
+import diaballik.vue.CaseVue;
+import diaballik.vue.Dialogs;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
+import javafx.scene.Cursor;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
@@ -28,14 +29,17 @@ import java.util.Optional;
 public class Diaballik extends Application {
     public Stage stage;
 
-    public final static String CSS_MENU_FILE = "DiaballikMenu.css";
-    public final static String CSS_JEU_FILE = "DiaballikJeu.css";
-    public final static String CSS_DIALOG_FILE = "DiaballikDialogs.css";
+    private final static String CSS_MENU = "DiaballikMenu.css";
+    private final static String CSS_JEU = "DiaballikJeu.css";
+    public final static String CSS_DIALOG = "DiaballikDialogs.css";
 
-    public final static String SAVES_DIRECTORY = "saves";
+    public final static String DOSSIER_SAUVEGARDES = "saves";
+    public final static String DOSSIER_TERRAINS = "defaultTerrains";
 
-    private final KeyCombination ctrlS = new KeyCodeCombination(KeyCode.S, KeyCombination.CONTROL_DOWN); // save
-    private final KeyCombination ctrlZ = new KeyCodeCombination(KeyCode.Z, KeyCombination.CONTROL_DOWN); // rollback
+    public final static String NOM_JEU = "Diaballik";
+
+    private final KeyCombination ctrlS = new KeyCodeCombination(KeyCode.S, KeyCombination.CONTROL_DOWN); // sauvegarde
+    private final KeyCombination ctrlZ = new KeyCodeCombination(KeyCode.Z, KeyCombination.CONTROL_DOWN); // actionAnnuler
 
     private Scene sceneJeu;
     private Scene sceneMenu;
@@ -50,69 +54,68 @@ public class Diaballik extends Application {
         stage.setScene(sceneMenu);
     }
 
-    public void newGame() {
-        Optional<ConfigurationPartie> cp = Dialogs.showNewGameDialog();
+    private void nouveauJeu() {
+        Optional<ConfigurationPartie> cp = Dialogs.montrerDialogNouvellePartie();
         if (cp.isPresent()) {
             initSceneJeu(cp.get());
             showSceneJeu();
         }
     }
 
-    public void newGame(String path, boolean isSave) {
+    private void nouveauJeu(String path, boolean isSave) {
         ConfigurationPartie cp = new ConfigurationPartie(path, isSave);
         initSceneJeu(cp);
         showSceneJeu();
     }
 
-    public void endGame(Joueur gagnant, int victoireType) {
-        Dialogs.showEndGame(gagnant, victoireType);
+    public void finJeu(Joueur gagnant, int victoireType) {
+        Dialogs.montrerFinJeu(gagnant, victoireType);
 
         showSceneMenu();
     }
 
-    public void exit() {
+    public void terminer() {
         Platform.exit();
     }
 
     private void initSceneJeu(ConfigurationPartie cp) {
         jeu = new Jeu(cp, this);
 
-        TerrainController terrainController = new TerrainController(this);
-        ActionsController actionsController = new ActionsController(this);
-        AffichageController affichageController = new AffichageController(this);
+        TerrainControleur terrainControleur = new TerrainControleur(this);
+        ActionsControleur actionsControleur = new ActionsControleur(this);
+        AffichageControleur affichageControleur = new AffichageControleur(this);
         BorderPane root = new BorderPane();
 
-        root.setCenter(terrainController.getTerrainView());
-        root.setRight(actionsController.getActionsView());
-        root.setTop(affichageController.getAffichageView());
+        root.setCenter(terrainControleur.getTerrainVue());
+        root.setRight(actionsControleur.getActionsVue());
+        root.setTop(affichageControleur.getAffichageVue());
 
-        sceneJeu = new Scene(root, CaseView.LARGEUR * Terrain.LARGEUR + 225, CaseView.HAUTEUR * Terrain.HAUTEUR + 75);
+        sceneJeu = new Scene(root, CaseVue.LARGEUR * Terrain.LARGEUR + 225, CaseVue.HAUTEUR * Terrain.HAUTEUR + 75);
         sceneJeu.setOnKeyPressed(k -> {
             if (ctrlS.match(k)) {
-                actionsController.saveGame(SAVES_DIRECTORY);
+                actionsControleur.actionSauvegarderJeu(DOSSIER_SAUVEGARDES);
             } else if (ctrlZ.match(k)) {
-                actionsController.rollback();
+                actionsControleur.actionAnnuler();
             }
         });
-        sceneJeu.getStylesheets().add(getClass().getResource(CSS_JEU_FILE).toExternalForm());
+        sceneJeu.getStylesheets().add(getClass().getResource(CSS_JEU).toExternalForm());
     }
     private void initSceneMenu() {
         BorderPane root = new BorderPane();
         VBox vBox = new VBox(10);
         vBox.setAlignment(Pos.CENTER);
 
-        // TODO: séparer menuScene dans une autre classe
-
-        Label titre = new Label("Diaballik");
+        Label titre = new Label(NOM_JEU);
         titre.setPadding(new Insets(0, 0, 25, 0));
 
         Button newGame = new Button("Nouvelle partie");
-        newGame.setOnAction(e -> newGame());
+        newGame.setOnAction(e -> nouveauJeu());
 
         Button loadGame = new Button("Charger une partie");
         loadGame.setOnAction(e -> {
-            Optional<String> ofilename = Dialogs.showLoadName(SAVES_DIRECTORY);
-            ofilename.ifPresent(s -> newGame(SAVES_DIRECTORY + "/" + s, true));
+            Optional<String> ofilename = Dialogs.montrerDialogChoisirFichier(DOSSIER_SAUVEGARDES);
+            if (ofilename != null)
+                ofilename.ifPresent(s -> nouveauJeu(DOSSIER_SAUVEGARDES + "/" + s, true));
 
             // Méthode avec Filechooser
             // Plus souple mais complexifie le choix pour l'utilisateur
@@ -121,7 +124,7 @@ public class Diaballik extends Application {
             fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Diaballik sauvegarde", "*.txt"));
             File file = fileChooser.showOpenDialog(stage);
             if (file != null) {
-                newGame(file.getAbsolutePath(), true);
+                nouveauJeu(file.getAbsolutePath(), true);
             }*/
         });
 
@@ -129,10 +132,10 @@ public class Diaballik extends Application {
         regles.setOnAction(e -> getHostServices().showDocument("http://inf362.forge.imag.fr/Projet/Regles/diaballik/"));
 
         Button credits = new Button("Crédits");
-        credits.setOnAction(e -> Dialogs.showCredits());
+        credits.setOnAction(e -> Dialogs.montrerCredits());
 
         Button quitter = new Button("Quitter");
-        quitter.setOnAction(e -> exit());
+        quitter.setOnAction(e -> terminer());
 
         vBox.getChildren().add(titre);
         vBox.getChildren().add(newGame);
@@ -146,7 +149,7 @@ public class Diaballik extends Application {
         Platform.runLater(root::requestFocus);
 
         sceneMenu = new Scene(root, 600, 400);
-        sceneMenu.getStylesheets().add(getClass().getResource(CSS_MENU_FILE).toExternalForm());
+        sceneMenu.getStylesheets().add(getClass().getResource(CSS_MENU).toExternalForm());
     }
 
     @Override
@@ -155,7 +158,7 @@ public class Diaballik extends Application {
 
         initSceneMenu();
 
-        stage.setTitle("Diaballik");
+        stage.setTitle(NOM_JEU);
         stage.setResizable(false);
         stage.setScene(sceneMenu);
         stage.show();
@@ -171,5 +174,13 @@ public class Diaballik extends Application {
 
     public Scene getSceneJeu() {
         return sceneJeu;
+    }
+
+    public void setCurseurSelection(Scene scene) {
+        scene.setCursor(Cursor.HAND);
+    }
+
+    public void setCurseurNormal(Scene scene) {
+        scene.setCursor(Cursor.DEFAULT);
     }
 }

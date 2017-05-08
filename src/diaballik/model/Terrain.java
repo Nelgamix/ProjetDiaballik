@@ -81,11 +81,11 @@ public class Terrain {
         }
     }
 
-    public Pion getPionOf(int joueur, int num) {
+    public Pion getPionDe(int joueur, int num) {
         return this.pions[joueur][num];
     }
 
-    public Case getCaseAt(Point point) {
+    public Case getCaseSur(Point point) {
         if (estValide(point)) return this.cases[point.getY()][point.getX()];
         else return null;
     }
@@ -94,7 +94,7 @@ public class Terrain {
         return point.getX() >= 0 && point.getX() < LARGEUR && point.getY() >= 0 && point.getY() < HAUTEUR;
     }
 
-    public String getPionRepr(Pion pion) {
+    public String getPionRepresentation(Pion pion) {
         String res = "";
 
         if (pion == null)
@@ -121,7 +121,7 @@ public class Terrain {
                     sb.append(";");
                 else
                     skip = false;
-                sb.append(getPionRepr(c.getPion()));
+                sb.append(getPionRepresentation(c.getPion()));
             }
             skip = true;
             sb.append("\n");
