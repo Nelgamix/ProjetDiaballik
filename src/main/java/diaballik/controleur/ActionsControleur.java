@@ -51,7 +51,9 @@ public class ActionsControleur {
     }
 
     public void actionAntijeu() {
-        System.out.println("Antijeu : " + jeu.antijeu());
+        String resAJ = jeu.antijeu();
+        if (!resAJ.isEmpty())
+            Dialogs.montrerAntijeu(resAJ);
     }
 
     public void actionAnnuler() {

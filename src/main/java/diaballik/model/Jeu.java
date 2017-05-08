@@ -110,7 +110,6 @@ public class Jeu extends Observable {
     }
 
     public void charger(ConfigurationPartie cp) {
-        System.out.println("F " +cp.cheminFichier);
         try (BufferedReader br = Utils.readerConditionnel(cp.cheminFichier, cp.estUneSauvegarde)) {
             String sCurrentLine;
             String parts[];
@@ -189,13 +188,13 @@ public class Jeu extends Observable {
         }
     }
 
-    public boolean antijeu() {
+    // renvoie une chaine vide si antijeu valide; sinon la raison de l'échec de la fonction
+    public String antijeu() {
         // 1: On vérifie si ils sont tous sur une colonne différente
         Pion[] tab = new Pion[7]; // on se souvient de la ligne des pions
         for (Pion p : getTerrain().getPions()[getJoueurAdverse().getCouleur()]) { // pour chaque pion du joueur adversaire
             if (tab[p.getPosition().getPoint().getX()] != null) {
-                System.out.println("Antijeu: étape 1 non valide (pions adverses ne prennent pas la largeur du terrain)");
-                return false;
+                return "étape 1 non valide (pions adverses ne prennent pas la largeur du terrain)";
             } else {
                 tab[p.getPosition().getPoint().getX()] = p;
             }
@@ -206,8 +205,7 @@ public class Jeu extends Observable {
         Pion p1 = tab[0], p2 = tab[i];
         while (++i < 7) {
             if (Math.abs(p1.getPosition().getPoint().getY() - p2.getPosition().getPoint().getY()) > 1) {
-                System.out.println("Antijeu: étape 2 non valide (pions adverses non collés)");
-                return false;
+                return "étape 2 non valide (pions adverses non collés)";
             }
 
             p1 = p2;
@@ -253,10 +251,9 @@ public class Jeu extends Observable {
 
         if (n >= 3) {
             diaballik.finJeu(getJoueurActuel(), VICTOIRE_ANTIJEU);
-            return true;
+            return "";
         } else {
-            System.out.println("Antijeu: étape 3 non valide (pions alliés collés à la ligne adverse = " + n + "/3)");
-            return false;
+            return "étape 3 non valide (pions alliés collés à la ligne adverse = " + n + "/3)";
         }
     }
 

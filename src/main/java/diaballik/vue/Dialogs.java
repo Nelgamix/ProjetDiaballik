@@ -277,7 +277,6 @@ public class Dialogs {
                         final String name = entries.nextElement().getName();
                         if (name.startsWith(directory.substring(1) + "/")) { // filtrer selon le directory
                             if (!name.endsWith("/")) {
-                                System.out.println(name);
                                 results.add(name.substring(directory.length(), name.length() - extension.length()));
                             }
                         }
@@ -295,7 +294,6 @@ public class Dialogs {
                         File[] files = apps.listFiles((dir, name) -> name.endsWith(extension));
                         if (files != null) {
                             for (File app : files) {
-                                System.out.println(app);
                                 results.add(app.getName().substring(0, app.getName().length() - extension.length()));
                             }
                         }
@@ -336,6 +334,15 @@ public class Dialogs {
         alert.setTitle("Partie terminée");
         alert.setHeaderText("Fin de la partie");
         alert.setContentText("Partie terminée!\nJoueur " + gagnant.getNom() + " l'emporte!\n" + victoireMessage);
+
+        alert.showAndWait();
+    }
+
+    public static void montrerAntijeu(String message) {
+        Alert alert = new Alert(Alert.AlertType.ERROR);
+        alert.setTitle("Antijeu non valide");
+        alert.setHeaderText("L'antijeu déclaré n'est pas légitime");
+        alert.setContentText("Raison: " + message);
 
         alert.showAndWait();
     }

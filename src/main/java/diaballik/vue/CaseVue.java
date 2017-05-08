@@ -32,10 +32,6 @@ public class CaseVue extends StackPane implements Observer {
         Point point = c.getPoint();
         pair = Math.abs(point.getX() - point.getY()) % 2 == 0;
 
-        this.setMaxWidth(LARGEUR);
-        this.setMaxHeight(HAUTEUR);
-        this.setWidth(LARGEUR);
-        this.setHeight(HAUTEUR);
         this.setMinSize(LARGEUR, HAUTEUR);
 
         this.setOnMouseClicked(e -> terrainVue.getTerrainControleur().clicSouris(this));
@@ -69,10 +65,12 @@ public class CaseVue extends StackPane implements Observer {
             survol = false;
         } else if (terrainVue.getTerrainControleur().caseEstMarquee(this)) {
             survol = enter;
-            if (enter)
+            if (enter) {
                 d.setCurseurSelection(d.getSceneJeu());
-            else
+                this.toFront();
+            } else {
                 d.setCurseurNormal(d.getSceneJeu());
+            }
         } else {
             survol = false;
         }
@@ -113,6 +111,7 @@ public class CaseVue extends StackPane implements Observer {
     public void setMarque(boolean marque) {
         if (marque != this.marque) {
             this.marque = marque;
+            this.toFront();
             updateStyleClass();
         }
     }
