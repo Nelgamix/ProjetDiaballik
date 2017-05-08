@@ -17,12 +17,15 @@ import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.VBox;
 import javafx.util.Pair;
+import sun.misc.Launcher;
 
 import java.io.File;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Optional;
+import java.io.IOException;
+import java.net.URISyntaxException;
+import java.net.URL;
+import java.util.*;
+import java.util.jar.JarEntry;
+import java.util.jar.JarFile;
 
 public class Dialogs {
     public static boolean dialogConfirmation(String message) {
@@ -261,17 +264,54 @@ public class Dialogs {
 
     private List<String> getFichiersDansDossier(String directory, String extension, boolean resource) {
         List<String> results = new ArrayList<>();
-        File[] files;
 
-        if (resource)
-            files = new File(getClass().getResource(directory).getFile()).listFiles((dir, name) -> name.endsWith(extension));
-        else
-            files = new File(directory).listFiles((dir, name) -> name.endsWith(extension));
+        if (resource) {
+            final File jarFile = new File(getClass().getProtectionDomain().getCodeSource().getLocation().getPath());
 
-        if (files != null) {
-            for (File file : files) {
-                if (file.isFile()) {
-                    results.add(file.getName().substring(0, file.getName().length() - extension.length()));
+            if (jarFile.isFile()) { // Si on lance depuis un jar
+                final JarFile jar;
+                try {
+                    jar = new JarFile(jarFile);
+                    final Enumeration<JarEntry> entries = jar.entries(); // envoie toutes les entrées du jar
+                    while(entries.hasMoreElements()) {
+                        final String name = entries.nextElement().getName();
+                        if (name.startsWith(directory.substring(1) + "/")) { // filtrer selon le directory
+                            if (!name.endsWith("/")) {
+                                System.out.println(name);
+                                results.add(name.substring(directory.length(), name.length() - extension.length()));
+                            }
+                        }
+                    }
+
+                    jar.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            } else { // Run with IDE
+                final URL url = Launcher.class.getResource(directory);
+                if (url != null) {
+                    try {
+                        final File apps = new File(url.toURI());
+                        File[] files = apps.listFiles((dir, name) -> name.endsWith(extension));
+                        if (files != null) {
+                            for (File app : files) {
+                                System.out.println(app);
+                                results.add(app.getName().substring(0, app.getName().length() - extension.length()));
+                            }
+                        }
+                    } catch (URISyntaxException ignored) {}
+                }
+            }
+        } else {
+            File file = new File(directory);
+
+            File[] files = file.listFiles((dir, name) -> name.endsWith(extension));
+
+            if (files != null) {
+                for (File f : files) {
+                    if (f.isFile()) {
+                        results.add(f.getName().substring(0, f.getName().length() - extension.length()));
+                    }
                 }
             }
         }

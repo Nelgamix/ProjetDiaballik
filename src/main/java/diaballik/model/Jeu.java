@@ -1,8 +1,12 @@
 package diaballik.model;
 
 import diaballik.Diaballik;
+import diaballik.Utils;
 
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Observable;
 
@@ -106,7 +110,8 @@ public class Jeu extends Observable {
     }
 
     public void charger(ConfigurationPartie cp) {
-        try (BufferedReader br = new BufferedReader(new FileReader(getClass().getResource(cp.cheminFichier).getFile()))) {
+        System.out.println("F " +cp.cheminFichier);
+        try (BufferedReader br = Utils.readerConditionnel(cp.cheminFichier, cp.estUneSauvegarde)) {
             String sCurrentLine;
             String parts[];
             Joueur joueur;

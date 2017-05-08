@@ -1,16 +1,9 @@
 package diaballik;
 
-import java.io.BufferedReader;
-import java.io.FileReader;
-import java.io.IOException;
+import java.io.*;
 import java.util.ArrayList;
 import java.util.Random;
 
-/**
- * Package ${PACKAGE} / Project JavaFXML.
- * Date 2017 05 08.
- * Created by Nico (15:49).
- */
 public class Utils {
     private final static ArrayList<String> nomsDisponibles = new ArrayList<>();
     private final static Random r = new Random();
@@ -18,7 +11,7 @@ public class Utils {
     private final static String CHEMIN_NOM_DISPONIBLES = "/nomsDisponibles.txt";
 
     private static void initNomsDisponibles() {
-        try (BufferedReader br = new BufferedReader(new FileReader(Utils.class.getResource(CHEMIN_NOM_DISPONIBLES).getFile()))) {
+        try (BufferedReader br = new BufferedReader(new InputStreamReader(Utils.class.getResourceAsStream((CHEMIN_NOM_DISPONIBLES))))) {
             String sCurrentLine;
             while ((sCurrentLine = br.readLine()) != null) {
                 nomsDisponibles.add(sCurrentLine);
@@ -44,5 +37,25 @@ public class Utils {
 
     public static boolean nomValide(String nom) {
         return nom.length() >= 3 && nom.length() <= 30;
+    }
+
+    public static BufferedReader readerConditionnel(String fichier, boolean estSauvegarde) {
+        BufferedReader br = null;
+
+        if (estSauvegarde) {
+            try {
+                br = new BufferedReader(new FileReader("." + fichier));
+            } catch (IOException e) {}
+        } else {
+            final File jarFile = new File(Utils.class.getProtectionDomain().getCodeSource().getLocation().getPath());
+
+            if (jarFile.isFile()) { // depuis le jar
+                br = new BufferedReader(new InputStreamReader(Utils.class.getResourceAsStream(fichier)));
+            } else {
+                br = new BufferedReader(new InputStreamReader(Utils.class.getResourceAsStream(fichier)));
+            }
+        }
+
+        return br;
     }
 }

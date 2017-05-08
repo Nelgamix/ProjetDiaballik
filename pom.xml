@@ -8,12 +8,17 @@
     <artifactId>DiaballikJeu</artifactId>
     <version>1.0-SNAPSHOT</version>
 
-    <dependencies>
+    <!--<dependencies>
         <dependency>
             <groupId>org.controlsfx</groupId>
             <artifactId>controlsfx</artifactId>
             <version>8.40.12</version>
         </dependency>
-    </dependencies>
+    </dependencies>-->
+
+    <properties>
+        <maven.compiler.source>1.8</maven.compiler.source>
+        <maven.compiler.target>1.8</maven.compiler.target>
+    </properties>
 
 </project>
