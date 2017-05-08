@@ -29,12 +29,13 @@ import java.util.Optional;
 public class Diaballik extends Application {
     public Stage stage;
 
-    private final static String CSS_MENU = "DiaballikMenu.css";
-    private final static String CSS_JEU = "DiaballikJeu.css";
-    public final static String CSS_DIALOG = "DiaballikDialogs.css";
+    public final static String DOSSIER_SAUVEGARDES = "/saves";
+    public final static String DOSSIER_TERRAINS = "/defaultTerrains";
+    public final static String DOSSIER_CSS = "/css";
 
-    public final static String DOSSIER_SAUVEGARDES = "saves";
-    public final static String DOSSIER_TERRAINS = "defaultTerrains";
+    private final static String CSS_MENU = DOSSIER_CSS + "/DiaballikMenu.css";
+    private final static String CSS_JEU = DOSSIER_CSS + "/DiaballikJeu.css";
+    public final static String CSS_DIALOG = DOSSIER_CSS + "/DiaballikDialogs.css";
 
     public final static String NOM_JEU = "Diaballik";
 

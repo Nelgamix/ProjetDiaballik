@@ -1,6 +1,7 @@
 package diaballik.vue;
 
 import diaballik.Diaballik;
+import diaballik.Utils;
 import diaballik.model.ConfigurationPartie;
 import diaballik.model.IA;
 import diaballik.model.Jeu;
@@ -107,47 +108,82 @@ public class Dialogs {
         Dialog<ConfigurationPartie> config = new Dialog<>();
         config.setTitle("Nouvelle partie");
 
-        GridPane content = new GridPane();
-        ColumnConstraints cc1 = new ColumnConstraints();
-        ColumnConstraints cc2 = new ColumnConstraints();
-        ColumnConstraints cc3 = new ColumnConstraints();
-        cc1.setPercentWidth(20);
-        cc2.setPercentWidth(50);
-        cc3.setPercentWidth(30);
-        content.getColumnConstraints().addAll(cc1, cc2, cc3);
-        content.setId("dialogNewGame");
-        content.setHgap(15);
-        content.setVgap(10);
+        VBox content = new VBox(20);
+        GridPane configJoueurs = new GridPane();
+        GridPane autre = new GridPane();
+
+        content.getChildren().add(configJoueurs);
+        content.getChildren().add(autre);
+
+        ColumnConstraints ccJoueur = new ColumnConstraints();
+        ColumnConstraints ccNom = new ColumnConstraints();
+        ColumnConstraints ccIA = new ColumnConstraints();
+        ccJoueur.setPercentWidth(20);
+        ccNom.setPercentWidth(50);
+        ccIA.setPercentWidth(30);
+        configJoueurs.getColumnConstraints().addAll(ccJoueur, ccNom, ccIA);
+        configJoueurs.setId("dialogNewGame");
+        configJoueurs.setHgap(15);
+        configJoueurs.setVgap(10);
+
+        ColumnConstraints ccLabel = new ColumnConstraints();
+        ColumnConstraints ccCtrl = new ColumnConstraints();
+        ccLabel.setPercentWidth(50);
+        ccCtrl.setPercentWidth(50);
+        autre.getColumnConstraints().addAll(ccLabel, ccCtrl);
+        autre.setHgap(10);
+        autre.setVgap(10);
 
         // Header row
         Label l = new Label("Joueur");
         l.getStyleClass().add("dialogNewGameHeader");
-        content.add(l, 0, 0);
+        configJoueurs.add(l, 0, 0);
         l = new Label("Nom");
         l.getStyleClass().add("dialogNewGameHeader");
-        content.add(l, 1, 0);
+        configJoueurs.add(l, 1, 0);
         l = new Label("IA");
         l.getStyleClass().add("dialogNewGameHeader");
-        content.add(l, 2, 0);
+        configJoueurs.add(l, 2, 0);
 
         // Row joueur 1
         TextField nomJoueur1 = new TextField();
         nomJoueur1.setPromptText("Nom");
         ComboBox<String> iaJoueur1 = new ComboBox<>(iaDifficultes);
         iaJoueur1.setValue("Non");
-        content.add(new Label("1"), 0, 1);
-        content.add(nomJoueur1, 1, 1);
-        content.add(iaJoueur1, 2, 1);
+        configJoueurs.add(new Label("1"), 0, 1);
+        configJoueurs.add(nomJoueur1, 1, 1);
+        configJoueurs.add(iaJoueur1, 2, 1);
 
         // Row joueur 2
         TextField nomJoueur2 = new TextField();
         nomJoueur2.setPromptText("Nom");
         ComboBox<String> iaJoueur2 = new ComboBox<>(iaDifficultes);
         iaJoueur2.setValue("Non");
-        content.add(new Label("2"), 0, 2);
-        content.add(nomJoueur2, 1, 2);
-        content.add(iaJoueur2, 2, 2);
+        configJoueurs.add(new Label("2"), 0, 2);
+        configJoueurs.add(nomJoueur2, 1, 2);
+        configJoueurs.add(iaJoueur2, 2, 2);
 
+        // autre
+        // row noms aléatoires
+        Label nomsAleatoires = new Label("Noms aléatoires");
+        autre.add(nomsAleatoires, 0, 0);
+        CheckBox checkNomsAleatoires = new CheckBox();
+        checkNomsAleatoires.selectedProperty().addListener((o, ov, nv) -> {
+            nomJoueur1.setDisable(nv);
+            nomJoueur2.setDisable(nv);
+        });
+        autre.add(checkNomsAleatoires, 1, 0);
+
+        // row terrain
+        ObservableList<String> terrainsDispo = FXCollections.observableArrayList(getFichiersDansDossier(Diaballik.DOSSIER_TERRAINS, ".txt", true));
+        Label terrain = new Label("Variante de terrain");
+        autre.add(terrain, 0, 1);
+        ComboBox<String> terrains = new ComboBox<>(terrainsDispo);
+        terrains.getSelectionModel().select(0);
+        terrains.setMaxWidth(Double.MAX_VALUE);
+        autre.add(terrains, 1, 1);
+
+        // setup
         config.getDialogPane().setContent(content);
         config.getDialogPane().getStylesheets().add(Diaballik.class.getResource(Diaballik.CSS_DIALOG).toExternalForm());
         config.getDialogPane().getButtonTypes().addAll(ButtonType.OK, ButtonType.CANCEL);
@@ -157,7 +193,14 @@ public class Dialogs {
             if (b == ButtonType.OK) {
                 int ia1 = convertirDifficulte(iaJoueur1.getValue());
                 int ia2 = convertirDifficulte(iaJoueur2.getValue());
-                return new ConfigurationPartie(nomJoueur1.getText(), nomJoueur2.getText(), ia1, ia2);
+                if (checkNomsAleatoires.isSelected())
+                    return new ConfigurationPartie(ia1, ia2, terrains.getSelectionModel().getSelectedItem() + ".txt");
+                else {
+                    if (!Utils.nomValide(nomJoueur1.getText()) || !Utils.nomValide(nomJoueur2.getText()))
+                        return null;
+                    else
+                        return new ConfigurationPartie(nomJoueur1.getText(), nomJoueur2.getText(), ia1, ia2, terrains.getSelectionModel().getSelectedItem() + ".txt");
+                }
             }
 
             return null;
@@ -187,13 +230,7 @@ public class Dialogs {
     }
 
     private Optional<String> getDialogChoisirFichier(String directory) {
-        List<String> fichiersDispo = getFichiersDansDossier(directory);
-        ObservableList<String> obs;
-
-        if (fichiersDispo != null)
-            obs = FXCollections.observableArrayList(fichiersDispo);
-        else
-            return null;
+        ObservableList<String> obs = FXCollections.observableArrayList(getFichiersDansDossier("." + directory, ".txt", false));
 
         Dialog<String> dialog = new Dialog<>();
         dialog.setTitle("Charger une partie");
@@ -209,7 +246,7 @@ public class Dialogs {
 
         dialog.setResultConverter(b -> {
             if (b == ButtonType.OK) {
-                return filesView.getSelectionModel().getSelectedItem();
+                return filesView.getSelectionModel().getSelectedItem() + ".txt";
             }
 
             return null;
@@ -222,20 +259,21 @@ public class Dialogs {
         return dialog.showAndWait();
     }
 
-    private List<String> getFichiersDansDossier(String directory) {
+    private List<String> getFichiersDansDossier(String directory, String extension, boolean resource) {
         List<String> results = new ArrayList<>();
+        File[] files;
 
-        System.out.println("ff " + new File(directory).getAbsolutePath());
-        File[] files = new File(directory).listFiles((dir, name) -> name.endsWith(".txt"));
+        if (resource)
+            files = new File(getClass().getResource(directory).getFile()).listFiles((dir, name) -> name.endsWith(extension));
+        else
+            files = new File(directory).listFiles((dir, name) -> name.endsWith(extension));
 
         if (files != null) {
             for (File file : files) {
                 if (file.isFile()) {
-                    results.add(file.getName());
+                    results.add(file.getName().substring(0, file.getName().length() - extension.length()));
                 }
             }
-        } else {
-            return null;
         }
 
         return results;

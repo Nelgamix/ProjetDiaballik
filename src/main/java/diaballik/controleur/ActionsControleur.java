@@ -36,7 +36,7 @@ public class ActionsControleur {
     public void actionSauvegarderJeu(String directory) {
         String filename;
         final FileChooser fileChooser = new FileChooser();
-        fileChooser.setInitialDirectory(new File(directory));
+        fileChooser.setInitialDirectory(new File("." + directory));
         fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Diaballik Sauvegarde", "*.txt"));
         File file = fileChooser.showSaveDialog(this.diaballik.stage);
         if (file != null) {

@@ -68,7 +68,7 @@ public class Jeu extends Observable {
     private int tour;
     private int joueurActuel;
 
-    private final static String CHEMIN_NOM_DISPONIBLES = "nomsDisponibles.txt";
+
     private final ArrayList<String> nomsDisponibles = new ArrayList<>();
 
     private final Diaballik diaballik;
@@ -86,7 +86,6 @@ public class Jeu extends Observable {
         this.diaballik = diaballik;
 
         initArrivee();
-        initNomsDisponibles();
 
         this.joueurs = new Joueur[NOMBRE_JOUEURS];
         this.joueurs[0] = new Joueur(this, Joueur.JOUEUR_VERT);
@@ -106,24 +105,8 @@ public class Jeu extends Observable {
         }
     }
 
-    private void initNomsDisponibles() {
-        try (BufferedReader br = new BufferedReader(new FileReader(CHEMIN_NOM_DISPONIBLES))) {
-            String sCurrentLine;
-            while ((sCurrentLine = br.readLine()) != null) {
-                nomsDisponibles.add(sCurrentLine);
-            }
-        } catch (IOException ignored) {}
-    }
-
-    public String getNomAleatoire() {
-        int index = (int)Math.floor(Math.random() * nomsDisponibles.size());
-        String nomChoisi = nomsDisponibles.get(index);
-        nomsDisponibles.remove(index);
-        return nomChoisi;
-    }
-
     public void charger(ConfigurationPartie cp) {
-        try (BufferedReader br = new BufferedReader(new FileReader(cp.cheminFichier))) {
+        try (BufferedReader br = new BufferedReader(new FileReader(getClass().getResource(cp.cheminFichier).getFile()))) {
             String sCurrentLine;
             String parts[];
             Joueur joueur;
@@ -156,8 +139,8 @@ public class Jeu extends Observable {
             } else {
                 this.tour = 1;
 
-                while (!this.joueurs[0].setNom(cp.nomJoueur1) && !this.joueurs[0].setNom(getNomAleatoire()));
-                while (!this.joueurs[1].setNom(cp.nomJoueur2) && !this.joueurs[1].setNom(getNomAleatoire()));
+                if (!this.joueurs[0].setNom(cp.nomJoueur1)) throw new IllegalStateException();
+                if (!this.joueurs[1].setNom(cp.nomJoueur2)) throw new IllegalStateException();
             }
 
             StringBuilder terrainString = new StringBuilder();
