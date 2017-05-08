@@ -52,6 +52,12 @@ public class CaseVue extends StackPane implements Observer {
         }
     }
 
+    public void reinitialiserEtat() {
+        this.setMarque(false);
+        this.survol = false;
+        updateStyleClass();
+    }
+
     private void survoler(boolean enter) {
         // selection pion alliés, puis cases dispos
         Diaballik d = terrainVue.getTerrainControleur().diaballik;

@@ -72,16 +72,17 @@ public class Jeu extends Observable {
     private int tour;
     private int joueurActuel;
 
-
     private final ArrayList<String> nomsDisponibles = new ArrayList<>();
 
     private final Diaballik diaballik;
 
     public final static int NOMBRE_JOUEURS = 2;
 
-    public final static int CHANGEMENT_INFOS = 1;
-    public final static int CHANGEMENT_TOUR = 2;
-    public final static int CHANGEMENT_GLOBAL = 3;
+    public final static int CHANGEMENT_INIT = 0;
+    public final static int CHANGEMENT_POSITION = 1;
+    public final static int CHANGEMENT_INFOS = 2;
+    public final static int CHANGEMENT_TOUR = 3;
+    public final static int CHANGEMENT_GLOBAL = 4;
 
     public final static int VICTOIRE_NORMALE = 1;
     public final static int VICTOIRE_ANTIJEU = 2;

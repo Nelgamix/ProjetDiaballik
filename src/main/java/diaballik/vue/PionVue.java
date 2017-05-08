@@ -1,10 +1,16 @@
 package diaballik.vue;
 
+import diaballik.model.Jeu;
 import diaballik.model.Joueur;
 import diaballik.model.Pion;
 import diaballik.model.Point;
+import javafx.animation.KeyFrame;
+import javafx.animation.KeyValue;
+import javafx.animation.Timeline;
+import javafx.animation.TranslateTransition;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
+import javafx.util.Duration;
 
 import java.util.Observable;
 import java.util.Observer;
@@ -23,21 +29,23 @@ public class PionVue extends Circle implements Observer {
     private boolean marque = false;
     private boolean survol = false;
 
+    private final TranslateTransition transitionDeplacement;
+
     public PionVue(TerrainVue terrainVue, Pion pion) {
         super(RAYON);
 
         this.pion = pion;
         this.caseVue = terrainVue.getCaseSur(pion.getPosition().getPoint());
+        this.caseVue.setPionVue(this);
         this.terrainVue = terrainVue;
         pion.addObserver(this);
 
+        this.transitionDeplacement = new TranslateTransition(Duration.millis(200), this);
+        this.transitionDeplacement.setAutoReverse(false);
+
         this.setStroke(Color.BLACK);
 
-        this.update();
-    }
-
-    public void update() {
-        this.update(null, null);
+        this.update(this.pion, Jeu.CHANGEMENT_INIT);
     }
 
     public void survoler(boolean enter) {
@@ -52,14 +60,54 @@ public class PionVue extends Circle implements Observer {
 
     @Override
     public void update(Observable o, Object arg) {
-        Point p = this.pion.getPosition().getPoint();
-
-        this.caseVue.setPionVue(null);
-        this.caseVue = this.terrainVue.getCaseSur(p);
-        this.caseVue.setPionVue(this);
+        if ((int)arg == Jeu.CHANGEMENT_POSITION)
+            deplacerPionAnimated();
 
         this.updateStyleClass();
-        this.setRadius(getRayon());
+        this.setRayon(getRayon());
+    }
+
+    private void setRayon(double rayon) {
+        if (rayon != this.getRadius()) {
+            final Timeline transitionTaille = new Timeline();
+            transitionTaille.setAutoReverse(false);
+            transitionTaille.setCycleCount(1);
+
+            final KeyValue kv = new KeyValue(this.radiusProperty(), rayon);
+            final KeyFrame kf = new KeyFrame(Duration.millis(500), kv);
+
+            transitionTaille.getKeyFrames().clear();
+            transitionTaille.getKeyFrames().addAll(kf);
+            
+            transitionTaille.play();
+        }
+    }
+
+    private void deplacerPionAnimated() {
+        Point destination = this.pion.getPosition().getPoint();
+        Point source = this.caseVue.getCase().getPoint();
+        CaseVue cvDestination = this.terrainVue.getCaseSur(destination);
+
+        double byX = (destination.getX() - source.getX()) * CaseVue.LARGEUR;
+        double byY = (destination.getY() - source.getY()) * CaseVue.HAUTEUR;
+        cvDestination.reinitialiserEtat();
+        this.caseVue.toFront();
+        transitionDeplacement.setByX(byX);
+        transitionDeplacement.setByY(byY);
+        transitionDeplacement.setOnFinished(e -> {
+            deplacerPion(cvDestination);
+            this.setTranslateX(0);
+            this.setTranslateY(0);
+            terrainVue.getTerrainControleur().diaballik.setCurseurNormal(terrainVue.getTerrainControleur().diaballik.getSceneJeu());
+        });
+
+        transitionDeplacement.play();
+    }
+
+    private void deplacerPion(CaseVue destination) {
+        this.caseVue.setPionVue(null);
+        this.caseVue = destination;
+        this.caseVue.setPionVue(this);
     }
 
     private void updateStyleClass() {
@@ -84,12 +132,12 @@ public class PionVue extends Circle implements Observer {
     public void desactiver() {
         this.actif = false;
         reinitialiserStatut();
-        update();
+        update(this.pion, Jeu.CHANGEMENT_GLOBAL);
     }
 
     public void activer() {
         this.actif = true;
-        update();
+        update(this.pion, Jeu.CHANGEMENT_GLOBAL);
     }
 
     // GETTERS objets

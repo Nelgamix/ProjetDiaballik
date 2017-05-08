@@ -45,20 +45,20 @@ public class Pion extends Observable {
         nouvellePosition.setPion(this); // la nouvelle case doit savoir que le pion est celui ci
         this.position = nouvellePosition; // on change donc la position
 
-        updateListeneners();
+        updateListeneners(Jeu.CHANGEMENT_POSITION);
     }
 
     public void passe(Pion receptionneur) {
         this.setaLaBalle(false); // on n'a plus la balle
         receptionneur.setaLaBalle(true); // la balle est au pion de la case alliée
-        receptionneur.updateListeneners();
+        receptionneur.updateListeneners(Jeu.CHANGEMENT_POSITION);
 
-        updateListeneners();
+        updateListeneners(Jeu.CHANGEMENT_POSITION);
     }
 
-    public void updateListeneners() {
+    public void updateListeneners(int changement) {
         this.setChanged();
-        this.notifyObservers();
+        this.notifyObservers(changement);
     }
 
     @Override
