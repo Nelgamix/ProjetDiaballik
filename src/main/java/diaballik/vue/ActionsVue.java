@@ -8,8 +8,12 @@ import javafx.geometry.Pos;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.ColumnConstraints;
+import javafx.scene.layout.GridPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
+import org.controlsfx.glyphfont.FontAwesome;
+import org.controlsfx.glyphfont.Glyph;
 
 import java.util.Observable;
 import java.util.Observer;
@@ -54,6 +58,18 @@ public class ActionsVue extends BorderPane implements Observer {
         vBoxInfos.getChildren().add(vBoxInfosDepl);
         vBoxInfos.getChildren().add(vBoxInfosPass);
 
+        GridPane gpActions = new GridPane();
+        gpActions.setAlignment(Pos.CENTER);
+        gpActions.setVgap(10);
+        gpActions.setHgap(5);
+        gpActions.setPadding(new Insets(20));
+        ColumnConstraints cc1 = new ColumnConstraints();
+        ColumnConstraints cc2 = new ColumnConstraints();
+        cc1.setPercentWidth(50);
+        cc2.setPercentWidth(50);
+        gpActions.getColumnConstraints().addAll(cc1, cc2);
+        //gpActions.setMinSize(Double.MAX_VALUE, Double.MAX_VALUE);
+
         VBox vBoxActions = new VBox(10);
         vBoxActions.setAlignment(Pos.CENTER);
         vBoxActions.setPadding(new Insets(20));
@@ -66,34 +82,56 @@ public class ActionsVue extends BorderPane implements Observer {
         this.jeu.addObserver(this);
 
         Button passerTour = new Button("Fin tour");
-        passerTour.setOnAction(e -> jeu.changerTour());
+        passerTour.setOnAction(e -> jeu.avancerTour());
         passerTour.setMaxWidth(Double.MAX_VALUE);
         passerTour.setId("passerTour");
+        gpActions.add(passerTour, 0, 0, 2, 1);
 
-        Button rollback = new Button("Rollback");
-        rollback.setOnAction(e -> actionsControleur.actionAnnuler());
-        rollback.setMaxWidth(Double.MAX_VALUE);
+        Glyph undo = new Glyph("FontAwesome", FontAwesome.Glyph.UNDO);
+        undo.setFontSize(22f);
+        Button annuler = new Button("", undo);
+        annuler.setOnAction(e -> actionsControleur.actionDefaire());
+        annuler.setMaxWidth(Double.MAX_VALUE);
+        gpActions.add(annuler, 0, 1);
+
+        Glyph repeat = new Glyph("FontAwesome", FontAwesome.Glyph.REPEAT);
+        repeat.setFontSize(22f);
+        Button refaire = new Button("", repeat);
+        refaire.setOnAction(e -> actionsControleur.actionRefaire());
+        refaire.setMaxWidth(Double.MAX_VALUE);
+        gpActions.add(refaire, 1, 1);
 
         Button antijeu = new Button("Antijeu");
         antijeu.setOnAction(e -> actionsControleur.actionAntijeu());
         antijeu.setMaxWidth(Double.MAX_VALUE);
+        gpActions.add(antijeu, 0, 2, 2, 1);
 
-        Button save = new Button("Sauvegarder");
-        save.setOnAction(e -> actionsControleur.actionSauvegarderJeu(Diaballik.DOSSIER_SAUVEGARDES));
-        save.setMaxWidth(Double.MAX_VALUE);
+        Button sauvegarder = new Button("Sauvegarder");
+        sauvegarder.setOnAction(e -> actionsControleur.actionSauvegarderJeu(Diaballik.DOSSIER_SAUVEGARDES));
+        sauvegarder.setMaxWidth(Double.MAX_VALUE);
+        gpActions.add(sauvegarder, 0, 3, 2, 1);
+
+        Glyph roue = new Glyph("FontAwesome", FontAwesome.Glyph.COG);
+        roue.setFontSize(22f);
+        Button parametres = new Button("", roue);
+        parametres.setOnAction(e -> System.out.println("Paramètres"));
+        parametres.setMaxWidth(Double.MAX_VALUE);
+        gpActions.add(parametres, 0, 4);
 
         Button menu = new Button("Menu");
         menu.setOnAction(e -> actionsControleur.actionMenu());
         menu.setMaxWidth(Double.MAX_VALUE);
+        gpActions.add(menu, 1, 4);
 
-        vBoxActions.getChildren().add(passerTour);
-        vBoxActions.getChildren().add(rollback);
+        /*vBoxActions.getChildren().add(passerTour);
+        vBoxActions.getChildren().add(defaire);
         vBoxActions.getChildren().add(antijeu);
-        vBoxActions.getChildren().add(save);
-        vBoxActions.getChildren().add(menu);
+        vBoxActions.getChildren().add(sauvegarder);
+        vBoxActions.getChildren().add(menu);*/
 
         this.setTop(vBoxInfos);
-        this.setBottom(vBoxActions);
+        //this.setBottom(vBoxActions);
+        this.setBottom(gpActions);
 
         update(null, null);
     }

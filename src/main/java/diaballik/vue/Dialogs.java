@@ -11,6 +11,7 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
+import javafx.scene.Node;
 import javafx.scene.control.*;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.ColumnConstraints;
@@ -102,14 +103,19 @@ public class Dialogs {
 
     private Optional<ConfigurationPartie> getDialogNouvellePartie() {
         ObservableList<String> iaDifficultes = FXCollections.observableArrayList(
-                "Non",
-                "Facile",
-                "Moyen",
-                "Difficile"
+                "Humain",
+                "IA Facile",
+                "IA Moyen",
+                "IA Difficile"
         );
 
         Dialog<ConfigurationPartie> config = new Dialog<>();
         config.setTitle("Nouvelle partie");
+        ButtonType boutonJouerType = new ButtonType("Jouer", ButtonBar.ButtonData.OK_DONE);
+        config.getDialogPane().getButtonTypes().addAll(boutonJouerType, ButtonType.CANCEL);
+
+        Node boutonJouer = config.getDialogPane().lookupButton(boutonJouerType);
+        boutonJouer.setDisable(true);
 
         VBox content = new VBox(20);
         GridPane configJoueurs = new GridPane();
@@ -144,15 +150,18 @@ public class Dialogs {
         l = new Label("Nom");
         l.getStyleClass().add("dialogNewGameHeader");
         configJoueurs.add(l, 1, 0);
-        l = new Label("IA");
+        /*l = new Label("IA");
         l.getStyleClass().add("dialogNewGameHeader");
-        configJoueurs.add(l, 2, 0);
+        configJoueurs.add(l, 2, 0);*/
 
         // Row joueur 1
         TextField nomJoueur1 = new TextField();
         nomJoueur1.setPromptText("Nom");
+        nomJoueur1.textProperty().addListener((o, ov, nv) -> {
+            boutonJouer.setDisable(nv.trim().length() < 3);
+        });
         ComboBox<String> iaJoueur1 = new ComboBox<>(iaDifficultes);
-        iaJoueur1.setValue("Non");
+        iaJoueur1.getSelectionModel().select(0);
         configJoueurs.add(new Label("1"), 0, 1);
         configJoueurs.add(nomJoueur1, 1, 1);
         configJoueurs.add(iaJoueur1, 2, 1);
@@ -160,8 +169,11 @@ public class Dialogs {
         // Row joueur 2
         TextField nomJoueur2 = new TextField();
         nomJoueur2.setPromptText("Nom");
+        nomJoueur2.textProperty().addListener((o, ov, nv) -> {
+            boutonJouer.setDisable(nv.trim().length() < 3);
+        });
         ComboBox<String> iaJoueur2 = new ComboBox<>(iaDifficultes);
-        iaJoueur2.setValue("Non");
+        iaJoueur2.getSelectionModel().select(0);
         configJoueurs.add(new Label("2"), 0, 2);
         configJoueurs.add(nomJoueur2, 1, 2);
         configJoueurs.add(iaJoueur2, 2, 2);
@@ -174,6 +186,7 @@ public class Dialogs {
         checkNomsAleatoires.selectedProperty().addListener((o, ov, nv) -> {
             nomJoueur1.setDisable(nv);
             nomJoueur2.setDisable(nv);
+            boutonJouer.setDisable(!nv);
         });
         autre.add(checkNomsAleatoires, 1, 0);
 
@@ -189,11 +202,10 @@ public class Dialogs {
         // setup
         config.getDialogPane().setContent(content);
         config.getDialogPane().getStylesheets().add(Diaballik.class.getResource(Diaballik.CSS_DIALOG).toExternalForm());
-        config.getDialogPane().getButtonTypes().addAll(ButtonType.OK, ButtonType.CANCEL);
         config.getDialogPane().setPrefSize(400, 150);
 
         config.setResultConverter(b -> {
-            if (b == ButtonType.OK) {
+            if (b == boutonJouerType) {
                 int ia1 = convertirDifficulte(iaJoueur1.getValue());
                 int ia2 = convertirDifficulte(iaJoueur2.getValue());
                 if (checkNomsAleatoires.isSelected())
@@ -216,11 +228,11 @@ public class Dialogs {
 
     private static int convertirDifficulte(String difficulte) {
         switch (difficulte) {
-            case "Facile":
+            case "IA Facile":
                 return IA.DIFFICULTE_FACILE;
-            case "Moyen":
+            case "IA Moyen":
                 return IA.DIFFICULTE_MOYEN;
-            case "Difficile":
+            case "IA Difficile":
                 return IA.DIFFICULTE_DIFFICILE;
             default:
                 return 0;
@@ -238,17 +250,26 @@ public class Dialogs {
         Dialog<String> dialog = new Dialog<>();
         dialog.setTitle("Charger une partie");
 
+        ButtonType boutonOuvrirType = new ButtonType("Ouvrir", ButtonBar.ButtonData.OK_DONE);
+        dialog.getDialogPane().getButtonTypes().addAll(boutonOuvrirType, ButtonType.CANCEL);
+        Node boutonJouer = dialog.getDialogPane().lookupButton(boutonOuvrirType);
+        boutonJouer.setDisable(true);
+
         BorderPane content = new BorderPane();
         ListView<String> filesView = new ListView<>(obs);
         filesView.setMaxWidth(Double.MAX_VALUE);
         filesView.setMaxHeight(Double.MAX_VALUE);
+        filesView.setOnMouseClicked(e -> {
+            if (filesView.getSelectionModel().getSelectedItem() != null)
+                boutonJouer.setDisable(false);
+        });
         content.setId("dialogLoadName");
         content.setTop(new Label("Sélectionnez une partie à charger"));
         content.setCenter(filesView);
         content.setPadding(new Insets(25));
 
         dialog.setResultConverter(b -> {
-            if (b == ButtonType.OK) {
+            if (b == boutonOuvrirType) {
                 return filesView.getSelectionModel().getSelectedItem() + ".txt";
             }
 
@@ -257,8 +278,8 @@ public class Dialogs {
 
         dialog.getDialogPane().setContent(content);
         dialog.getDialogPane().getStylesheets().add(Diaballik.class.getResource(Diaballik.CSS_DIALOG).toExternalForm());
-        dialog.getDialogPane().getButtonTypes().addAll(ButtonType.OK, ButtonType.CANCEL);
         dialog.getDialogPane().setPrefSize(400, 400);
+
         return dialog.showAndWait();
     }
 

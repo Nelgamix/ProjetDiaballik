@@ -71,7 +71,7 @@ public class TerrainVue extends GridPane implements Observer {
 
         int changed_type = (arg != null ? (int)arg : 0);
         Diaballik d = getTerrainControleur().diaballik;
-        if (d.getSceneJeu() != null && changed_type == Jeu.CHANGEMENT_TOUR) {
+        if (d.getSceneJeu() != null) {
             switch (changed_type) {
                 case Jeu.CHANGEMENT_TOUR:
                     d.setCurseurNormal(d.getSceneJeu());

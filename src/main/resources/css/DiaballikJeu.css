@@ -39,25 +39,25 @@
     -fx-cursor: hand;
 }*/
 
-#actionsView > VBox > .button {
+#actionsView > GridPane > .button {
     -fx-background-color: linear-gradient(to bottom, #3498db, #2980b9);
     -fx-background-radius: 4px;
     -fx-background-insets: 2px;
     -fx-font-family: "Arial";
     -fx-text-fill: white;
-    -fx-font-size: 140%;
-    -fx-padding: 10px;
+    -fx-font-size: 20px;
+    -fx-padding: 8px;
     -fx-border-radius: 4px;
     -fx-border-color: black;
     -fx-border-width: 2px;
 }
 
-#actionsView > VBox > .button:hover {
+#actionsView > GridPane > .button:hover {
     -fx-background-color: linear-gradient(to bottom, #3cb0fd, #3498db);
     -fx-cursor: hand;
 }
 
-#actionsView > VBox > #passerTour {
+#actionsView > GridPane > #passerTour {
     -fx-font-weight: bold;
     -fx-font-size: 175%;
 }

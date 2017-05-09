@@ -40,7 +40,7 @@ public class Diaballik extends Application {
     public final static String NOM_JEU = "Diaballik";
 
     private final KeyCombination ctrlS = new KeyCodeCombination(KeyCode.S, KeyCombination.CONTROL_DOWN); // sauvegarde
-    private final KeyCombination ctrlZ = new KeyCodeCombination(KeyCode.Z, KeyCombination.CONTROL_DOWN); // actionAnnuler
+    private final KeyCombination ctrlZ = new KeyCodeCombination(KeyCode.Z, KeyCombination.CONTROL_DOWN); // actionDefaire
 
     private Scene sceneJeu;
     private Scene sceneMenu;
@@ -96,7 +96,7 @@ public class Diaballik extends Application {
             if (ctrlS.match(k)) {
                 actionsControleur.actionSauvegarderJeu(DOSSIER_SAUVEGARDES);
             } else if (ctrlZ.match(k)) {
-                actionsControleur.actionAnnuler();
+                actionsControleur.actionDefaire();
             }
         });
         sceneJeu.getStylesheets().add(getClass().getResource(CSS_JEU).toExternalForm());

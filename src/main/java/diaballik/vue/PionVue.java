@@ -78,7 +78,7 @@ public class PionVue extends Circle implements Observer {
 
             transitionTaille.getKeyFrames().clear();
             transitionTaille.getKeyFrames().addAll(kf);
-            
+
             transitionTaille.play();
         }
     }

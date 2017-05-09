@@ -36,7 +36,12 @@ public class ActionsControleur {
     public void actionSauvegarderJeu(String directory) {
         String filename;
         final FileChooser fileChooser = new FileChooser();
-        fileChooser.setInitialDirectory(new File("." + directory));
+
+        final File saveDir = new File("." + directory);
+        if (!saveDir.exists())
+            saveDir.mkdir();
+
+        fileChooser.setInitialDirectory(saveDir);
         fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Diaballik Sauvegarde", "*.txt"));
         File file = fileChooser.showSaveDialog(this.diaballik.stage);
         if (file != null) {
@@ -56,7 +61,11 @@ public class ActionsControleur {
             Dialogs.montrerAntijeu(resAJ);
     }
 
-    public void actionAnnuler() {
-        jeu.annuler();
+    public void actionDefaire() {
+        jeu.defaire();
+    }
+
+    public void actionRefaire() {
+        jeu.refaire();
     }
 }
