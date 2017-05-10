@@ -28,6 +28,9 @@ public class ActionsVue extends BorderPane implements Observer {
     private final Label deplInd;
     private final Label passInd;
 
+    public final Button annuler;
+    public final Button refaire;
+
     public ActionsVue(ActionsControleur actionsControleur) {
         super();
 
@@ -89,14 +92,14 @@ public class ActionsVue extends BorderPane implements Observer {
 
         Glyph undo = new Glyph("FontAwesome", FontAwesome.Glyph.UNDO);
         undo.setFontSize(22f);
-        Button annuler = new Button("", undo);
+        annuler = new Button("", undo);
         annuler.setOnAction(e -> actionsControleur.actionDefaire());
         annuler.setMaxWidth(Double.MAX_VALUE);
         gpActions.add(annuler, 0, 1);
 
         Glyph repeat = new Glyph("FontAwesome", FontAwesome.Glyph.REPEAT);
         repeat.setFontSize(22f);
-        Button refaire = new Button("", repeat);
+        refaire = new Button("", repeat);
         refaire.setOnAction(e -> actionsControleur.actionRefaire());
         refaire.setMaxWidth(Double.MAX_VALUE);
         gpActions.add(refaire, 1, 1);
@@ -154,5 +157,8 @@ public class ActionsVue extends BorderPane implements Observer {
         pass.setText(passRest + "");
         if (passRest < 1) pass.setTextFill(Color.RED);
         else pass.setTextFill(Color.BLACK);
+
+        annuler.setDisable(!jeu.historique.peutDefaire());
+        refaire.setDisable(!jeu.historique.peutRefaire());
     }
 }

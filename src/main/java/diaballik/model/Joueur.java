@@ -29,6 +29,17 @@ public class Joueur {
         reset_actions();
     }
 
+    public static String parseAction(int action) {
+        switch (action) {
+            case ACTION_PASSE:
+                return "passe";
+            case ACTION_DEPLACEMENT:
+                return "déplacement";
+            default:
+                return "inconnu";
+        }
+    }
+
     public boolean setNom(String nom) {
         if (nom.length() > 30) {
             System.err.println("(Joueur.setNom) Nom \"" + nom.substring(0, 10) + "...\" trop long (> 30 char.)");
