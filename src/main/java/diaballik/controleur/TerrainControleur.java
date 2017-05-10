@@ -72,7 +72,7 @@ public class TerrainControleur {
                     pionVueCorrespondant = this.pionSelectionne;
                     if (this.jeu.deplacement(pionSelectionne.getPion(), caseCliquee.getCase())) { // on tente le déplacement
                         // si on a réussi
-                        if (jeu.getJoueurActuel().getDeplacementsRestants() > 0) {
+                        if (jeu.getJoueurActuel().getDeplacementsRestants() > 0 && jeu.cp.autoSelectionPion) {
                             finSelection();
                             selectionPion(pionVueCorrespondant);
                         } else {

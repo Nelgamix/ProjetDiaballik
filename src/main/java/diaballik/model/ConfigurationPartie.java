@@ -12,10 +12,9 @@ public class ConfigurationPartie {
     int joueur1ia;
     int joueur2ia;
 
-    public boolean param1 = false;
-    public boolean param2 = false;
-
-    //public final static String CHEMIN_TERRAIN_DEFAUT = Diaballik.DOSSIER_TERRAINS + "/defaultTerrain.txt";
+    public boolean aideDeplacement = true;
+    public boolean aidePasse = true;
+    public boolean autoSelectionPion = true;
 
     public ConfigurationPartie(String nomJoueur1, String nomJoueur2, int joueur1ia, int joueur2ia, String terrain) {
         this.nomJoueur1 = nomJoueur1;

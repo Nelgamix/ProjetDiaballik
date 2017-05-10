@@ -178,10 +178,10 @@ public class Diaballik extends Application {
     }
 
     public void setCurseurSelection(Scene scene) {
-        scene.setCursor(Cursor.HAND);
+        scene.getRoot().setCursor(Cursor.HAND);
     }
 
     public void setCurseurNormal(Scene scene) {
-        scene.setCursor(Cursor.DEFAULT);
+        scene.getRoot().setCursor(Cursor.DEFAULT);
     }
 }

@@ -1,9 +1,12 @@
+.root {}
+
 /* ACTIONS VIEW */
 #actionsView {
     -fx-pref-width: 200px;
     -fx-background-color: linear-gradient(to top, #88848a, #d2d2d2);
     -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.8), 10, 0, 0, 0);
     -fx-scale-z: -1;
+    -fx-font-family: "Arial";
 }
 
 .indicateurActionsRestantes {

@@ -14,7 +14,6 @@ import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.control.*;
 import javafx.scene.layout.*;
-import javafx.scene.text.TextAlignment;
 import javafx.util.Pair;
 import sun.misc.Launcher;
 
@@ -221,6 +220,7 @@ public class Dialogs {
         Label nomsAleatoires = new Label("Noms aléatoires");
         autre.add(nomsAleatoires, 0, 0);
         CheckBox checkNomsAleatoires = new CheckBox();
+        checkNomsAleatoires.setDisable(true);
         checkNomsAleatoires.selectedProperty().addListener((o, ov, nv) -> {
             nomJoueur1.setDisable(nv);
             nomJoueur2.setDisable(nv);
@@ -417,35 +417,49 @@ public class Dialogs {
         grid.setHgap(10);
         grid.setVgap(10);
         ColumnConstraints cc1 = new ColumnConstraints();
-        cc1.setPercentWidth(75);
+        cc1.setPercentWidth(85);
         ColumnConstraints cc2 = new ColumnConstraints();
-        cc2.setPercentWidth(25);
+        cc2.setPercentWidth(15);
         grid.getColumnConstraints().addAll(cc1, cc2);
 
         CheckBox parametre1 = new CheckBox();
-        parametre1.setSelected(cp.param1);
-        parametre1.setOnAction(e -> cp.param1 = parametre1.isSelected());
-        CheckBox parametre2 = new CheckBox();
-        parametre2.setSelected(cp.param2);
-        parametre2.setOnAction(e -> cp.param2 = parametre2.isSelected());
+        parametre1.setSelected(cp.aideDeplacement);
+        parametre1.setOnAction(e -> cp.aideDeplacement = parametre1.isSelected());
 
-        Label labelParametre1 = new Label("Paramètre 1");
-        labelParametre1.setMaxWidth(Double.MAX_VALUE);
-        labelParametre1.setTextAlignment(TextAlignment.CENTER);
-        Label labelParametre2 = new Label("Paramètre 2");
-        labelParametre2.setMaxWidth(Double.MAX_VALUE);
-        labelParametre2.setTextAlignment(TextAlignment.CENTER);
+        CheckBox parametre2 = new CheckBox();
+        parametre2.setSelected(cp.aidePasse);
+        parametre2.setOnAction(e -> cp.aidePasse = parametre2.isSelected());
+
+        CheckBox parametre3 = new CheckBox();
+        parametre3.setSelected(cp.autoSelectionPion);
+        parametre3.setOnAction(e -> cp.autoSelectionPion = parametre3.isSelected());
+
+        Label labelParametre1 = new Label("Aide au déplacement des pions");
+        Label labelParametre2 = new Label("Aide aux passes");
+        Label labelParametre3 = new Label("Auto sélectionner le meme pion\nsi déplacement restant");
+        labelParametre3.setWrapText(true);
+        labelParametre3.setMaxHeight(Double.MAX_VALUE);
+
+        /*GridPane.setHalignment(labelParametre1, HPos.CENTER);
+        GridPane.setHalignment(labelParametre2, HPos.CENTER);
+        GridPane.setHalignment(labelParametre3, HPos.CENTER);
+        GridPane.setValignment(labelParametre1, VPos.CENTER);
+        GridPane.setValignment(labelParametre2, VPos.CENTER);
+        GridPane.setValignment(labelParametre3, VPos.CENTER);
+        GridPane.setVgrow(labelParametre3, Priority.ALWAYS);*/
 
         grid.add(labelParametre1, 0, 0);
         grid.add(parametre1, 1, 0);
         grid.add(labelParametre2, 0, 1);
         grid.add(parametre2, 1, 1);
+        grid.add(labelParametre3, 0, 2);
+        grid.add(parametre3, 1, 2);
 
         content.getChildren().add(grid);
 
         parametres.getDialogPane().getButtonTypes().addAll(ButtonType.OK);
         parametres.getDialogPane().setContent(content);
-        parametres.getDialogPane().setPrefSize(240, 120);
+        parametres.getDialogPane().setPrefSize(320, 160);
 
         parametres.showAndWait();
     }
