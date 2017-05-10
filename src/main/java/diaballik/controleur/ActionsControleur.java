@@ -61,6 +61,10 @@ public class ActionsControleur {
             Dialogs.montrerAntijeu(resAJ);
     }
 
+    public void actionParametres() {
+        System.out.println(jeu.historique);
+    }
+
     public void actionDefaire() {
         jeu.defaire();
     }

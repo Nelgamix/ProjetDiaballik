@@ -89,6 +89,14 @@ public class Jeu extends Observable {
             else return a.get(a.size() - 1);
         }
 
+        void ecraserInutile(int tour, int num) {
+            ArrayList<Action> a = getActions(tour);
+            if (a == null) return;
+            int i = num;
+            while (i++ <= a.size())
+                a.remove(num - 1);
+        }
+
         boolean tourExiste(int tour) {
             return tour > 0 && tour <= this.tours.size();
         }
@@ -129,6 +137,7 @@ public class Jeu extends Observable {
         }
 
         void addAction(Case caseAvant, int action, Case caseApres, int tour) {
+            verifierAvantAjout(tour, -1);
             ArrayList<Action> a = getActions(tour);
             if (a == null) {
                 a = new ArrayList<>();
@@ -151,22 +160,29 @@ public class Jeu extends Observable {
         }
 
         void verifierAvantAjout(int tour, int num) {
-            if (tour < 1 || num < 1) return;
+            if (num == -1 && this.tours.size() < tour) {
+                for (int i = 0; i < tour - this.tours.size(); i++) {
+                    this.tours.add(new ArrayList<>());
+                }
+            } else {
+                if (tour < 1 || num < 1) return;
 
-            if (this.tours.size() > tour) {
-                int s = this.tours.size();
-                for (int i = tour; i < s; i++) {
-                    this.tours.remove(tour);
+                if (this.tours.size() > tour) {
+                    int s = this.tours.size();
+                    for (int i = tour; i < s; i++) {
+                        this.tours.remove(tour);
+                    }
+                }
+
+                ArrayList<Action> a = getActions(tour);
+                if (a != null && a.size() >= num) {
+                    int s = a.size();
+                    for (int i = num - 1; i < s; i++) {
+                        a.remove(num - 1);
+                    }
                 }
             }
 
-            ArrayList<Action> a = getActions(tour);
-            if (a != null && a.size() >= num) {
-                int s = a.size();
-                for (int i = num - 1; i < s; i++) {
-                    a.remove(num - 1);
-                }
-            }
         }
 
         int nombreActions(int tour) {
@@ -204,7 +220,7 @@ public class Jeu extends Observable {
     private Terrain terrain;
     private final Joueur[] joueurs;
 
-    private final Historique historique = new Historique();
+    public final Historique historique = new Historique();
 
     private final ArrayList<Point> arriveeJoueurVert = new ArrayList<>();
     private final ArrayList<Point> arriveeJoueurRouge = new ArrayList<>();
@@ -641,6 +657,7 @@ public class Jeu extends Observable {
 
     // Change le tour actuel (change aussi le joueur actuel)
     public void avancerTour() {
+        historique.ecraserInutile(tour, numAction);
         getJoueurActuel().reset_actions();
         this.tour++;
         this.numAction = 1;

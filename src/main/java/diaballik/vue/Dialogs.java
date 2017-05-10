@@ -155,25 +155,65 @@ public class Dialogs {
         configJoueurs.add(l, 2, 0);*/
 
         // Row joueur 1
-        TextField nomJoueur1 = new TextField();
+        TextField nomJoueur1 = new TextField("Joueur 1");
         nomJoueur1.setPromptText("Nom");
         nomJoueur1.textProperty().addListener((o, ov, nv) -> {
             boutonJouer.setDisable(nv.trim().length() < 3);
         });
         ComboBox<String> iaJoueur1 = new ComboBox<>(iaDifficultes);
         iaJoueur1.getSelectionModel().select(0);
+        iaJoueur1.setOnAction(e -> {
+            switch (iaJoueur1.getSelectionModel().getSelectedIndex()) {
+                case 0:
+                    nomJoueur1.setText("Joueur 1");
+                    nomJoueur1.setDisable(false);
+                    break;
+                case 1:
+                    nomJoueur1.setText("IA 1 Facile");
+                    nomJoueur1.setDisable(true);
+                    break;
+                case 2:
+                    nomJoueur1.setText("IA 1 Moyen");
+                    nomJoueur1.setDisable(true);
+                    break;
+                case 3:
+                    nomJoueur1.setText("IA 1 Difficile");
+                    nomJoueur1.setDisable(true);
+                    break;
+            }
+        });
         configJoueurs.add(new Label("1"), 0, 1);
         configJoueurs.add(nomJoueur1, 1, 1);
         configJoueurs.add(iaJoueur1, 2, 1);
 
         // Row joueur 2
-        TextField nomJoueur2 = new TextField();
+        TextField nomJoueur2 = new TextField("Joueur 2");
         nomJoueur2.setPromptText("Nom");
         nomJoueur2.textProperty().addListener((o, ov, nv) -> {
             boutonJouer.setDisable(nv.trim().length() < 3);
         });
         ComboBox<String> iaJoueur2 = new ComboBox<>(iaDifficultes);
         iaJoueur2.getSelectionModel().select(0);
+        iaJoueur2.setOnAction(e -> {
+            switch (iaJoueur2.getSelectionModel().getSelectedIndex()) {
+                case 0:
+                    nomJoueur2.setText("Joueur 2");
+                    nomJoueur2.setDisable(false);
+                    break;
+                case 1:
+                    nomJoueur2.setText("IA 2 Facile");
+                    nomJoueur2.setDisable(true);
+                    break;
+                case 2:
+                    nomJoueur2.setText("IA 2 Moyen");
+                    nomJoueur2.setDisable(true);
+                    break;
+                case 3:
+                    nomJoueur2.setText("IA 2 Difficile");
+                    nomJoueur2.setDisable(true);
+                    break;
+            }
+        });
         configJoueurs.add(new Label("2"), 0, 2);
         configJoueurs.add(nomJoueur2, 1, 2);
         configJoueurs.add(iaJoueur2, 2, 2);

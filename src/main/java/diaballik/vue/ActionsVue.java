@@ -114,7 +114,7 @@ public class ActionsVue extends BorderPane implements Observer {
         Glyph roue = new Glyph("FontAwesome", FontAwesome.Glyph.COG);
         roue.setFontSize(22f);
         Button parametres = new Button("", roue);
-        parametres.setOnAction(e -> System.out.println("Paramètres"));
+        parametres.setOnAction(e -> actionsControleur.actionParametres());
         parametres.setMaxWidth(Double.MAX_VALUE);
         gpActions.add(parametres, 0, 4);
 
