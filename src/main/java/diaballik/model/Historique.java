@@ -10,6 +10,14 @@ public class Historique {
         this.jeu = jeu;
     }
 
+    ArrayList<Action> ajouterTour() {
+        if (this.tours.size() > jeu.getTour()) return getActions(jeu.getTour());
+
+        ArrayList<Action> a = new ArrayList<>();
+        this.tours.add(a);
+        return a;
+    }
+
     Action getDerniereAction() {
         if (this.tours.isEmpty()) return null;
 
@@ -75,19 +83,20 @@ public class Historique {
         return tours.get(tour - 1);
     }
 
-    void addAction(Case caseAvant, int action, Case caseApres, int tour) {
-        verifierAvantAjout(tour, -1);
-        ArrayList<Action> a = getActions(tour);
+    void addAction(Case caseAvant, int action, Case caseApres) {
+        ecraserFinHistorique();
+        ArrayList<Action> a = getActions(jeu.getTour());
         if (a == null) {
-            a = new ArrayList<>();
-            a.add(new Action(caseAvant, action, caseApres, tour));
-            this.tours.add(a);
+            a = ajouterTour();
+            a.add(new Action(caseAvant, action, caseApres, jeu.getTour()));
         } else {
-            a.add(new Action(caseAvant, action, caseApres, tour));
+            a.add(new Action(caseAvant, action, caseApres, jeu.getTour()));
         }
     }
 
     void addAction(Jeu j, String s) {
+        while (this.tours.size() < jeu.getTour()) ajouterTour();
+
         ArrayList<Action> a = getActions(Integer.parseInt(s.split(":")[0]));
         if (a == null) {
             a = new ArrayList<>();
@@ -98,30 +107,28 @@ public class Historique {
         }
     }
 
-    void verifierAvantAjout(int tour, int num) {
-        if (num == -1 && this.tours.size() < tour) {
-            for (int i = 0; i < tour - this.tours.size(); i++) {
-                this.tours.add(new ArrayList<>());
-            }
-        } else {
-            if (tour < 1 || num < 1) return;
+    private void ecraserFinHistorique() {
+        /*for (int i = 0; i < tour - this.tours.size(); i++) {
+            this.tours.add(new ArrayList<>());
+        }*/
+        int tour = jeu.getTour(), num = jeu.getNumAction();
 
-            if (this.tours.size() > tour) {
-                int s = this.tours.size();
-                for (int i = tour; i < s; i++) {
-                    this.tours.remove(tour);
-                }
-            }
+        if (tour < 1 || num < 1) return;
 
-            ArrayList<Action> a = getActions(tour);
-            if (a != null && a.size() >= num) {
-                int s = a.size();
-                for (int i = num - 1; i < s; i++) {
-                    a.remove(num - 1);
-                }
+        if (this.tours.size() > tour) {
+            int s = this.tours.size();
+            for (int i = tour; i < s; i++) {
+                this.tours.remove(tour);
             }
         }
 
+        ArrayList<Action> a = getActions(tour);
+        if (a != null && a.size() >= num) {
+            int s = a.size();
+            for (int i = num - 1; i < s; i++) {
+                a.remove(num - 1);
+            }
+        }
     }
 
     int nombreActions(int tour) {

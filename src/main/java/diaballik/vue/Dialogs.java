@@ -13,10 +13,8 @@ import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.control.*;
-import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.ColumnConstraints;
-import javafx.scene.layout.GridPane;
-import javafx.scene.layout.VBox;
+import javafx.scene.layout.*;
+import javafx.scene.text.TextAlignment;
 import javafx.util.Pair;
 import sun.misc.Launcher;
 
@@ -115,7 +113,7 @@ public class Dialogs {
         config.getDialogPane().getButtonTypes().addAll(boutonJouerType, ButtonType.CANCEL);
 
         Node boutonJouer = config.getDialogPane().lookupButton(boutonJouerType);
-        boutonJouer.setDisable(true);
+        //boutonJouer.setDisable(true);
 
         VBox content = new VBox(20);
         GridPane configJoueurs = new GridPane();
@@ -406,5 +404,49 @@ public class Dialogs {
         alert.setContentText("Raison: " + message);
 
         alert.showAndWait();
+    }
+
+    public static void montrerParametres(ConfigurationPartie cp) {
+        Dialog<Void> parametres = new Dialog<>();
+        parametres.setTitle("Paramètres");
+
+        StackPane content = new StackPane();
+        content.setPadding(new Insets(10));
+
+        GridPane grid = new GridPane();
+        grid.setHgap(10);
+        grid.setVgap(10);
+        ColumnConstraints cc1 = new ColumnConstraints();
+        cc1.setPercentWidth(75);
+        ColumnConstraints cc2 = new ColumnConstraints();
+        cc2.setPercentWidth(25);
+        grid.getColumnConstraints().addAll(cc1, cc2);
+
+        CheckBox parametre1 = new CheckBox();
+        parametre1.setSelected(cp.param1);
+        parametre1.setOnAction(e -> cp.param1 = parametre1.isSelected());
+        CheckBox parametre2 = new CheckBox();
+        parametre2.setSelected(cp.param2);
+        parametre2.setOnAction(e -> cp.param2 = parametre2.isSelected());
+
+        Label labelParametre1 = new Label("Paramètre 1");
+        labelParametre1.setMaxWidth(Double.MAX_VALUE);
+        labelParametre1.setTextAlignment(TextAlignment.CENTER);
+        Label labelParametre2 = new Label("Paramètre 2");
+        labelParametre2.setMaxWidth(Double.MAX_VALUE);
+        labelParametre2.setTextAlignment(TextAlignment.CENTER);
+
+        grid.add(labelParametre1, 0, 0);
+        grid.add(parametre1, 1, 0);
+        grid.add(labelParametre2, 0, 1);
+        grid.add(parametre2, 1, 1);
+
+        content.getChildren().add(grid);
+
+        parametres.getDialogPane().getButtonTypes().addAll(ButtonType.OK);
+        parametres.getDialogPane().setContent(content);
+        parametres.getDialogPane().setPrefSize(240, 120);
+
+        parametres.showAndWait();
     }
 }

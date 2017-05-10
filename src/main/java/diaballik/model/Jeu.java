@@ -14,6 +14,8 @@ public class Jeu extends Observable {
     private Terrain terrain;
     private final Joueur[] joueurs;
 
+    public final ConfigurationPartie cp;
+
     public final Historique historique = new Historique(this);
 
     private final ArrayList<Point> arriveeJoueurVert = new ArrayList<>();
@@ -40,6 +42,7 @@ public class Jeu extends Observable {
 
     public Jeu(ConfigurationPartie cp, Diaballik diaballik) {
         this.diaballik = diaballik;
+        this.cp = cp;
 
         initArrivee();
 
@@ -234,8 +237,8 @@ public class Jeu extends Observable {
 
             p.deplacer(c);
 
-            historique.verifierAvantAjout(this.tour, this.numAction);
-            historique.addAction(cv, Joueur.ACTION_DEPLACEMENT, p.getPosition(), this.tour);
+            //historique.ecraserFinHistorique(this.tour, this.numAction);
+            historique.addAction(cv, Joueur.ACTION_DEPLACEMENT, p.getPosition());
 
             this.getJoueurActuel().moinsAction(Joueur.ACTION_DEPLACEMENT);
             this.numAction++;
@@ -406,8 +409,8 @@ public class Jeu extends Observable {
 
             envoyeur.passe(receptionneur);
 
-            historique.verifierAvantAjout(this.tour, this.numAction);
-            historique.addAction(envoyeur.getPosition(), Joueur.ACTION_PASSE, receptionneur.getPosition(), this.tour);
+            //historique.ecraserFinHistorique(this.tour, this.numAction);
+            historique.addAction(envoyeur.getPosition(), Joueur.ACTION_PASSE, receptionneur.getPosition());
 
             if (partieTerminee(receptionneur)) {
                 // la partie est terminée (le vainqueur est joueurActuel())
@@ -452,6 +455,7 @@ public class Jeu extends Observable {
     // Change le tour actuel (change aussi le joueur actuel)
     public void avancerTour() {
         historique.ecraserInutile(tour, numAction);
+        historique.ajouterTour();
         getJoueurActuel().reset_actions();
         this.tour++;
         this.numAction = 1;

@@ -62,7 +62,7 @@ public class ActionsControleur {
     }
 
     public void actionParametres() {
-        System.out.println(jeu.historique);
+        Dialogs.montrerParametres(jeu.cp);
     }
 
     public void actionDefaire() {

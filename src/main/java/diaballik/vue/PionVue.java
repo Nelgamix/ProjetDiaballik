@@ -119,7 +119,7 @@ public class PionVue extends Circle implements Observer {
             this.getStyleClass().add("couleurSurvol");
         } else if (isSelectionne()) {
             this.getStyleClass().add("couleurSelection");
-        } else if (isMarque()) {
+        } else if (isMarque() && terrainVue.getTerrainControleur().getJeu().cp.param2) {
             this.getStyleClass().add("couleurMarquage");
         } else {
             if (pion.getCouleur() == Joueur.JOUEUR_VERT)

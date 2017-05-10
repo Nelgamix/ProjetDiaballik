@@ -102,7 +102,7 @@ public class CaseVue extends StackPane implements Observer {
 
         if (survol)
             this.getStyleClass().add("couleurSurvol");
-        else if (isMarque())
+        else if (isMarque() && terrainVue.getTerrainControleur().getJeu().cp.param1)
             this.getStyleClass().add("couleurMarquage");
         else if (pair)
             this.getStyleClass().add("couleurCasePair");
