@@ -6,7 +6,7 @@
     -fx-background-color: linear-gradient(to top, #88848a, #d2d2d2);
     -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.8), 10, 0, 0, 0);
     -fx-scale-z: -1;
-    -fx-font-family: "Arial";
+    -fx-font-family: "Open Sans";
 }
 
 .indicateurActionsRestantes {
@@ -46,13 +46,13 @@
     -fx-background-color: linear-gradient(to bottom, #3498db, #2980b9);
     -fx-background-radius: 4px;
     -fx-background-insets: 2px;
-    -fx-font-family: "Arial";
     -fx-text-fill: white;
     -fx-font-size: 20px;
     -fx-padding: 8px;
     -fx-border-radius: 4px;
     -fx-border-color: black;
     -fx-border-width: 2px;
+    -fx-font-family: "Open Sans";
 }
 
 #actionsView > GridPane > .button:hover {
@@ -78,10 +78,12 @@
     -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.3), 6, 0, 0, 0);
 }
 
+/* TERRAIN VIEW */
 #terrainView {
     -fx-alignment: center;
     -fx-border-color: #4b4b4b;
     -fx-border-width: 2px;
+    -fx-font-family: "Open Sans";
 }
 
 /* COULEURS */

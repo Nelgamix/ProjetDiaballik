@@ -423,30 +423,19 @@ public class Dialogs {
         grid.getColumnConstraints().addAll(cc1, cc2);
 
         CheckBox parametre1 = new CheckBox();
-        parametre1.setSelected(cp.aideDeplacement);
-        parametre1.setOnAction(e -> cp.aideDeplacement = parametre1.isSelected());
+        parametre1.setSelected(cp.isAideDeplacement());
 
         CheckBox parametre2 = new CheckBox();
-        parametre2.setSelected(cp.aidePasse);
-        parametre2.setOnAction(e -> cp.aidePasse = parametre2.isSelected());
+        parametre2.setSelected(cp.isAidePasse());
 
         CheckBox parametre3 = new CheckBox();
-        parametre3.setSelected(cp.autoSelectionPion);
-        parametre3.setOnAction(e -> cp.autoSelectionPion = parametre3.isSelected());
+        parametre3.setSelected(cp.isAutoSelectionPion());
 
         Label labelParametre1 = new Label("Aide au déplacement des pions");
         Label labelParametre2 = new Label("Aide aux passes");
         Label labelParametre3 = new Label("Auto sélectionner le meme pion\nsi déplacement restant");
         labelParametre3.setWrapText(true);
         labelParametre3.setMaxHeight(Double.MAX_VALUE);
-
-        /*GridPane.setHalignment(labelParametre1, HPos.CENTER);
-        GridPane.setHalignment(labelParametre2, HPos.CENTER);
-        GridPane.setHalignment(labelParametre3, HPos.CENTER);
-        GridPane.setValignment(labelParametre1, VPos.CENTER);
-        GridPane.setValignment(labelParametre2, VPos.CENTER);
-        GridPane.setValignment(labelParametre3, VPos.CENTER);
-        GridPane.setVgrow(labelParametre3, Priority.ALWAYS);*/
 
         grid.add(labelParametre1, 0, 0);
         grid.add(parametre1, 1, 0);
@@ -460,6 +449,18 @@ public class Dialogs {
         parametres.getDialogPane().getButtonTypes().addAll(ButtonType.OK);
         parametres.getDialogPane().setContent(content);
         parametres.getDialogPane().setPrefSize(320, 160);
+
+        parametres.setResultConverter(bt -> {
+            if (bt == ButtonType.OK) {
+                cp.setAideDeplacement(parametre1.isSelected());
+                cp.setAidePasse(parametre2.isSelected());
+                cp.setAutoSelectionPion(parametre3.isSelected());
+
+                cp.writeProperties();
+            }
+
+            return null;
+        });
 
         parametres.showAndWait();
     }

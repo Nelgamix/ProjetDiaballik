@@ -1,3 +1,7 @@
+.root {
+    -fx-font-family: "Open Sans";
+}
+
 .button {
     -fx-max-width: 220px;
     -fx-max-height: 30px;

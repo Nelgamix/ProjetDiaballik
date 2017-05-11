@@ -31,7 +31,7 @@ public class PionVue extends Circle implements Observer {
 
     private final TranslateTransition transitionDeplacement;
 
-    public PionVue(TerrainVue terrainVue, Pion pion) {
+    PionVue(TerrainVue terrainVue, Pion pion) {
         super(RAYON);
 
         this.pion = pion;
@@ -48,12 +48,13 @@ public class PionVue extends Circle implements Observer {
         this.update(this.pion, Jeu.CHANGEMENT_INIT);
     }
 
-    public void survoler(boolean enter) {
+    // Gestion du survol à la souris
+    void survoler(boolean enter) {
         survol = enter;
         updateStyleClass();
     }
 
-    public void reinitialiserStatut() {
+    private void reinitialiserStatut() {
         setMarque(false);
         this.survol = false;
     }
@@ -67,6 +68,7 @@ public class PionVue extends Circle implements Observer {
         this.setRayon(getRayon());
     }
 
+    // Set le rayon en fonction de la propriété aLaBalle du pion
     private void setRayon(double rayon) {
         if (rayon != this.getRadius()) {
             final Timeline transitionTaille = new Timeline();
@@ -83,6 +85,7 @@ public class PionVue extends Circle implements Observer {
         }
     }
 
+    // Déplacer le pionVue de manière animée
     private void deplacerPionAnimated() {
         Point destination = this.pion.getPosition().getPoint();
         Point source = this.caseVue.getCase().getPoint();
@@ -104,12 +107,14 @@ public class PionVue extends Circle implements Observer {
         transitionDeplacement.play();
     }
 
+    // Déplacer le pionVue vers la case destination
     private void deplacerPion(CaseVue destination) {
         this.caseVue.setPionVue(null);
         this.caseVue = destination;
         this.caseVue.setPionVue(this);
     }
 
+    // Update le style de la classe en fonction des propriétés
     private void updateStyleClass() {
         this.getStyleClass().clear();
 
@@ -119,7 +124,7 @@ public class PionVue extends Circle implements Observer {
             this.getStyleClass().add("couleurSurvol");
         } else if (isSelectionne()) {
             this.getStyleClass().add("couleurSelection");
-        } else if (isMarque() && terrainVue.getTerrainControleur().getJeu().cp.aidePasse) {
+        } else if (isMarque() && terrainVue.getTerrainControleur().getJeu().cp.isAidePasse()) {
             this.getStyleClass().add("couleurMarquage");
         } else {
             if (pion.getCouleur() == Joueur.JOUEUR_VERT)
@@ -129,6 +134,7 @@ public class PionVue extends Circle implements Observer {
         }
     }
 
+    // Actif / inactif (quand les pions ne sont pas jouables)
     public void desactiver() {
         this.actif = false;
         reinitialiserStatut();

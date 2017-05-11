@@ -71,7 +71,6 @@ public class ActionsVue extends BorderPane implements Observer {
         cc1.setPercentWidth(50);
         cc2.setPercentWidth(50);
         gpActions.getColumnConstraints().addAll(cc1, cc2);
-        //gpActions.setMinSize(Double.MAX_VALUE, Double.MAX_VALUE);
 
         VBox vBoxActions = new VBox(10);
         vBoxActions.setAlignment(Pos.CENTER);
@@ -90,24 +89,24 @@ public class ActionsVue extends BorderPane implements Observer {
         passerTour.setId("passerTour");
         gpActions.add(passerTour, 0, 0, 2, 1);
 
+        Button antijeu = new Button("Antijeu");
+        antijeu.setOnAction(e -> actionsControleur.actionAntijeu());
+        antijeu.setMaxWidth(Double.MAX_VALUE);
+        gpActions.add(antijeu, 0, 1, 2, 1);
+
         Glyph undo = new Glyph("FontAwesome", FontAwesome.Glyph.UNDO);
         undo.setFontSize(22f);
         annuler = new Button("", undo);
         annuler.setOnAction(e -> actionsControleur.actionDefaire());
         annuler.setMaxWidth(Double.MAX_VALUE);
-        gpActions.add(annuler, 0, 1);
+        gpActions.add(annuler, 0, 2);
 
         Glyph repeat = new Glyph("FontAwesome", FontAwesome.Glyph.REPEAT);
         repeat.setFontSize(22f);
         refaire = new Button("", repeat);
         refaire.setOnAction(e -> actionsControleur.actionRefaire());
         refaire.setMaxWidth(Double.MAX_VALUE);
-        gpActions.add(refaire, 1, 1);
-
-        Button antijeu = new Button("Antijeu");
-        antijeu.setOnAction(e -> actionsControleur.actionAntijeu());
-        antijeu.setMaxWidth(Double.MAX_VALUE);
-        gpActions.add(antijeu, 0, 2, 2, 1);
+        gpActions.add(refaire, 1, 2);
 
         Button sauvegarder = new Button("Sauvegarder");
         sauvegarder.setOnAction(e -> actionsControleur.actionSauvegarderJeu(Diaballik.DOSSIER_SAUVEGARDES));
@@ -126,14 +125,7 @@ public class ActionsVue extends BorderPane implements Observer {
         menu.setMaxWidth(Double.MAX_VALUE);
         gpActions.add(menu, 1, 4);
 
-        /*vBoxActions.getChildren().add(passerTour);
-        vBoxActions.getChildren().add(defaire);
-        vBoxActions.getChildren().add(antijeu);
-        vBoxActions.getChildren().add(sauvegarder);
-        vBoxActions.getChildren().add(menu);*/
-
         this.setTop(vBoxInfos);
-        //this.setBottom(vBoxActions);
         this.setBottom(gpActions);
 
         update(null, null);
