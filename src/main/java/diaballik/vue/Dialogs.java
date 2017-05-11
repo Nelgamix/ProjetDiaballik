@@ -2,10 +2,7 @@ package diaballik.vue;
 
 import diaballik.Diaballik;
 import diaballik.Utils;
-import diaballik.model.ConfigurationPartie;
-import diaballik.model.IA;
-import diaballik.model.Jeu;
-import diaballik.model.Joueur;
+import diaballik.model.*;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -293,18 +290,62 @@ public class Dialogs {
         Node boutonJouer = dialog.getDialogPane().lookupButton(boutonOuvrirType);
         boutonJouer.setDisable(true);
 
-        BorderPane content = new BorderPane();
+        GridPane content = new GridPane();
+        content.setHgap(10f);
+        ColumnConstraints cc1 = new ColumnConstraints();
+        ColumnConstraints cc2 = new ColumnConstraints();
+        cc1.setPercentWidth(33);
+        cc2.setPercentWidth(66);
+        content.getColumnConstraints().addAll(cc1, cc2);
+
+        // Partie de droite (info sur la partie sélectionnée)
+        ArrayList<Metadonnees> mds = new ArrayList<>();
+        for (String o : obs) {
+            mds.add(Utils.getMetadonneesSauvegarde(o));
+        }
+
+        GridPane infosSave = new GridPane();
+        infosSave.setPadding(new Insets(0, 10, 0, 10));
+        ColumnConstraints ccis = new ColumnConstraints();
+        ccis.setPercentWidth(40);
+        infosSave.getColumnConstraints().addAll(ccis);
+
+        Label labelInfoTour = new Label(),
+                labelInfoNomJoueur1 = new Label(),
+                labelInfoNomJoueur2 = new Label();
+        infosSave.add(new Label("Tour"), 0, 0);
+        infosSave.add(new Label("Nom joueur 1"), 0, 1);
+        infosSave.add(new Label("Nom joueur 2"), 0, 2);
+
+        infosSave.add(labelInfoTour, 1, 0);
+        infosSave.add(labelInfoNomJoueur1, 1, 1);
+        infosSave.add(labelInfoNomJoueur2, 1, 2);
+
+        // Partie de gauche (liste de saves)
         ListView<String> filesView = new ListView<>(obs);
         filesView.setMaxWidth(Double.MAX_VALUE);
         filesView.setMaxHeight(Double.MAX_VALUE);
         filesView.setOnMouseClicked(e -> {
             if (filesView.getSelectionModel().getSelectedItem() != null)
                 boutonJouer.setDisable(false);
+
+            // update infos
+            if (filesView.getSelectionModel().getSelectedIndex() > -1) {
+                labelInfoTour.setText(mds.get(filesView.getSelectionModel().getSelectedIndex()).tour + "");
+                labelInfoNomJoueur1.setText(mds.get(filesView.getSelectionModel().getSelectedIndex()).joueurVert.getNom());
+                labelInfoNomJoueur2.setText(mds.get(filesView.getSelectionModel().getSelectedIndex()).joueurRouge.getNom());
+
+                content.add(infosSave, 1, 1);
+            }
         });
+        filesView.getSelectionModel().selectFirst();
+
+        // setup content
         content.setId("dialogLoadName");
-        content.setTop(new Label("Sélectionnez une partie à charger"));
-        content.setCenter(filesView);
-        content.setPadding(new Insets(25));
+        content.add(new Label("Sauvegardes"), 0, 0);
+        content.add(filesView, 0, 1);
+        content.add(new Label("Sauvegarde sélectionnée"), 1, 0);
+        content.setPadding(new Insets(10));
 
         dialog.setResultConverter(b -> {
             if (b == boutonOuvrirType) {
@@ -316,7 +357,7 @@ public class Dialogs {
 
         dialog.getDialogPane().setContent(content);
         dialog.getDialogPane().getStylesheets().add(Diaballik.class.getResource(Diaballik.CSS_DIALOG).toExternalForm());
-        dialog.getDialogPane().setPrefSize(400, 400);
+        dialog.getDialogPane().setPrefSize(500, 400);
 
         return dialog.showAndWait();
     }

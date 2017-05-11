@@ -1,5 +1,8 @@
 package diaballik;
 
+import diaballik.model.Joueur;
+import diaballik.model.Metadonnees;
+
 import java.io.*;
 import java.util.ArrayList;
 import java.util.Random;
@@ -57,5 +60,28 @@ public class Utils {
         }
 
         return br;
+    }
+
+    public static Metadonnees getMetadonneesSauvegarde(String fichier) {
+        Metadonnees md = new Metadonnees();
+
+        try (BufferedReader i = new BufferedReader(new FileReader("." + Diaballik.DOSSIER_SAUVEGARDES + "/" + fichier + ".txt"))) {
+            String sCurrentLine;
+            if ((sCurrentLine = i.readLine()) != null) { // tour
+                md.tour = Integer.parseInt(sCurrentLine.split(":")[0]);
+            }
+
+            if ((sCurrentLine = i.readLine()) != null) { // joueur vert
+                md.joueurVert = new Joueur(Joueur.JOUEUR_VERT, sCurrentLine);
+            }
+
+            if ((sCurrentLine = i.readLine()) != null) { // joueur rouge
+                md.joueurRouge = new Joueur(Joueur.JOUEUR_ROUGE, sCurrentLine);
+            }
+
+            return md;
+        } catch (IOException ignored) {}
+
+        return null;
     }
 }

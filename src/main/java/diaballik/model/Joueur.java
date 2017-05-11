@@ -1,20 +1,21 @@
 package diaballik.model;
 
 public class Joueur {
-    private Terrain terrain;
-    private Jeu jeu;
+    private final Jeu jeu;
     private String nom;
     private int couleur;
     private int deplacementsRestants;
     private int passesRestantes;
 
-    public final static int NOMBRE_DEPLACEMENTS_MAX = 2;
-    public final static int NOMBRE_PASSES_MAX = 1;
+    private final static int NOMBRE_DEPLACEMENTS_MAX = 2;
+    private final static int NOMBRE_PASSES_MAX = 1;
 
-    public final static int ACTION_PASSE = 0;
-    public final static int ACTION_DEPLACEMENT = 1;
+    final static int ACTION_PASSE = 0;
+    final static int ACTION_DEPLACEMENT = 1;
 
     public final static int NOMBRE_PIONS = 7;
+
+    private int type; // 0 = humain
 
     // Joueurs et couleurs
     public final static int JOUEUR_VERT = 0; // J vert
@@ -22,14 +23,29 @@ public class Joueur {
 
     public Joueur(Jeu jeu, int couleur) {
         this.jeu = jeu;
-        this.terrain = jeu.getTerrain();
         this.couleur = couleur;
         this.nom = "";
+        this.type = 0;
 
         reset_actions();
     }
 
-    public static String parseAction(int action) {
+    public Joueur(int couleur, String line) {
+        this(null, couleur, line);
+    }
+
+    public Joueur(Jeu jeu, int couleur, String line) {
+        this(jeu, couleur);
+
+        String[] parts = line.split(":");
+
+        this.setNom(parts[0]);
+        this.setType(Integer.parseInt(parts[1]));
+        this.setDeplacementsRestants(Integer.parseInt(parts[2]));
+        this.setPassesRestantes(Integer.parseInt(parts[3]));
+    }
+
+    static String parseAction(int action) {
         switch (action) {
             case ACTION_PASSE:
                 return "passe";
@@ -40,7 +56,7 @@ public class Joueur {
         }
     }
 
-    public boolean setNom(String nom) {
+    boolean setNom(String nom) {
         if (nom.length() > 30) {
             System.err.println("(Joueur.setNom) Nom \"" + nom.substring(0, 10) + "...\" trop long (> 30 char.)");
             return false;
@@ -71,12 +87,12 @@ public class Joueur {
         return this.passesRestantes > 0;
     }
 
-    public boolean actionPossible(int action) {
+    boolean actionPossible(int action) {
         switch (action) {
             case ACTION_PASSE:
-                return this.passesRestantes > 0;
+                return this.peutPasser();
             case ACTION_DEPLACEMENT:
-                return this.deplacementsRestants > 0;
+                return this.peutDeplacer();
             default:
                 System.err.println("Action non reconnue");
                 return false;
@@ -85,7 +101,7 @@ public class Joueur {
 
     // décrémente le compteur correspondant à action.
     // si aucun compteur > 0 à la fin, renvoie false sinon renvoie true
-    public boolean moinsAction(int action) {
+    boolean moinsAction(int action) {
         switch (action) {
             case ACTION_PASSE:
                 this.passesRestantes--;
@@ -104,7 +120,7 @@ public class Joueur {
         }
     }
 
-    public void plusAction(int action) {
+    void plusAction(int action) {
         switch (action) {
             case ACTION_PASSE:
                 this.passesRestantes++;
@@ -117,15 +133,15 @@ public class Joueur {
         }
     }
 
-    public void setDeplacementsRestants(int deplacementsRestants) {
+    void setDeplacementsRestants(int deplacementsRestants) {
         this.deplacementsRestants = deplacementsRestants;
     }
 
-    public void setPassesRestantes(int passesRestantes) {
+    void setPassesRestantes(int passesRestantes) {
         this.passesRestantes = passesRestantes;
     }
 
-    public void reset_actions() {
+    void reset_actions() {
         this.deplacementsRestants = NOMBRE_DEPLACEMENTS_MAX;
         this.passesRestantes = NOMBRE_PASSES_MAX;
     }
@@ -138,11 +154,15 @@ public class Joueur {
         return passesRestantes;
     }
 
-    public String getSaveString() {
-        StringBuilder sb = new StringBuilder();
+    void setType(int type) {
+        this.type = type;
+    }
 
-        sb.append(this.getNom()).append(":").append(this.getDeplacementsRestants()).append(":").append(this.getPassesRestantes()).append("\n");
+    int getType() {
+        return type;
+    }
 
-        return sb.toString();
+    String getSaveString() {
+        return this.getNom() + ":" + this.getType() + ":" + this.getDeplacementsRestants() + ":" + this.getPassesRestantes() + "\n";
     }
 }

@@ -47,8 +47,6 @@ public class Jeu extends Observable {
         initArrivee();
 
         this.joueurs = new Joueur[NOMBRE_JOUEURS];
-        this.joueurs[0] = new Joueur(this, Joueur.JOUEUR_VERT);
-        this.joueurs[1] = new Joueur(this, Joueur.JOUEUR_ROUGE);
 
         charger(cp);
 
@@ -80,26 +78,19 @@ public class Jeu extends Observable {
 
                 // joueur 1
                 if ((sCurrentLine = br.readLine()) != null) {
-                    parts = sCurrentLine.split(":");
-                    joueur = this.joueurs[0];
-
-                    joueur.setNom(parts[0]);
-                    joueur.setDeplacementsRestants(Integer.parseInt(parts[1]));
-                    joueur.setPassesRestantes(Integer.parseInt(parts[2]));
+                    this.joueurs[0] = new Joueur(this, Joueur.JOUEUR_VERT, sCurrentLine);
                 }
 
                 // joueur 2
                 if ((sCurrentLine = br.readLine()) != null) {
-                    parts = sCurrentLine.split(":");
-                    joueur = this.joueurs[1];
-
-                    joueur.setNom(parts[0]);
-                    joueur.setDeplacementsRestants(Integer.parseInt(parts[1]));
-                    joueur.setPassesRestantes(Integer.parseInt(parts[2]));
+                    this.joueurs[0] = new Joueur(this, Joueur.JOUEUR_ROUGE, sCurrentLine);
                 }
             } else {
                 this.tour = 1;
                 this.numAction = 1;
+
+                this.joueurs[0] = new Joueur(this, Joueur.JOUEUR_VERT);
+                this.joueurs[1] = new Joueur(this, Joueur.JOUEUR_ROUGE);
 
                 if (!this.joueurs[0].setNom(cp.nomJoueur1)) throw new IllegalStateException();
                 if (!this.joueurs[1].setNom(cp.nomJoueur2)) throw new IllegalStateException();
@@ -277,7 +268,7 @@ public class Jeu extends Observable {
     public ArrayList<Case> getDeplacementsPossibles(Pion pion) {
         ArrayList<Case> c = new ArrayList<>();
 
-        if (getJoueurActuel().getDeplacementsRestants() < 1) return c;
+        if (!getJoueurActuel().peutDeplacer()) return c;
 
         Point pbase = pion.getPosition().getPoint();
         Case ca;
@@ -297,7 +288,7 @@ public class Jeu extends Observable {
     public ArrayList<Pion> getPassesPossibles(Pion pion) {
         ArrayList<Pion> pions = new ArrayList<>();
 
-        if (getJoueurActuel().getPassesRestantes() < 1) return pions;
+        if (!getJoueurActuel().peutPasser()) return pions;
 
         Case c;
         Point p = pion.getPosition().getPoint();

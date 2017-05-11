@@ -5,8 +5,9 @@ public class IA extends Joueur {
     public final static int DIFFICULTE_MOYEN = 2;
     public final static int DIFFICULTE_DIFFICILE = 3;
 
-    public IA(Jeu jeu, int couleur) {
+    public IA(Jeu jeu, int couleur, int difficulte) {
         super(jeu, couleur);
+        this.setType(difficulte);
     }
 
     public static String parseDifficulte(int difficulte) {
