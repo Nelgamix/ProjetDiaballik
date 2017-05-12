@@ -29,9 +29,11 @@ import java.util.Optional;
 public class Diaballik extends Application {
     public Stage stage;
 
-    public final static String DOSSIER_SAUVEGARDES = "/saves";
+    public final static String DOSSIER_SAUVEGARDES = "saves";
     public final static String DOSSIER_TERRAINS = "/defaultTerrains";
     public final static String DOSSIER_CSS = "/css";
+
+    public final static String EXTENSION_SAUVEGARDE = ".txt";
 
     private final static String CSS_MENU = DOSSIER_CSS + "/DiaballikMenu.css";
     private final static String CSS_JEU = DOSSIER_CSS + "/DiaballikJeu.css";
@@ -94,7 +96,7 @@ public class Diaballik extends Application {
         sceneJeu = new Scene(root, CaseVue.LARGEUR * Terrain.LARGEUR + 225, CaseVue.HAUTEUR * Terrain.HAUTEUR + 75);
         sceneJeu.setOnKeyPressed(k -> {
             if (ctrlS.match(k)) {
-                actionsControleur.actionSauvegarderJeu(DOSSIER_SAUVEGARDES);
+                actionsControleur.getActionsVue().montrerPopupSauvegarde();
             } else if (ctrlZ.match(k)) {
                 actionsControleur.actionDefaire();
             }
@@ -117,16 +119,6 @@ public class Diaballik extends Application {
             Optional<String> ofilename = Dialogs.montrerDialogChoisirFichier(DOSSIER_SAUVEGARDES);
             if (ofilename != null)
                 ofilename.ifPresent(s -> nouveauJeu(DOSSIER_SAUVEGARDES + "/" + s, true));
-
-            // Méthode avec Filechooser
-            // Plus souple mais complexifie le choix pour l'utilisateur
-            /*FileChooser fileChooser = new FileChooser();
-            fileChooser.setInitialDirectory(new File("."));
-            fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Diaballik sauvegarde", "*.txt"));
-            File file = fileChooser.showOpenDialog(stage);
-            if (file != null) {
-                nouveauJeu(file.getAbsolutePath(), true);
-            }*/
         });
 
         Button regles = new Button("Règles");

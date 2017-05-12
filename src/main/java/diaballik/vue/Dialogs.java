@@ -280,7 +280,7 @@ public class Dialogs {
     }
 
     private Optional<String> getDialogChoisirFichier(String directory) {
-        ObservableList<String> obs = FXCollections.observableArrayList(getFichiersDansDossier("." + directory, ".txt", false));
+        ObservableList<String> obs = FXCollections.observableArrayList(getFichiersDansDossier(directory, Diaballik.EXTENSION_SAUVEGARDE, false));
 
         Dialog<String> dialog = new Dialog<>();
         dialog.setTitle("Charger une partie");
@@ -326,6 +326,10 @@ public class Dialogs {
         filesView.setMaxWidth(Double.MAX_VALUE);
         filesView.setMaxHeight(Double.MAX_VALUE);
         filesView.setOnMouseClicked(e -> {
+            if (e.getClickCount() == 2) {
+                dialog.close();
+            }
+
             if (filesView.getSelectionModel().getSelectedItem() != null)
                 boutonJouer.setDisable(false);
 
@@ -347,8 +351,8 @@ public class Dialogs {
         content.setPadding(new Insets(10));
 
         dialog.setResultConverter(b -> {
-            if (b == boutonOuvrirType) {
-                return filesView.getSelectionModel().getSelectedItem() + ".txt";
+            if (filesView.getSelectionModel().getSelectedItem() != null) {
+                return filesView.getSelectionModel().getSelectedItem() + Diaballik.EXTENSION_SAUVEGARDE;
             }
 
             return null;

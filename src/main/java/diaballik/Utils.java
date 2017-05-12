@@ -47,7 +47,7 @@ public class Utils {
 
         if (estSauvegarde) {
             try {
-                br = new BufferedReader(new FileReader("." + fichier));
+                br = new BufferedReader(new FileReader(fichier));
             } catch (IOException e) {}
         } else {
             final File jarFile = new File(Utils.class.getProtectionDomain().getCodeSource().getLocation().getPath());
@@ -65,7 +65,7 @@ public class Utils {
     public static Metadonnees getMetadonneesSauvegarde(String fichier) {
         Metadonnees md = new Metadonnees();
 
-        try (BufferedReader i = new BufferedReader(new FileReader("." + Diaballik.DOSSIER_SAUVEGARDES + "/" + fichier + ".txt"))) {
+        try (BufferedReader i = new BufferedReader(new FileReader(Diaballik.DOSSIER_SAUVEGARDES + "/" + fichier + Diaballik.EXTENSION_SAUVEGARDE))) {
             String sCurrentLine;
             if ((sCurrentLine = i.readLine()) != null) { // tour
                 md.tour = Integer.parseInt(sCurrentLine.split(":")[0]);
@@ -83,5 +83,10 @@ public class Utils {
         } catch (IOException ignored) {}
 
         return null;
+    }
+
+    public static boolean saveExists(String filename) {
+        File f = new File(Diaballik.DOSSIER_SAUVEGARDES + "/" + filename + Diaballik.EXTENSION_SAUVEGARDE);
+        return f.exists();
     }
 }

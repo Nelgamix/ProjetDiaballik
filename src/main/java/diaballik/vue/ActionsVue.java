@@ -1,25 +1,30 @@
 package diaballik.vue;
 
-import diaballik.Diaballik;
+import diaballik.Utils;
 import diaballik.controleur.ActionsControleur;
 import diaballik.model.Jeu;
+import javafx.animation.KeyFrame;
+import javafx.animation.Timeline;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
-import javafx.scene.Parent;
 import javafx.scene.control.Button;
+import javafx.scene.control.Control;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
-import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.ColumnConstraints;
-import javafx.scene.layout.GridPane;
-import javafx.scene.layout.VBox;
+import javafx.scene.input.KeyCode;
+import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
+import javafx.util.Duration;
 import org.controlsfx.control.PopOver;
 import org.controlsfx.glyphfont.FontAwesome;
 import org.controlsfx.glyphfont.Glyph;
+import org.controlsfx.validation.Severity;
+import org.controlsfx.validation.ValidationResult;
+import org.controlsfx.validation.ValidationSupport;
 
 import java.util.Observable;
 import java.util.Observer;
+import java.util.function.Supplier;
 
 public class ActionsVue extends BorderPane implements Observer {
     private final ActionsControleur actionsControleur;
@@ -31,33 +36,113 @@ public class ActionsVue extends BorderPane implements Observer {
     private final Label deplInd;
     private final Label passInd;
 
-    public final Button annuler;
-    public final Button refaire;
+    private final Button annuler;
+    private final Button refaire;
+
+    private final Button sauvegarde;
+
+    private PopOver p;
+    private boolean saveExists = false;
+
+    private final ValidationSupport validationSupport = new ValidationSupport();
+
+    private ValidationResult checkFileExists(Control control, String filename) {
+        saveExists = Utils.saveExists(filename);
+        return ValidationResult.fromMessageIf(control, "file exists", Severity.ERROR, saveExists);
+    }
 
     private PopOver getSauvegarderPopover() {
-        PopOver p = new PopOver();
+        if (p != null) return p;
 
-        BorderPane b = new BorderPane();
+        p = new PopOver();
+        p.setDetachable(false);
+        p.setArrowLocation(PopOver.ArrowLocation.TOP_CENTER);
 
-        b.setTop(new Label("Nom de la sauvegarde :"));
-        TextField chemin = new TextField("Partie 1");
-        BorderPane.setMargin(chemin, new Insets(10, 0, 10, 0));
-        b.setCenter(chemin);
+        BorderPane contentSave = new BorderPane();
+        BorderPane contentValider = new BorderPane();
+        BorderPane contentFin = new BorderPane();
+
+        // Déclarations
+        // contentSave
+        TextField chemin = new TextField();
         Button valider = new Button("Valider");
-        valider.setAlignment(Pos.CENTER);
-        
-        b.setBottom(valider);
-        b.setPadding(new Insets(5));
 
-        p.setContentNode(b);
+        // contentValider
+        Label contentValiderLabel = new Label();
+        HBox boutonsChoix = new HBox(5);
+        Button choixValider = new Button("Ecraser");
+        Button choixAnnuler = new Button("Annuler");
+
+        // contentFin
+        Label contentFinLabel = new Label("Sauvegarde effectuée.");
+
+        // Utils
+        Timeline t = new Timeline(new KeyFrame(
+                Duration.seconds(2),
+                e -> p.setContentNode(contentSave)
+        ));
+
+        Supplier<Void> sp = () -> {
+            if (saveExists) {
+                contentValiderLabel.setText("Le fichier de sauvegarde " + chemin.getText() + ".txt existe déjà.\n" +
+                        "Voulez-vous le remplacer?");
+                p.setContentNode(contentValider);
+            } else {
+                actionsControleur.actionSauvegarderJeu(chemin.getText());
+                p.setContentNode(contentFin);
+                t.play();
+            }
+
+            return null;
+        };
+
+        // Fonction
+        BorderPane.setMargin(chemin, new Insets(10, 0, 10, 0));
+        validationSupport.registerValidator(chemin, false, this::checkFileExists);
+        chemin.setText("Partie 1");
+        chemin.setOnKeyPressed(e -> {
+            if (e.getCode() == KeyCode.ENTER)
+                sp.get();
+        });
+
+        BorderPane.setAlignment(valider, Pos.CENTER);
+        valider.setOnAction(e -> sp.get());
+
+        contentSave.setPadding(new Insets(5));
+        contentSave.setTop(new Label("Nom de la sauvegarde :"));
+        contentSave.setCenter(chemin);
+        contentSave.setBottom(valider);
+
+        BorderPane.setAlignment(contentValiderLabel, Pos.CENTER);
+
+        choixValider.setOnAction(e -> {
+            actionsControleur.actionSauvegarderJeu(chemin.getText());
+            p.setContentNode(contentFin);
+            t.play();
+        });
+
+        choixAnnuler.setOnAction(e -> p.setContentNode(contentSave));
+
+        boutonsChoix.getChildren().addAll(choixAnnuler, choixValider);
+        boutonsChoix.setAlignment(Pos.CENTER);
+        boutonsChoix.setPadding(new Insets(10, 0, 5, 0));
+
+        contentValider.setPadding(new Insets(10));
+        contentValider.setCenter(contentValiderLabel);
+        contentValider.setBottom(boutonsChoix);
+
+        BorderPane.setAlignment(contentFinLabel, Pos.CENTER);
+
+        contentFin.setPadding(new Insets(10));
+        contentFin.setCenter(contentFinLabel);
+
+        p.setContentNode(contentSave);
 
         return p;
     }
 
     public ActionsVue(ActionsControleur actionsControleur) {
         super();
-
-        PopOver popSauvegarder = getSauvegarderPopover();
 
         // Infos
         VBox vBoxInfos = new VBox(20);
@@ -133,13 +218,13 @@ public class ActionsVue extends BorderPane implements Observer {
         refaire.setMaxWidth(Double.MAX_VALUE);
         gpActions.add(refaire, 1, 2);
 
-        Button sauvegarder = new Button("Sauvegarder");
-        sauvegarder.setOnAction(e -> {
-            popSauvegarder.show(sauvegarder);
+        sauvegarde = new Button("Sauvegarder");
+        sauvegarde.setOnAction(e -> {
+            montrerPopupSauvegarde();
             //actionsControleur.actionSauvegarderJeu(Diaballik.DOSSIER_SAUVEGARDES)
         });
-        sauvegarder.setMaxWidth(Double.MAX_VALUE);
-        gpActions.add(sauvegarder, 0, 3, 2, 1);
+        sauvegarde.setMaxWidth(Double.MAX_VALUE);
+        gpActions.add(sauvegarde, 0, 3, 2, 1);
 
         Glyph roue = new Glyph("FontAwesome", FontAwesome.Glyph.COG);
         roue.setFontSize(22f);
@@ -157,6 +242,10 @@ public class ActionsVue extends BorderPane implements Observer {
         this.setBottom(gpActions);
 
         update(null, null);
+    }
+
+    public void montrerPopupSauvegarde() {
+        getSauvegarderPopover().show(sauvegarde);
     }
 
     @Override

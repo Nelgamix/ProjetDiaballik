@@ -4,7 +4,6 @@ import diaballik.Diaballik;
 import diaballik.model.Jeu;
 import diaballik.vue.ActionsVue;
 import diaballik.vue.Dialogs;
-import javafx.stage.FileChooser;
 
 import java.io.File;
 
@@ -33,26 +32,16 @@ public class ActionsControleur {
         }
     }
 
-    public void actionSauvegarderJeu(String directory) {
-        String filename;
-        final FileChooser fileChooser = new FileChooser();
-
-        final File saveDir = new File("." + directory);
+    public void actionSauvegarderJeu(String filename) {
+        final File saveDir = new File(Diaballik.DOSSIER_SAUVEGARDES);
         if (!saveDir.exists())
             saveDir.mkdir();
 
-        fileChooser.setInitialDirectory(saveDir);
-        fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Diaballik Sauvegarde", "*.txt"));
-        File file = fileChooser.showSaveDialog(this.diaballik.stage);
-        if (file != null) {
-            filename = file.getAbsolutePath();
+        if (!filename.endsWith(Diaballik.EXTENSION_SAUVEGARDE))
+            filename += Diaballik.EXTENSION_SAUVEGARDE;
 
-            if (!filename.endsWith(".txt"))
-                filename += ".txt";
-
-            System.out.println("Sauvegarde vers " + filename);
-            this.jeu.sauvegarde(filename);
-        }
+        System.out.println("Sauvegarde vers " + filename);
+        this.jeu.sauvegarde(Diaballik.DOSSIER_SAUVEGARDES + "/" + filename);
     }
 
     public void actionAntijeu() {
