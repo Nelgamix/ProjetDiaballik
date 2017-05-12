@@ -66,7 +66,6 @@ public class Jeu extends Observable {
         try (BufferedReader br = Utils.readerConditionnel(cp.cheminFichier, cp.estUneSauvegarde)) {
             String sCurrentLine;
             String parts[];
-            Joueur joueur;
 
             if (cp.estUneSauvegarde) {
                 // tour actuel
@@ -83,7 +82,7 @@ public class Jeu extends Observable {
 
                 // joueur 2
                 if ((sCurrentLine = br.readLine()) != null) {
-                    this.joueurs[0] = new Joueur(this, Joueur.JOUEUR_ROUGE, sCurrentLine);
+                    this.joueurs[1] = new Joueur(this, Joueur.JOUEUR_ROUGE, sCurrentLine);
                 }
             } else {
                 this.tour = 1;

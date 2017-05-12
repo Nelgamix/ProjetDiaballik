@@ -5,13 +5,16 @@ import diaballik.controleur.ActionsControleur;
 import diaballik.model.Jeu;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
+import javafx.scene.Parent;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.control.TextField;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
+import org.controlsfx.control.PopOver;
 import org.controlsfx.glyphfont.FontAwesome;
 import org.controlsfx.glyphfont.Glyph;
 
@@ -31,8 +34,30 @@ public class ActionsVue extends BorderPane implements Observer {
     public final Button annuler;
     public final Button refaire;
 
+    private PopOver getSauvegarderPopover() {
+        PopOver p = new PopOver();
+
+        BorderPane b = new BorderPane();
+
+        b.setTop(new Label("Nom de la sauvegarde :"));
+        TextField chemin = new TextField("Partie 1");
+        BorderPane.setMargin(chemin, new Insets(10, 0, 10, 0));
+        b.setCenter(chemin);
+        Button valider = new Button("Valider");
+        valider.setAlignment(Pos.CENTER);
+        
+        b.setBottom(valider);
+        b.setPadding(new Insets(5));
+
+        p.setContentNode(b);
+
+        return p;
+    }
+
     public ActionsVue(ActionsControleur actionsControleur) {
         super();
+
+        PopOver popSauvegarder = getSauvegarderPopover();
 
         // Infos
         VBox vBoxInfos = new VBox(20);
@@ -109,7 +134,10 @@ public class ActionsVue extends BorderPane implements Observer {
         gpActions.add(refaire, 1, 2);
 
         Button sauvegarder = new Button("Sauvegarder");
-        sauvegarder.setOnAction(e -> actionsControleur.actionSauvegarderJeu(Diaballik.DOSSIER_SAUVEGARDES));
+        sauvegarder.setOnAction(e -> {
+            popSauvegarder.show(sauvegarder);
+            //actionsControleur.actionSauvegarderJeu(Diaballik.DOSSIER_SAUVEGARDES)
+        });
         sauvegarder.setMaxWidth(Double.MAX_VALUE);
         gpActions.add(sauvegarder, 0, 3, 2, 1);
 

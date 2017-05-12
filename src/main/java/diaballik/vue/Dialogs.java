@@ -334,8 +334,6 @@ public class Dialogs {
                 labelInfoTour.setText(mds.get(filesView.getSelectionModel().getSelectedIndex()).tour + "");
                 labelInfoNomJoueur1.setText(mds.get(filesView.getSelectionModel().getSelectedIndex()).joueurVert.getNom());
                 labelInfoNomJoueur2.setText(mds.get(filesView.getSelectionModel().getSelectedIndex()).joueurRouge.getNom());
-
-                content.add(infosSave, 1, 1);
             }
         });
         filesView.getSelectionModel().selectFirst();
@@ -345,6 +343,7 @@ public class Dialogs {
         content.add(new Label("Sauvegardes"), 0, 0);
         content.add(filesView, 0, 1);
         content.add(new Label("Sauvegarde sélectionnée"), 1, 0);
+        content.add(infosSave, 1, 1);
         content.setPadding(new Insets(10));
 
         dialog.setResultConverter(b -> {

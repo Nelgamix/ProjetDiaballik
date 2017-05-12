@@ -41,8 +41,8 @@ public class Joueur {
 
         this.setNom(parts[0]);
         this.setType(Integer.parseInt(parts[1]));
-        this.setDeplacementsRestants(Integer.parseInt(parts[2]));
-        this.setPassesRestantes(Integer.parseInt(parts[3]));
+        /*this.setDeplacementsRestants(Integer.parseInt(parts[2]));
+        this.setPassesRestantes(Integer.parseInt(parts[3]));*/
     }
 
     static String parseAction(int action) {
