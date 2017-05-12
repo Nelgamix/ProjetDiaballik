@@ -32,7 +32,7 @@ public class CaseVue extends StackPane implements Observer {
         Point point = c.getPoint();
         pair = Math.abs(point.getX() - point.getY()) % 2 == 0;
 
-        this.setMinSize(LARGEUR, HAUTEUR);
+        this.setPrefSize(Double.MAX_VALUE, Double.MAX_VALUE);
 
         this.setOnMouseClicked(e -> terrainVue.getTerrainControleur().clicSouris(this));
         this.setOnMouseEntered(e -> survoler(true));

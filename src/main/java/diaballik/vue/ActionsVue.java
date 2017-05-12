@@ -1,16 +1,16 @@
 package diaballik.vue;
 
+import diaballik.Diaballik;
 import diaballik.Utils;
 import diaballik.controleur.ActionsControleur;
+import diaballik.model.ConfigurationPartie;
 import diaballik.model.Jeu;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
-import javafx.scene.control.Button;
-import javafx.scene.control.Control;
-import javafx.scene.control.Label;
-import javafx.scene.control.TextField;
+import javafx.scene.Parent;
+import javafx.scene.control.*;
 import javafx.scene.input.KeyCode;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
@@ -40,9 +40,12 @@ public class ActionsVue extends BorderPane implements Observer {
     private final Button refaire;
 
     private final Button sauvegarde;
+    private final Button parametres;
 
-    private PopOver p;
+    private PopOver popOverSauvegarde;
     private boolean saveExists = false;
+
+    private PopOver popOverParametres;
 
     private final ValidationSupport validationSupport = new ValidationSupport();
 
@@ -52,11 +55,11 @@ public class ActionsVue extends BorderPane implements Observer {
     }
 
     private PopOver getSauvegarderPopover() {
-        if (p != null) return p;
+        if (popOverSauvegarde != null) return popOverSauvegarde;
 
-        p = new PopOver();
-        p.setDetachable(false);
-        p.setArrowLocation(PopOver.ArrowLocation.TOP_CENTER);
+        popOverSauvegarde = new PopOver();
+        popOverSauvegarde.setDetachable(false);
+        popOverSauvegarde.setArrowLocation(PopOver.ArrowLocation.TOP_CENTER);
 
         BorderPane contentSave = new BorderPane();
         BorderPane contentValider = new BorderPane();
@@ -79,17 +82,17 @@ public class ActionsVue extends BorderPane implements Observer {
         // Utils
         Timeline t = new Timeline(new KeyFrame(
                 Duration.seconds(2),
-                e -> p.setContentNode(contentSave)
+                e -> popOverSauvegarde.setContentNode(contentSave)
         ));
 
         Supplier<Void> sp = () -> {
             if (saveExists) {
                 contentValiderLabel.setText("Le fichier de sauvegarde " + chemin.getText() + ".txt existe déjà.\n" +
                         "Voulez-vous le remplacer?");
-                p.setContentNode(contentValider);
+                popOverSauvegarde.setContentNode(contentValider);
             } else {
                 actionsControleur.actionSauvegarderJeu(chemin.getText());
-                p.setContentNode(contentFin);
+                popOverSauvegarde.setContentNode(contentFin);
                 t.play();
             }
 
@@ -108,8 +111,8 @@ public class ActionsVue extends BorderPane implements Observer {
         BorderPane.setAlignment(valider, Pos.CENTER);
         valider.setOnAction(e -> sp.get());
 
-        contentSave.setPadding(new Insets(5));
-        contentSave.setTop(new Label("Nom de la sauvegarde :"));
+        contentSave.setPadding(new Insets(10));
+        contentSave.setTop(new Label("Nom de la sauvegarde"));
         contentSave.setCenter(chemin);
         contentSave.setBottom(valider);
 
@@ -117,11 +120,11 @@ public class ActionsVue extends BorderPane implements Observer {
 
         choixValider.setOnAction(e -> {
             actionsControleur.actionSauvegarderJeu(chemin.getText());
-            p.setContentNode(contentFin);
+            popOverSauvegarde.setContentNode(contentFin);
             t.play();
         });
 
-        choixAnnuler.setOnAction(e -> p.setContentNode(contentSave));
+        choixAnnuler.setOnAction(e -> popOverSauvegarde.setContentNode(contentSave));
 
         boutonsChoix.getChildren().addAll(choixAnnuler, choixValider);
         boutonsChoix.setAlignment(Pos.CENTER);
@@ -136,9 +139,86 @@ public class ActionsVue extends BorderPane implements Observer {
         contentFin.setPadding(new Insets(10));
         contentFin.setCenter(contentFinLabel);
 
-        p.setContentNode(contentSave);
+        popOverSauvegarde.setContentNode(contentSave);
 
-        return p;
+        return popOverSauvegarde;
+    }
+
+    private PopOver getParametresPopover() {
+        if (popOverParametres != null) return popOverParametres;
+
+        final ConfigurationPartie cp = actionsControleur.getJeu().cp;
+
+        popOverParametres = new PopOver();
+        popOverParametres.setDetachable(false);
+        popOverParametres.setArrowLocation(PopOver.ArrowLocation.BOTTOM_CENTER);
+
+        BorderPane content = new BorderPane();
+        content.setPadding(new Insets(15));
+
+        GridPane grid = new GridPane();
+        grid.setPrefWidth(300);
+        grid.setHgap(10);
+        grid.setVgap(10);
+        ColumnConstraints cc1 = new ColumnConstraints();
+        cc1.setPercentWidth(85);
+        ColumnConstraints cc2 = new ColumnConstraints();
+        cc2.setPercentWidth(15);
+        grid.getColumnConstraints().addAll(cc1, cc2);
+
+        CheckBox parametre1 = new CheckBox();
+        parametre1.setSelected(cp.isAideDeplacement());
+
+        CheckBox parametre2 = new CheckBox();
+        parametre2.setSelected(cp.isAidePasse());
+
+        CheckBox parametre3 = new CheckBox();
+        parametre3.setSelected(cp.isAutoSelectionPion());
+
+        Label labelParametre1 = new Label("Aide au déplacement des pions");
+        labelParametre1.setMaxWidth(Double.MAX_VALUE);
+        Label labelParametre2 = new Label("Aide aux passes");
+        Label labelParametre3 = new Label("Auto sélectionner le meme pion\nsi déplacement restant");
+
+        grid.add(labelParametre1, 0, 0);
+        grid.add(parametre1, 1, 0);
+        grid.add(labelParametre2, 0, 1);
+        grid.add(parametre2, 1, 1);
+        grid.add(labelParametre3, 0, 2);
+        grid.add(parametre3, 1, 2);
+
+        content.setCenter(grid);
+
+        Button valider = new Button("Valider");
+        Button annuler = new Button("Annuler");
+        annuler.setOnAction(e -> {
+            popOverParametres.hide();
+
+            parametre1.setSelected(cp.isAideDeplacement());
+            parametre2.setSelected(cp.isAidePasse());
+            parametre3.setSelected(cp.isAutoSelectionPion());
+        });
+        valider.setOnAction(e -> {
+            cp.setAideDeplacement(parametre1.isSelected());
+            cp.setAidePasse(parametre2.isSelected());
+            cp.setAutoSelectionPion(parametre3.isSelected());
+
+            cp.writeProperties();
+
+            popOverParametres.hide();
+        });
+
+        HBox buttonBar = new HBox(10);
+        buttonBar.setPadding(new Insets(10, 0, 0, 0));
+        buttonBar.getChildren().addAll(valider, annuler);
+        buttonBar.setAlignment(Pos.CENTER);
+        BorderPane.setAlignment(buttonBar, Pos.CENTER);
+
+        content.setBottom(buttonBar);
+
+        popOverParametres.setContentNode(content);
+
+        return popOverParametres;
     }
 
     public ActionsVue(ActionsControleur actionsControleur) {
@@ -228,7 +308,7 @@ public class ActionsVue extends BorderPane implements Observer {
 
         Glyph roue = new Glyph("FontAwesome", FontAwesome.Glyph.COG);
         roue.setFontSize(22f);
-        Button parametres = new Button("", roue);
+        parametres = new Button("", roue);
         parametres.setOnAction(e -> actionsControleur.actionParametres());
         parametres.setMaxWidth(Double.MAX_VALUE);
         gpActions.add(parametres, 0, 4);
@@ -246,6 +326,14 @@ public class ActionsVue extends BorderPane implements Observer {
 
     public void montrerPopupSauvegarde() {
         getSauvegarderPopover().show(sauvegarde);
+        ((Parent)popOverSauvegarde.getSkin().getNode()).getStylesheets()
+                .add(getClass().getResource(Diaballik.CSS_POPOVER).toExternalForm());
+    }
+
+    public void montrerPopupParametres() {
+        getParametresPopover().show(parametres);
+        ((Parent)popOverParametres.getSkin().getNode()).getStylesheets()
+                .add(getClass().getResource(Diaballik.CSS_POPOVER).toExternalForm());
     }
 
     @Override

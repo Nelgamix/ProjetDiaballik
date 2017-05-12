@@ -40,6 +40,8 @@ public class PionVue extends Circle implements Observer {
         this.terrainVue = terrainVue;
         pion.addObserver(this);
 
+        caseVue.heightProperty().addListener((o, ov, nv) -> this.setRadius((pion.aLaBalle() ? 1.5 : 1) * (nv.doubleValue() / 4)));
+
         this.transitionDeplacement = new TranslateTransition(Duration.millis(200), this);
         this.transitionDeplacement.setAutoReverse(false);
 
@@ -119,9 +121,11 @@ public class PionVue extends Circle implements Observer {
         this.getStyleClass().clear();
 
         if (!actif) {
-            this.getStyleClass().add("couleurAdversaire");
+            this.getStyleClass().add(pion.getCouleur() == Joueur.JOUEUR_VERT ? "couleurJoueurVertInactif" : "couleurJoueurRougeInactif");
+            //this.getStyleClass().add("couleurAdversaire");
         } else if (survol) {
-            this.getStyleClass().add("couleurSurvol");
+            this.getStyleClass().add(pion.getCouleur() == Joueur.JOUEUR_VERT ? "couleurJoueurVertSurvol" : "couleurJoueurRougeSurvol");
+            //this.getStyleClass().add("couleurSurvol");
         } else if (isSelectionne()) {
             this.getStyleClass().add("couleurSelection");
         } else if (isMarque() && terrainVue.getTerrainControleur().getJeu().cp.isAidePasse()) {

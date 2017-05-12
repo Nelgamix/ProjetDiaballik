@@ -1,11 +1,13 @@
 # Priorité 1
-* Réseau
 * IA
+* Améliorer popup charger partie
+* Changer la popup paramètres en popover
+* Popup des règles
 
 # Prorité 2
-* Terrains alternatifs
 * Animations
 
 # Priorité 3 (idées amélioration)
-* Changer curseur
 * Sons
+* Proposer le meilleur coup au joueur
+* Sélection dans l'historique

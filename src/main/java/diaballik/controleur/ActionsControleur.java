@@ -51,7 +51,7 @@ public class ActionsControleur {
     }
 
     public void actionParametres() {
-        Dialogs.montrerParametres(jeu.cp);
+        actionsVue.montrerPopupParametres();
     }
 
     public void actionDefaire() {

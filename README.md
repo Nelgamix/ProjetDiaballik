@@ -1,15 +1,9 @@
 # ProjetDiaballik
 ## To do
 Par ordre de priorité:
-* Système de sauvegarde: géré en interne plutôt que 
-faire manipuler les fichiers à l'utilisateur (charger fait, voir pour
-la sauvegarde)
-* IA (aléatoire, minimax)
-* Améliorer visuel et IHM de la partie jeu (couleurs, effets, anims, images pions)
-* (Jeu en réseau) ?
+voir TODO.md
 
-Voir TODO.md
-## Images
+## Images (pas à jour)
 IHM réalisées par Loïc Houdebine (voir lien dans la dernière section)
 ### Menu
 ![Menu](screenshots/menu.png)

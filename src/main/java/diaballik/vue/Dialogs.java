@@ -329,7 +329,8 @@ public class Dialogs {
             if (e.getClickCount() == 2) {
                 dialog.close();
             }
-
+        });
+        filesView.getSelectionModel().selectedItemProperty().addListener(e -> {
             if (filesView.getSelectionModel().getSelectedItem() != null)
                 boutonJouer.setDisable(false);
 

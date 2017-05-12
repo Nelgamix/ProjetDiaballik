@@ -6,7 +6,9 @@ import diaballik.model.Jeu;
 import diaballik.model.Joueur;
 import diaballik.model.Point;
 import diaballik.model.Terrain;
+import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
+import javafx.scene.layout.RowConstraints;
 
 import java.util.Observable;
 import java.util.Observer;
@@ -26,15 +28,32 @@ public class TerrainVue extends GridPane implements Observer {
         terrainControleur.getJeu().addObserver(this);
         this.setId("terrainView");
 
-        this.setMaxSize(CaseVue.LARGEUR * Terrain.LARGEUR, CaseVue.HAUTEUR * Terrain.HAUTEUR);
-
         this.cases = new CaseVue[Terrain.HAUTEUR][Terrain.LARGEUR];
         this.pions = new PionVue[Jeu.NOMBRE_JOUEURS][Joueur.NOMBRE_PIONS];
+
+        ColumnConstraints cc[] = new ColumnConstraints[Terrain.LARGEUR];
+        RowConstraints rc[] = new RowConstraints[Terrain.HAUTEUR];
+
+        ColumnConstraints c;
+        for (int i = 0; i < Terrain.LARGEUR; i++) {
+            c = new ColumnConstraints();
+            c.setPercentWidth(100*((double)1/Terrain.LARGEUR));
+            cc[i] = c;
+        }
+
+        RowConstraints r;
+        for (int i = 0; i < Terrain.HAUTEUR; i++) {
+            r = new RowConstraints();
+            r.setPercentHeight(100*((double)1/Terrain.HAUTEUR));
+            rc[i] = r;
+        }
+
+        this.getColumnConstraints().addAll(cc);
+        this.getRowConstraints().addAll(rc);
 
         for (int i = 0; i < Terrain.HAUTEUR; i++) {
             for (int j = 0; j < Terrain.LARGEUR; j++) {
                 CaseVue cv = new CaseVue(this, terrain.getCaseSur(new Point(j, i)));
-
                 this.cases[i][j] = cv;
                 this.add(cv, j, i);
             }

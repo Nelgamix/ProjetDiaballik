@@ -38,6 +38,7 @@ public class Diaballik extends Application {
     private final static String CSS_MENU = DOSSIER_CSS + "/DiaballikMenu.css";
     private final static String CSS_JEU = DOSSIER_CSS + "/DiaballikJeu.css";
     public final static String CSS_DIALOG = DOSSIER_CSS + "/DiaballikDialogs.css";
+    public final static String CSS_POPOVER = DOSSIER_CSS + "/DiaballikPopover.css";
 
     public final static String NOM_JEU = "Diaballik";
 
@@ -92,6 +93,8 @@ public class Diaballik extends Application {
         root.setCenter(terrainControleur.getTerrainVue());
         root.setRight(actionsControleur.getActionsVue());
         root.setTop(affichageControleur.getAffichageVue());
+
+        BorderPane.setMargin(terrainControleur.getTerrainVue(), new Insets(10));
 
         sceneJeu = new Scene(root, CaseVue.LARGEUR * Terrain.LARGEUR + 225, CaseVue.HAUTEUR * Terrain.HAUTEUR + 75);
         sceneJeu.setOnKeyPressed(k -> {
@@ -152,7 +155,7 @@ public class Diaballik extends Application {
         initSceneMenu();
 
         stage.setTitle(NOM_JEU);
-        stage.setResizable(false);
+        //stage.setResizable(false);
         stage.setScene(sceneMenu);
         stage.show();
     }
