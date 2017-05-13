@@ -16,8 +16,7 @@ import java.util.Observable;
 import java.util.Observer;
 
 public class PionVue extends Circle implements Observer {
-    private final static double RAYON = CaseVue.HAUTEUR / 4;
-    private final static double RAYON_BALLE = RAYON * 1.5;
+    private double rayonBase;
 
     private final TerrainVue terrainVue;
     private final Pion pion;
@@ -32,7 +31,7 @@ public class PionVue extends Circle implements Observer {
     private final TranslateTransition transitionDeplacement;
 
     PionVue(TerrainVue terrainVue, Pion pion) {
-        super(RAYON);
+        super(20);
 
         this.pion = pion;
         this.caseVue = terrainVue.getCaseSur(pion.getPosition().getPoint());
@@ -40,7 +39,7 @@ public class PionVue extends Circle implements Observer {
         this.terrainVue = terrainVue;
         pion.addObserver(this);
 
-        caseVue.heightProperty().addListener((o, ov, nv) -> this.setRadius((pion.aLaBalle() ? 1.5 : 1) * (nv.doubleValue() / 4)));
+        caseVue.heightProperty().addListener((o, ov, nv) -> this.setRayonFromCaseView(nv.doubleValue() / 4));
 
         this.transitionDeplacement = new TranslateTransition(Duration.millis(200), this);
         this.transitionDeplacement.setAutoReverse(false);
@@ -67,17 +66,24 @@ public class PionVue extends Circle implements Observer {
             deplacerPionAnimated();
 
         this.updateStyleClass();
-        this.setRayon(getRayon());
+        this.setRayon();
+    }
+
+    private void setRayonFromCaseView(double rayon) {
+        rayonBase = rayon;
+        setRayon();
     }
 
     // Set le rayon en fonction de la propriété aLaBalle du pion
-    private void setRayon(double rayon) {
-        if (rayon != this.getRadius()) {
+    private void setRayon() {
+        double r = getRayon();
+
+        if (r != this.getRadius()) {
             final Timeline transitionTaille = new Timeline();
             transitionTaille.setAutoReverse(false);
             transitionTaille.setCycleCount(1);
 
-            final KeyValue kv = new KeyValue(this.radiusProperty(), rayon);
+            final KeyValue kv = new KeyValue(this.radiusProperty(), r);
             final KeyFrame kf = new KeyFrame(Duration.millis(500), kv);
 
             transitionTaille.getKeyFrames().clear();
@@ -121,17 +127,17 @@ public class PionVue extends Circle implements Observer {
         this.getStyleClass().clear();
 
         if (!actif) {
-            this.getStyleClass().add(pion.getCouleur() == Joueur.JOUEUR_VERT ? "couleurJoueurVertInactif" : "couleurJoueurRougeInactif");
+            this.getStyleClass().add(pion.getCouleur() == Joueur.VERT ? "couleurJoueurVertInactif" : "couleurJoueurRougeInactif");
             //this.getStyleClass().add("couleurAdversaire");
         } else if (survol) {
-            this.getStyleClass().add(pion.getCouleur() == Joueur.JOUEUR_VERT ? "couleurJoueurVertSurvol" : "couleurJoueurRougeSurvol");
+            this.getStyleClass().add(pion.getCouleur() == Joueur.VERT ? "couleurJoueurVertSurvol" : "couleurJoueurRougeSurvol");
             //this.getStyleClass().add("couleurSurvol");
         } else if (isSelectionne()) {
             this.getStyleClass().add("couleurSelection");
         } else if (isMarque() && terrainVue.getTerrainControleur().getJeu().cp.isAidePasse()) {
             this.getStyleClass().add("couleurMarquage");
         } else {
-            if (pion.getCouleur() == Joueur.JOUEUR_VERT)
+            if (pion.getCouleur() == Joueur.VERT)
                 this.getStyleClass().add("couleurJoueurVert");
             else
                 this.getStyleClass().add("couleurJoueurRouge");
@@ -160,7 +166,7 @@ public class PionVue extends Circle implements Observer {
     }
 
     private double getRayon() {
-        return (this.pion.aLaBalle() ? RAYON_BALLE : RAYON);
+        return (this.pion.aLaBalle() ? rayonBase * 1.5 : rayonBase);
     }
 
     // GETTERS booleens

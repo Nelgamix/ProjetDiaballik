@@ -1,11 +1,11 @@
 package diaballik.model;
 
-public class IA extends Joueur {
+public class JoueurIA extends Joueur {
     public final static int DIFFICULTE_FACILE = 1;
     public final static int DIFFICULTE_MOYEN = 2;
     public final static int DIFFICULTE_DIFFICILE = 3;
 
-    public IA(Jeu jeu, int couleur, int difficulte) {
+    public JoueurIA(Jeu jeu, int couleur, int difficulte) {
         super(jeu, couleur);
         this.setType(difficulte);
     }
@@ -21,5 +21,15 @@ public class IA extends Joueur {
             default:
                 return "inconnu";
         }
+    }
+
+    @Override
+    public boolean preparerJouer() {
+        return false;
+    }
+
+    @Override
+    public boolean jouer() {
+        return false;
     }
 }

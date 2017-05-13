@@ -1,6 +1,7 @@
 package diaballik;
 
 import diaballik.model.Joueur;
+import diaballik.model.JoueurLocal;
 import diaballik.model.Metadonnees;
 
 import java.io.*;
@@ -72,11 +73,11 @@ public class Utils {
             }
 
             if ((sCurrentLine = i.readLine()) != null) { // joueur vert
-                md.joueurVert = new Joueur(Joueur.JOUEUR_VERT, sCurrentLine);
+                md.joueurVert = new JoueurLocal(Joueur.VERT, sCurrentLine);
             }
 
             if ((sCurrentLine = i.readLine()) != null) { // joueur rouge
-                md.joueurRouge = new Joueur(Joueur.JOUEUR_ROUGE, sCurrentLine);
+                md.joueurRouge = new JoueurLocal(Joueur.ROUGE, sCurrentLine);
             }
 
             return md;

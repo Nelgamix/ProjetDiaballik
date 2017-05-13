@@ -37,17 +37,17 @@ public class Terrain {
 
                 switch (c) {
                     case "V":
-                        couleur = Joueur.JOUEUR_VERT;
+                        couleur = Joueur.VERT;
                         break;
                     case "R":
-                        couleur = Joueur.JOUEUR_ROUGE;
+                        couleur = Joueur.ROUGE;
                         break;
                     case "BV":
-                        couleur = Joueur.JOUEUR_VERT;
+                        couleur = Joueur.VERT;
                         pionBalle = true;
                         break;
                     case "BR":
-                        couleur = Joueur.JOUEUR_ROUGE;
+                        couleur = Joueur.ROUGE;
                         pionBalle = true;
                         break;
                     default:
@@ -61,7 +61,7 @@ public class Terrain {
                     pion = new Pion(couleur, x, ct);
                     this.cases[y][x].setPion(pion);
 
-                    if (couleur == Joueur.JOUEUR_VERT)
+                    if (couleur == Joueur.VERT)
                         this.pions[couleur][nbv++] = pion;
                     else
                         this.pions[couleur][nbr++] = pion;
@@ -103,7 +103,7 @@ public class Terrain {
         if (pion.aLaBalle())
             res += "B";
 
-        if (pion.getCouleur() == Joueur.JOUEUR_VERT)
+        if (pion.getCouleur() == Joueur.VERT)
             res += "V";
         else
             res += "R";

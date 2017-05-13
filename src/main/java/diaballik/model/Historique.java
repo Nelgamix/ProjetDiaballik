@@ -54,7 +54,7 @@ public class Historique {
         if (a == null) return 0;
         int n = 0;
         for (Action b : a)
-            if (b.getAction() == Joueur.ACTION_PASSE)
+            if (b.getAction() == Action.PASSE)
                 n++;
         return n;
     }
@@ -65,7 +65,7 @@ public class Historique {
         if (a == null) return 0;
         int n = 0;
         for (Action b : a)
-            if (b.getAction() == Joueur.ACTION_DEPLACEMENT)
+            if (b.getAction() == Action.DEPLACEMENT)
                 n++;
         return n;
     }
@@ -104,6 +104,17 @@ public class Historique {
             this.tours.add(a);
         } else {
             a.add(new Action(j, s));
+        }
+    }
+
+    void addAction(Action action) {
+        ecraserFinHistorique();
+        ArrayList<Action> a = getActions(jeu.getTour());
+        if (a == null) {
+            a = ajouterTour();
+            a.add(action);
+        } else {
+            a.add(action);
         }
     }
 

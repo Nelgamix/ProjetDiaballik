@@ -126,7 +126,9 @@
 
 /* Général */
 .couleurSelection {
-    -fx-fill: linear-gradient(to bottom right, #a3ddeb, #88bfcd);
+
+    -fx-fill: linear-gradient(to bottom right, #ebeb00, #cdcd00);
+    -fx-background-color: linear-gradient(to bottom right, #ebeb00, #cdcd00);
     -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.3), 20, 0, 0, 0);
 }
 
@@ -139,8 +141,8 @@
 }
 
 .couleurMarquage {
-    -fx-fill: linear-gradient(to bottom right, #ebeb00, #cdcd00);
-    -fx-background-color: linear-gradient(to bottom right, #ebeb00, #cdcd00);
+    -fx-fill: linear-gradient(to bottom right, #a3ddeb, #88bfcd);
+    -fx-background-color: linear-gradient(to bottom right, #a3ddeb, #88bfcd);
     -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.3), 10, 0, 0, 0);
 }
 

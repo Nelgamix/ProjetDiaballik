@@ -77,19 +77,19 @@ public class Jeu extends Observable {
 
                 // joueur 1
                 if ((sCurrentLine = br.readLine()) != null) {
-                    this.joueurs[0] = new Joueur(this, Joueur.JOUEUR_VERT, sCurrentLine);
+                    this.joueurs[0] = new JoueurLocal(this, Joueur.VERT, sCurrentLine);
                 }
 
                 // joueur 2
                 if ((sCurrentLine = br.readLine()) != null) {
-                    this.joueurs[1] = new Joueur(this, Joueur.JOUEUR_ROUGE, sCurrentLine);
+                    this.joueurs[1] = new JoueurLocal(this, Joueur.ROUGE, sCurrentLine);
                 }
             } else {
                 this.tour = 1;
                 this.numAction = 1;
 
-                this.joueurs[0] = new Joueur(this, Joueur.JOUEUR_VERT);
-                this.joueurs[1] = new Joueur(this, Joueur.JOUEUR_ROUGE);
+                this.joueurs[0] = new JoueurLocal(this, Joueur.VERT);
+                this.joueurs[1] = new JoueurLocal(this, Joueur.ROUGE);
 
                 if (!this.joueurs[0].setNom(cp.nomJoueur1)) throw new IllegalStateException();
                 if (!this.joueurs[1].setNom(cp.nomJoueur2)) throw new IllegalStateException();
@@ -119,11 +119,11 @@ public class Jeu extends Observable {
         this.numAction = historique.nombreActions(tour) + 1;
 
         for (int i = 0; i < historique.getNombrePassesRetirer(tour); i++) {
-            getJoueurActuel().moinsAction(Joueur.ACTION_PASSE);
+            getJoueurActuel().moinsAction(Action.PASSE);
         }
 
         for (int i = 0; i < historique.getNombreDeplacementRetirer(tour); i++) {
-            getJoueurActuel().moinsAction(Joueur.ACTION_DEPLACEMENT);
+            getJoueurActuel().moinsAction(Action.DEPLACEMENT);
         }
     }
 
@@ -219,18 +219,19 @@ public class Jeu extends Observable {
     }
 
     // Effectue un déplacement (le pion p se déplace sur la case c)
-    public boolean deplacement(Pion p, Case c) {
-        if (!p.aLaBalle() && deplacementPossible(p.getPosition(), c) && this.getJoueurActuel().actionPossible(Joueur.ACTION_DEPLACEMENT)) {
-            System.out.println("Déplacement!");
+    public boolean deplacement(Action action) {
+        Pion p = action.getCaseAvant().getPion();
+        Case c = action.getCaseApres();
 
-            Case cv = p.getPosition();
+        if (!p.aLaBalle() && deplacementPossible(p.getPosition(), c)) {
+            System.out.println("Déplacement!");
 
             p.deplacer(c);
 
             //historique.ecraserFinHistorique(this.tour, this.numAction);
-            historique.addAction(cv, Joueur.ACTION_DEPLACEMENT, p.getPosition());
+            historique.addAction(action);
 
-            this.getJoueurActuel().moinsAction(Joueur.ACTION_DEPLACEMENT);
+            this.getJoueurActuel().moinsAction(action);
             this.numAction++;
             //if (!this.getJoueurActuel().moinsAction(Joueur.ACTION_DEPLACEMENT)) {
             //    avancerTour();
@@ -263,7 +264,6 @@ public class Jeu extends Observable {
         return false;
     }
 
-    // TODO: améliorer ce truc!!
     public ArrayList<Case> getDeplacementsPossibles(Pion pion) {
         ArrayList<Case> c = new ArrayList<>();
 
@@ -390,24 +390,23 @@ public class Jeu extends Observable {
     }
 
     // Effectue une passe d'un pion p vers un pion positionné sur une case c
-    public boolean passe(Pion envoyeur, Pion receptionneur) {
-        if (envoyeur.aLaBalle()
-                && passePossible(envoyeur, receptionneur)
-                && this.getJoueurActuel().actionPossible(Joueur.ACTION_PASSE)) {
+    public boolean passe(Action action) {
+        Pion envoyeur = action.getCaseAvant().getPion();
+        Pion receptionneur = action.getCaseApres().getPion();
 
+        if (envoyeur.aLaBalle() && passePossible(envoyeur, receptionneur)) {
             System.out.println("Passe!");
 
             envoyeur.passe(receptionneur);
 
-            //historique.ecraserFinHistorique(this.tour, this.numAction);
-            historique.addAction(envoyeur.getPosition(), Joueur.ACTION_PASSE, receptionneur.getPosition());
+            historique.addAction(action);
 
             if (partieTerminee(receptionneur)) {
                 // la partie est terminée (le vainqueur est joueurActuel())
                 diaballik.finJeu(getJoueurActuel(), VICTOIRE_NORMALE);
             }
 
-            this.getJoueurActuel().moinsAction(Joueur.ACTION_PASSE);
+            this.getJoueurActuel().moinsAction(action);
             this.numAction++;
             //if (!this.getJoueurActuel().moinsAction(Joueur.ACTION_PASSE)) {
             //    avancerTour();
@@ -425,7 +424,7 @@ public class Jeu extends Observable {
     private boolean partieTerminee(Pion pion) {
         Point p = pion.getPosition().getPoint();
 
-        if (this.getJoueurActuel().getCouleur() == Joueur.JOUEUR_VERT) {
+        if (this.getJoueurActuel().getCouleur() == Joueur.VERT) {
             for (Point e : arriveeJoueurRouge) {
                 if (e.getX() == p.getX() && e.getY() == p.getY()) {
                     return true;
@@ -453,7 +452,6 @@ public class Jeu extends Observable {
 
         updateListeners(CHANGEMENT_TOUR);
     }
-
     public void reculerTour() {
         this.tour--;
 
@@ -467,12 +465,11 @@ public class Jeu extends Observable {
     public Joueur getJoueurActuel() {
         return this.joueurs[joueurActuel % NOMBRE_JOUEURS];
     }
-
     public Joueur getJoueurAdverse() {
         return this.joueurs[(joueurActuel + 1) % NOMBRE_JOUEURS];
     }
 
-    private void updateListeners(Object o) {
+    public void updateListeners(Object o) {
         this.setChanged();
         this.notifyObservers(o);
     }
@@ -497,7 +494,6 @@ public class Jeu extends Observable {
 
         updateListeners(CHANGEMENT_GLOBAL);
     }
-
     public void refaire() {
         Action a = historique.getActionTourNum(this.tour, this.numAction);
 
@@ -523,30 +519,36 @@ public class Jeu extends Observable {
     // retourne true si action effectuée
     // false sinon
     private void executerAction(Action a, boolean defaire) {
+        boolean succes = false;
+
         switch (a.getAction()) {
-            case Joueur.ACTION_DEPLACEMENT:
+            case Action.DEPLACEMENT:
                 if (defaire) {
                     a.getCaseApres().getPion().deplacer(a.getCaseAvant());
-                    getJoueurActuel().plusAction(Joueur.ACTION_DEPLACEMENT);
                 } else {
                     a.getCaseAvant().getPion().deplacer(a.getCaseApres());
-                    getJoueurActuel().moinsAction(Joueur.ACTION_DEPLACEMENT);
                 }
 
+                succes = true;
                 break;
-            case Joueur.ACTION_PASSE:
+            case Action.PASSE:
                 if (defaire) {
                     a.getCaseApres().getPion().passe(a.getCaseAvant().getPion());
-                    getJoueurActuel().plusAction(Joueur.ACTION_PASSE);
                 } else {
                     a.getCaseAvant().getPion().passe(a.getCaseApres().getPion());
-                    getJoueurActuel().moinsAction(Joueur.ACTION_PASSE);
                 }
 
+                succes = true;
                 break;
             default:
                 System.err.println("Action non reconnue");
         }
+
+        if (succes)
+            if (defaire)
+                getJoueurActuel().plusAction(a);
+            else
+                getJoueurActuel().moinsAction(a);
     }
 
     public boolean pionAllie(Pion pion) {

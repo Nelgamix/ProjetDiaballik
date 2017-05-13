@@ -33,7 +33,7 @@ public class AffichageVue extends BorderPane implements Observer {
     public void update(Observable o, Object arg) {
         joueurActuel.setText(jeu.getJoueurActuel().getNom());
         this.getStyleClass().clear();
-        this.getStyleClass().add(jeu.getJoueurActuel().getCouleur() == Joueur.JOUEUR_VERT ? "couleurJoueurVert" : "couleurJoueurRouge");
+        this.getStyleClass().add(jeu.getJoueurActuel().getCouleur() == Joueur.VERT ? "couleurJoueurVert" : "couleurJoueurRouge");
         //this.setId(jeu.getTour() % 2 == 0 ? "affichageViewRed" : "affichageViewGreen");
     }
 }

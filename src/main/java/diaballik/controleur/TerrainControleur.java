@@ -1,9 +1,7 @@
 package diaballik.controleur;
 
 import diaballik.Diaballik;
-import diaballik.model.Case;
-import diaballik.model.Jeu;
-import diaballik.model.Pion;
+import diaballik.model.*;
 import diaballik.vue.CaseVue;
 import diaballik.vue.PionVue;
 import diaballik.vue.TerrainVue;
@@ -56,7 +54,11 @@ public class TerrainControleur {
             } else if (modeActionDeplacement) { // si on attend une passe, il faut un pion
                 if (pionVueCorrespondant != null) {
                     if (pionVueCorrespondant.getPion().getCouleur() == this.jeu.getJoueurActuel().getCouleur()) { // de la bonne couleur
-                        this.jeu.passe(pionSelectionne.getPion(), pionVueCorrespondant.getPion());
+                        Action a = new Action(pionSelectionne.getPion().getPosition(), Action.PASSE, caseCliquee.getCase(), getJeu().getTour());
+                        //this.jeu.passe(pionSelectionne.getPion(), pionVueCorrespondant.getPion());
+                        JoueurLocal j = (JoueurLocal)getJeu().getJoueurActuel();
+                        j.setActionAJouer(a);
+                        getJeu().getJoueurActuel().jouer();
                     }
                 }
 
@@ -70,7 +72,12 @@ public class TerrainControleur {
                     }
                 } else {
                     pionVueCorrespondant = this.pionSelectionne;
-                    if (this.jeu.deplacement(pionSelectionne.getPion(), caseCliquee.getCase())) { // on tente le déplacement
+
+                    Action a = new Action(pionSelectionne.getPion().getPosition(), Action.DEPLACEMENT, caseCliquee.getCase(), getJeu().getTour());
+                    JoueurLocal j = (JoueurLocal)getJeu().getJoueurActuel();
+                    j.setActionAJouer(a);
+
+                    if (j.jouer()) { // on tente le déplacement
                         // si on a réussi
                         if (jeu.getJoueurActuel().peutDeplacer() && jeu.cp.isAutoSelectionPion()) {
                             finSelection();

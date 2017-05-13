@@ -98,9 +98,9 @@ public class Dialogs {
     private Optional<ConfigurationPartie> getDialogNouvellePartie() {
         ObservableList<String> iaDifficultes = FXCollections.observableArrayList(
                 "Humain",
-                "IA Facile",
-                "IA Moyen",
-                "IA Difficile"
+                "JoueurIA Facile",
+                "JoueurIA Moyen",
+                "JoueurIA Difficile"
         );
 
         Dialog<ConfigurationPartie> config = new Dialog<>();
@@ -144,7 +144,7 @@ public class Dialogs {
         l = new Label("Nom");
         l.getStyleClass().add("dialogNewGameHeader");
         configJoueurs.add(l, 1, 0);
-        /*l = new Label("IA");
+        /*l = new Label("JoueurIA");
         l.getStyleClass().add("dialogNewGameHeader");
         configJoueurs.add(l, 2, 0);*/
 
@@ -163,15 +163,15 @@ public class Dialogs {
                     nomJoueur1.setDisable(false);
                     break;
                 case 1:
-                    nomJoueur1.setText("IA 1 Facile");
+                    nomJoueur1.setText("JoueurIA 1 Facile");
                     nomJoueur1.setDisable(true);
                     break;
                 case 2:
-                    nomJoueur1.setText("IA 1 Moyen");
+                    nomJoueur1.setText("JoueurIA 1 Moyen");
                     nomJoueur1.setDisable(true);
                     break;
                 case 3:
-                    nomJoueur1.setText("IA 1 Difficile");
+                    nomJoueur1.setText("JoueurIA 1 Difficile");
                     nomJoueur1.setDisable(true);
                     break;
             }
@@ -195,15 +195,15 @@ public class Dialogs {
                     nomJoueur2.setDisable(false);
                     break;
                 case 1:
-                    nomJoueur2.setText("IA 2 Facile");
+                    nomJoueur2.setText("JoueurIA 2 Facile");
                     nomJoueur2.setDisable(true);
                     break;
                 case 2:
-                    nomJoueur2.setText("IA 2 Moyen");
+                    nomJoueur2.setText("JoueurIA 2 Moyen");
                     nomJoueur2.setDisable(true);
                     break;
                 case 3:
-                    nomJoueur2.setText("IA 2 Difficile");
+                    nomJoueur2.setText("JoueurIA 2 Difficile");
                     nomJoueur2.setDisable(true);
                     break;
             }
@@ -263,12 +263,12 @@ public class Dialogs {
 
     private static int convertirDifficulte(String difficulte) {
         switch (difficulte) {
-            case "IA Facile":
-                return IA.DIFFICULTE_FACILE;
-            case "IA Moyen":
-                return IA.DIFFICULTE_MOYEN;
-            case "IA Difficile":
-                return IA.DIFFICULTE_DIFFICILE;
+            case "JoueurIA Facile":
+                return JoueurIA.DIFFICULTE_FACILE;
+            case "JoueurIA Moyen":
+                return JoueurIA.DIFFICULTE_MOYEN;
+            case "JoueurIA Difficile":
+                return JoueurIA.DIFFICULTE_DIFFICILE;
             default:
                 return 0;
         }

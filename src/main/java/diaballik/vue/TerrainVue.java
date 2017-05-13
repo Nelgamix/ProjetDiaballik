@@ -80,12 +80,12 @@ public class TerrainVue extends GridPane implements Observer {
 
     @Override
     public void update(Observable o, Object arg) {
-        if (terrainControleur.getJeu().getJoueurActuel().getCouleur() == Joueur.JOUEUR_VERT) {
-            for (PionVue p : pions[Joueur.JOUEUR_ROUGE]) p.desactiver();
-            for (PionVue p : pions[Joueur.JOUEUR_VERT]) p.activer();
+        if (terrainControleur.getJeu().getJoueurActuel().getCouleur() == Joueur.VERT) {
+            for (PionVue p : pions[Joueur.ROUGE]) p.desactiver();
+            for (PionVue p : pions[Joueur.VERT]) p.activer();
         } else {
-            for (PionVue p : pions[Joueur.JOUEUR_ROUGE]) p.activer();
-            for (PionVue p : pions[Joueur.JOUEUR_VERT]) p.desactiver();
+            for (PionVue p : pions[Joueur.ROUGE]) p.activer();
+            for (PionVue p : pions[Joueur.VERT]) p.desactiver();
         }
 
         int changed_type = (arg != null ? (int)arg : 0);

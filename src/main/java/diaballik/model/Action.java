@@ -1,12 +1,15 @@
 package diaballik.model;
 
 public class Action {
+    public final static int PASSE = 0;
+    public final static int DEPLACEMENT = 1;
+
     private final Case caseAvant;
     private final int action;
     private final Case caseApres;
     private final int tour;
 
-    Action(Case caseAvant, int action, Case caseApres, int tour) {
+    public Action(Case caseAvant, int action, Case caseApres, int tour) {
         this.caseAvant = caseAvant;
         this.action = action;
         this.caseApres = caseApres;
@@ -21,6 +24,17 @@ public class Action {
         this.action = Integer.parseInt(parts[2]);
         Point pointCaseApres = new Point(parts[3]);
         this.caseApres = jeu.getTerrain().getCaseSur(pointCaseApres);
+    }
+
+    static String parseAction(int action) {
+        switch (action) {
+            case PASSE:
+                return "passe";
+            case DEPLACEMENT:
+                return "déplacement";
+            default:
+                return "inconnu";
+        }
     }
 
     String getSaveString() {
@@ -52,6 +66,6 @@ public class Action {
 
     @Override
     public String toString() {
-        return "Tour " + tour + ": " + Joueur.parseAction(action) + " de " + caseAvant + " vers " + caseApres;
+        return "Tour " + tour + ": " + parseAction(action) + " de " + caseAvant + " vers " + caseApres;
     }
 }
