@@ -150,14 +150,14 @@ public class Historique {
 
     public boolean peutDefaire() {
         boolean peutDefaire = getActionTourNum(jeu.getTour(), jeu.getNumAction() - 1) != null;
-        if (!peutDefaire) peutDefaire = getActions(jeu.getTour() - 1) != null;
+        if (!peutDefaire && !jeu.cp.multijoueur) peutDefaire = getActions(jeu.getTour() - 1) != null;
 
         return peutDefaire;
     }
 
     public boolean peutRefaire() {
         boolean peutRefaire = getActionTourNum(jeu.getTour(), jeu.getNumAction()) != null;
-        if (!peutRefaire) peutRefaire = getActions(jeu.getTour() + 1) != null;
+        if (!peutRefaire && !jeu.cp.multijoueur) peutRefaire = getActions(jeu.getTour() + 1) != null;
 
         return peutRefaire;
     }

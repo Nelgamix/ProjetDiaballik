@@ -63,6 +63,7 @@ public class Pion extends Observable {
 
     @Override
     public String toString() {
-        return this.getPosition().getPoint().toString();
+        return "X";
+        //return this.getPosition().getPoint().toString();
     }
 }

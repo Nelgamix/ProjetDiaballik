@@ -39,6 +39,9 @@ public class ActionsVue extends BorderPane implements Observer {
     private final Button annuler;
     private final Button refaire;
 
+    private final Button passerTour;
+    private final Button antijeu;
+
     private final Button sauvegarde;
     private final Button parametres;
 
@@ -273,13 +276,13 @@ public class ActionsVue extends BorderPane implements Observer {
 
         this.jeu.addObserver(this);
 
-        Button passerTour = new Button("Fin tour");
-        passerTour.setOnAction(e -> jeu.avancerTour());
+        passerTour = new Button("Fin tour");
+        passerTour.setOnAction(e -> actionsControleur.actionFinTour());
         passerTour.setMaxWidth(Double.MAX_VALUE);
         passerTour.setId("passerTour");
         gpActions.add(passerTour, 0, 0, 2, 1);
 
-        Button antijeu = new Button("Antijeu");
+        antijeu = new Button("Antijeu");
         antijeu.setOnAction(e -> actionsControleur.actionAntijeu());
         antijeu.setMaxWidth(Double.MAX_VALUE);
         gpActions.add(antijeu, 0, 1, 2, 1);
@@ -304,6 +307,7 @@ public class ActionsVue extends BorderPane implements Observer {
             //actionsControleur.actionSauvegarderJeu(Diaballik.DOSSIER_SAUVEGARDES)
         });
         sauvegarde.setMaxWidth(Double.MAX_VALUE);
+        if (actionsControleur.getJeu().cp.multijoueur) sauvegarde.setDisable(true);
         gpActions.add(sauvegarde, 0, 3, 2, 1);
 
         Glyph roue = new Glyph("FontAwesome", FontAwesome.Glyph.COG);
@@ -355,7 +359,12 @@ public class ActionsVue extends BorderPane implements Observer {
         if (passRest < 1) pass.setTextFill(Color.RED);
         else pass.setTextFill(Color.BLACK);
 
-        annuler.setDisable(!jeu.historique.peutDefaire());
-        refaire.setDisable(!jeu.historique.peutRefaire());
+        boolean jaReseau = jeu.joueurActuelReseau();
+
+        passerTour.setDisable(jaReseau);
+        antijeu.setDisable(jaReseau);
+
+        annuler.setDisable(jaReseau || !jeu.historique.peutDefaire());
+        refaire.setDisable(jaReseau || !jeu.historique.peutRefaire());
     }
 }

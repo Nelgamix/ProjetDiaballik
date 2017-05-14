@@ -133,4 +133,17 @@ public class Terrain {
     public Pion[][] getPions() {
         return pions;
     }
+
+    @Override
+    public String toString() {
+        String s = "";
+
+        for (Case[] c : cases) {
+            for (Case ci : c)
+                s += ci.toString() + "\t";
+            s += "\n";
+        }
+
+        return s;
+    }
 }

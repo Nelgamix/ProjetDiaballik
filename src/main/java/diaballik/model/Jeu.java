@@ -23,11 +23,11 @@ public class Jeu extends Observable {
 
     private int tour;
     private int numAction;
-    private int joueurActuel;
+    int joueurActuel;
 
     private final ArrayList<String> nomsDisponibles = new ArrayList<>();
 
-    private final Diaballik diaballik;
+    final Diaballik diaballik;
 
     public final static int NOMBRE_JOUEURS = 2;
 
@@ -51,6 +51,8 @@ public class Jeu extends Observable {
         charger(cp);
 
         this.joueurActuel = this.getTour() - 1;
+
+        getJoueurActuel().preparerJouer();
 
         updateListeners(CHANGEMENT_GLOBAL);
     }
@@ -88,8 +90,19 @@ public class Jeu extends Observable {
                 this.tour = 1;
                 this.numAction = 1;
 
-                this.joueurs[0] = new JoueurLocal(this, Joueur.VERT);
-                this.joueurs[1] = new JoueurLocal(this, Joueur.ROUGE);
+                if (cp.typeJoueur1 == 0)
+                    this.joueurs[0] = new JoueurLocal(this, Joueur.VERT);
+                else if (cp.typeJoueur1 == 1 || cp.typeJoueur1 == 2 || cp.typeJoueur1 == 3)
+                    this.joueurs[0] = new JoueurIA(this, Joueur.VERT, cp.typeJoueur1);
+                else
+                    this.joueurs[0] = new JoueurReseau(this, Joueur.VERT);
+
+                if (cp.typeJoueur2 == 0)
+                    this.joueurs[1] = new JoueurLocal(this, Joueur.ROUGE);
+                else if (cp.typeJoueur2 == 1 || cp.typeJoueur2 == 2 || cp.typeJoueur2 == 3)
+                    this.joueurs[1] = new JoueurIA(this, Joueur.ROUGE, cp.typeJoueur2);
+                else
+                    this.joueurs[1] = new JoueurReseau(this, Joueur.ROUGE);
 
                 if (!this.joueurs[0].setNom(cp.nomJoueur1)) throw new IllegalStateException();
                 if (!this.joueurs[1].setNom(cp.nomJoueur2)) throw new IllegalStateException();
@@ -236,6 +249,9 @@ public class Jeu extends Observable {
             //if (!this.getJoueurActuel().moinsAction(Joueur.ACTION_DEPLACEMENT)) {
             //    avancerTour();
             //}
+
+            if (getJoueurActuel().peutPasser() || getJoueurActuel().peutDeplacer())
+                preparerJoueur();
 
             updateListeners(CHANGEMENT_INFOS);
 
@@ -412,6 +428,9 @@ public class Jeu extends Observable {
             //    avancerTour();
             //}
 
+            if (getJoueurActuel().peutPasser() || getJoueurActuel().peutDeplacer())
+                preparerJoueur();
+
             updateListeners(CHANGEMENT_INFOS);
 
             return true;
@@ -441,6 +460,10 @@ public class Jeu extends Observable {
         return false;
     }
 
+    public void preparerJoueur() {
+        getJoueurActuel().preparerJouer();
+    }
+
     // Change le tour actuel (change aussi le joueur actuel)
     public void avancerTour() {
         historique.ecraserInutile(tour, numAction);
@@ -449,6 +472,7 @@ public class Jeu extends Observable {
         this.tour++;
         this.numAction = 1;
         joueurActuel = ++joueurActuel % Jeu.NOMBRE_JOUEURS;
+        preparerJoueur();
 
         updateListeners(CHANGEMENT_TOUR);
     }
@@ -482,6 +506,9 @@ public class Jeu extends Observable {
         Action a = historique.getActionTourNum(this.tour, this.numAction - 1);
 
         if (a == null) {
+            if (cp.multijoueur)
+                return;
+
             if (this.tour > 1)
                 reculerTour();
 
@@ -492,12 +519,17 @@ public class Jeu extends Observable {
 
         this.executerAction(a, true);
 
-        updateListeners(CHANGEMENT_GLOBAL);
+        a.setInverse(true);
+        if (cp.multijoueur)
+            diaballik.reseau.envoyerAction(a);
     }
     public void refaire() {
         Action a = historique.getActionTourNum(this.tour, this.numAction);
 
         if (a == null) {
+            if (cp.multijoueur)
+                return;
+
             if (this.historique.tourExiste(tour + 1))
                 avancerTour();
 
@@ -508,17 +540,23 @@ public class Jeu extends Observable {
 
         this.executerAction(a, false);
 
-        updateListeners(CHANGEMENT_GLOBAL);
+        System.out.println("Refaire");
+        if (cp.multijoueur)
+            diaballik.reseau.envoyerAction(a);
     }
 
     public int getNumAction() {
         return numAction;
     }
 
+    public boolean joueurActuelReseau() {
+        return cp.multijoueur && getJoueurActuel() instanceof JoueurReseau;
+    }
+
     // Execute l'action passée en paramètre, et ajoute une action au joueur actuel si defaire = true (enlève si defaire = false)
     // retourne true si action effectuée
     // false sinon
-    private void executerAction(Action a, boolean defaire) {
+    public void executerAction(Action a, boolean defaire) {
         boolean succes = false;
 
         switch (a.getAction()) {
@@ -549,9 +587,18 @@ public class Jeu extends Observable {
                 getJoueurActuel().plusAction(a);
             else
                 getJoueurActuel().moinsAction(a);
+
+        preparerJoueur();
+
+        updateListeners(CHANGEMENT_GLOBAL);
     }
 
     public boolean pionAllie(Pion pion) {
         return pion.getCouleur() == getJoueurActuel().getCouleur();
+    }
+
+    public void mapperDepuisReseau(Action a) {
+        a.setCaseAvant(terrain.getCaseSur(a.getCaseAvant().getPoint()));
+        a.setCaseApres(terrain.getCaseSur(a.getCaseApres().getPoint()));
     }
 }

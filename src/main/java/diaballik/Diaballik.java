@@ -42,6 +42,8 @@ public class Diaballik extends Application {
 
     public final static String NOM_JEU = "Diaballik";
 
+    public Reseau reseau;
+
     private final KeyCombination ctrlS = new KeyCodeCombination(KeyCode.S, KeyCombination.CONTROL_DOWN); // sauvegarde
     private final KeyCombination ctrlZ = new KeyCodeCombination(KeyCode.Z, KeyCombination.CONTROL_DOWN); // actionDefaire
 
@@ -53,12 +55,17 @@ public class Diaballik extends Application {
     public void showSceneJeu() {
         stage.setScene(sceneJeu);
     }
-
     public void showSceneMenu() {
         stage.setScene(sceneMenu);
     }
 
-    private void nouveauJeu() {
+    public void nouveauJeuReseau(int numJoueur) {
+        ConfigurationPartie cp = new ConfigurationPartie(numJoueur, "defaultTerrain.txt");
+        initSceneJeu(cp);
+        showSceneJeu();
+    }
+
+    public void nouveauJeu() {
         Optional<ConfigurationPartie> cp = Dialogs.montrerDialogNouvellePartie();
         if (cp.isPresent()) {
             initSceneJeu(cp.get());
@@ -78,8 +85,10 @@ public class Diaballik extends Application {
         showSceneMenu();
     }
 
-    public void terminer() {
-        Platform.exit();
+    @Override
+    public void stop() throws Exception {
+        if (reseau != null && reseau.isRunning())
+            reseau.fermerReseau();
     }
 
     private void initSceneJeu(ConfigurationPartie cp) {
@@ -110,9 +119,10 @@ public class Diaballik extends Application {
         BorderPane root = new BorderPane();
         VBox vBox = new VBox(10);
         vBox.setAlignment(Pos.CENTER);
+        vBox.setPadding(new Insets(5, 200, 20, 200));
 
         Label titre = new Label(NOM_JEU);
-        titre.setPadding(new Insets(0, 0, 25, 0));
+        titre.setPadding(new Insets(10, 0, 25, 0));
 
         Button newGame = new Button("Nouvelle partie");
         newGame.setOnAction(e -> nouveauJeu());
@@ -124,6 +134,19 @@ public class Diaballik extends Application {
                 ofilename.ifPresent(s -> nouveauJeu(DOSSIER_SAUVEGARDES + "/" + s, true));
         });
 
+        Diaballik d = this;
+        Button newGameNetwork = new Button("Partie en réseau");
+        newGameNetwork.setOnAction(e -> {
+            if (reseau == null)
+                reseau = new Reseau(this);
+            else if (reseau.isRunning()) {
+                System.out.println("Le réseau tourne déjà.");
+                return;
+            }
+
+            Dialogs.montrerReseau(d);
+        });
+
         Button regles = new Button("Règles");
         regles.setOnAction(e -> getHostServices().showDocument("http://inf362.forge.imag.fr/Projet/Regles/diaballik/"));
 
@@ -131,11 +154,12 @@ public class Diaballik extends Application {
         credits.setOnAction(e -> Dialogs.montrerCredits());
 
         Button quitter = new Button("Quitter");
-        quitter.setOnAction(e -> terminer());
+        quitter.setOnAction(e -> Platform.exit());
 
         vBox.getChildren().add(titre);
         vBox.getChildren().add(newGame);
         vBox.getChildren().add(loadGame);
+        vBox.getChildren().add(newGameNetwork);
         vBox.getChildren().add(regles);
         vBox.getChildren().add(credits);
         vBox.getChildren().add(quitter);
@@ -144,7 +168,7 @@ public class Diaballik extends Application {
 
         Platform.runLater(root::requestFocus);
 
-        sceneMenu = new Scene(root, 600, 400);
+        sceneMenu = new Scene(root);
         sceneMenu.getStylesheets().add(getClass().getResource(CSS_MENU).toExternalForm());
     }
 

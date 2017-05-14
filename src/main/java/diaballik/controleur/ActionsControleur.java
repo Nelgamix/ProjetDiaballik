@@ -26,6 +26,10 @@ public class ActionsControleur {
         return actionsVue;
     }
 
+    public void actionFinTour() {
+        jeu.getJoueurActuel().finTour();
+    }
+
     public void actionMenu() {
         if (Dialogs.dialogConfirmation("Vous allez quitter le jeu. La partie sera perdue. Voulez-vous continuer?")) {
             diaballik.showSceneMenu();

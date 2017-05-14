@@ -1,8 +1,6 @@
 package diaballik.model;
 
 public class JoueurLocal extends Joueur {
-    private Action actionAJouer;
-
     public JoueurLocal(Jeu jeu, int couleur) {
         super(jeu, couleur);
     }
@@ -22,24 +20,19 @@ public class JoueurLocal extends Joueur {
 
     @Override
     public boolean jouer() {
-        boolean succes = false;
+        boolean succes = super.jouer();
 
-        if (actionPossible(actionAJouer)) {
-            if (actionAJouer.getAction() == Action.PASSE) {
-                if (jeu.passe(actionAJouer)) {
-                    succes = true;
-                }
-            } else {
-                if (jeu.deplacement(actionAJouer)) {
-                    succes = true;
-                }
-            }
-        }
+        if (succes && jeu.cp.multijoueur)
+            jeu.diaballik.reseau.envoyerAction(actionAJouer);
 
         return succes;
     }
 
-    public void setActionAJouer(Action actionAJouer) {
-        this.actionAJouer = actionAJouer;
+    @Override
+    public void finTour() {
+        if (jeu.cp.multijoueur)
+            jeu.diaballik.reseau.envoyerAction(new Action(Action.FINTOUR));
+
+        super.finTour();
     }
 }

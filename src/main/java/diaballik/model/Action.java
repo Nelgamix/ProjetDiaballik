@@ -1,22 +1,33 @@
 package diaballik.model;
 
-public class Action {
+import java.io.Serializable;
+
+public class Action implements Serializable {
     public final static int PASSE = 0;
     public final static int DEPLACEMENT = 1;
+    public final static int FINTOUR = 2;
 
-    private final Case caseAvant;
+    private Case caseAvant;
     private final int action;
-    private final Case caseApres;
+    private Case caseApres;
+    private boolean inverse; // si inverse, l'action provient de défaire
     private final int tour;
+
+    public Action(int action) {
+        this.action = action;
+        this.tour = -1;
+        this.inverse = false;
+    }
 
     public Action(Case caseAvant, int action, Case caseApres, int tour) {
         this.caseAvant = caseAvant;
         this.action = action;
         this.caseApres = caseApres;
         this.tour = tour;
+        this.inverse = false;
     }
 
-    Action(Jeu jeu, String s) {
+    public Action(Jeu jeu, String s) {
         String[] parts = s.split(":");
         this.tour = Integer.parseInt(parts[0]);
         Point pointCaseAvant = new Point(parts[1]);
@@ -24,14 +35,25 @@ public class Action {
         this.action = Integer.parseInt(parts[2]);
         Point pointCaseApres = new Point(parts[3]);
         this.caseApres = jeu.getTerrain().getCaseSur(pointCaseApres);
+        this.inverse = false;
     }
 
-    static String parseAction(int action) {
+    public void setInverse(boolean inverse) {
+        this.inverse = inverse;
+    }
+
+    public boolean isInverse() {
+        return inverse;
+    }
+
+    private static String parseAction(int action) {
         switch (action) {
             case PASSE:
                 return "passe";
             case DEPLACEMENT:
                 return "déplacement";
+            case FINTOUR:
+                return "fin du tour";
             default:
                 return "inconnu";
         }
@@ -52,20 +74,30 @@ public class Action {
         return sb.toString();
     }
 
-    Case getCaseApres() {
+    public Case getCaseApres() {
         return caseApres;
     }
 
-    int getAction() {
+    public int getAction() {
         return action;
     }
 
-    Case getCaseAvant() {
+    public Case getCaseAvant() {
         return caseAvant;
+    }
+
+    public void setCaseAvant(Case caseAvant) {
+        this.caseAvant = caseAvant;
+    }
+
+    public void setCaseApres(Case caseApres) {
+        this.caseApres = caseApres;
     }
 
     @Override
     public String toString() {
         return "Tour " + tour + ": " + parseAction(action) + " de " + caseAvant + " vers " + caseApres;
     }
+
+
 }

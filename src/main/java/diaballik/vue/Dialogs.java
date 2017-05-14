@@ -352,6 +352,8 @@ public class Dialogs {
         content.setPadding(new Insets(10));
 
         dialog.setResultConverter(b -> {
+            if (b == ButtonType.CANCEL) return null;
+
             if (filesView.getSelectionModel().getSelectedItem() != null) {
                 return filesView.getSelectionModel().getSelectedItem() + Diaballik.EXTENSION_SAUVEGARDE;
             }
@@ -508,5 +510,43 @@ public class Dialogs {
         });
 
         parametres.showAndWait();
+    }
+
+    public static void montrerReseau(Diaballik diaballik) {
+        Dialogs d = new Dialogs();
+        d.getReseau(diaballik);
+    }
+
+    private void getReseau(Diaballik diaballik) {
+        Dialog<Void> dialog = new Dialog<>();
+
+        StackPane hostAttente = new StackPane();
+        Label hostLabel = new Label("Attente d'un joueur");
+        StackPane.setAlignment(hostAttente, Pos.CENTER);
+        hostAttente.getChildren().add(hostLabel);
+
+        VBox choixType = new VBox(12);
+        choixType.setPadding(new Insets(10));
+        Button choixHost = new Button("Hoster la partie");
+        choixHost.setMaxWidth(Double.MAX_VALUE);
+        choixHost.setOnAction(e -> {
+            diaballik.reseau.d = dialog;
+            diaballik.reseau.host();
+            dialog.getDialogPane().setContent(hostAttente);
+        });
+        Button choixClient = new Button("Se connecter à un host");
+        choixClient.setMaxWidth(Double.MAX_VALUE);
+        choixClient.setOnAction(e -> {
+            diaballik.reseau.d = dialog;
+            diaballik.reseau.client("localhost");
+            dialog.getDialogPane().setContent(hostAttente);
+        });
+
+        choixType.getChildren().addAll(new Label("Choisir entre"), choixHost, choixClient);
+
+        dialog.getDialogPane().setContent(choixType);
+        dialog.setTitle("Partie en réseau");
+        dialog.getDialogPane().getButtonTypes().addAll(ButtonType.CANCEL);
+        dialog.showAndWait();
     }
 }

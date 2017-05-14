@@ -14,6 +14,8 @@ public abstract class Joueur {
 
     protected int type; // 0 = humain
 
+    protected Action actionAJouer;
+
     // Joueurs et couleurs
     public final static int VERT = 0; // J vert
     public final static int ROUGE = 1; // J rouge
@@ -84,7 +86,31 @@ public abstract class Joueur {
     }
 
     public abstract boolean preparerJouer();
-    public abstract boolean jouer();
+    public boolean jouer() {
+        boolean succes = false;
+
+        if (actionPossible(actionAJouer)) {
+            if (actionAJouer.getAction() == Action.PASSE) {
+                if (jeu.passe(actionAJouer)) {
+                    succes = true;
+                }
+            } else {
+                if (jeu.deplacement(actionAJouer)) {
+                    succes = true;
+                }
+            }
+        }
+
+        return succes;
+    }
+
+    public void finTour() {
+        jeu.avancerTour();
+    }
+
+    public void setActionAJouer(Action actionAJouer) {
+        this.actionAJouer = actionAJouer;
+    }
 
     // décrémente le compteur correspondant à action.
     // si aucun compteur > 0 à la fin, renvoie false sinon renvoie true

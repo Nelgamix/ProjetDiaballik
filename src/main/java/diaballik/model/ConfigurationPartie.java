@@ -11,11 +11,12 @@ import java.util.Properties;
 public class ConfigurationPartie {
     String cheminFichier; // chemin vers le fichier terrain ou sauvegarde
     boolean estUneSauvegarde; // vrai si cheminFichier est un fichier de sauvegarde, faux si simple fichier représentant un terrain
+    public boolean multijoueur;
 
     String nomJoueur1;
     String nomJoueur2;
-    int joueur1ia;
-    int joueur2ia;
+    int typeJoueur1;
+    int typeJoueur2;
 
     private boolean aideDeplacement;
     private boolean aidePasse;
@@ -25,15 +26,35 @@ public class ConfigurationPartie {
 
     private final static String CONFIG_FILE = "config.properties";
 
+    public ConfigurationPartie(int numJoueurReseau, String terrain) {
+        this.nomJoueur1 = "Joueur 1";
+        this.nomJoueur2 = "Joueur 2";
+
+        if (numJoueurReseau == 1) {
+            this.typeJoueur1 = 0;
+            this.typeJoueur2 = JoueurReseau.TYPE_RESEAU;
+        } else {
+            this.typeJoueur1 = JoueurReseau.TYPE_RESEAU;
+            this.typeJoueur2 = 0;
+        }
+
+        this.estUneSauvegarde = false;
+        this.cheminFichier = Diaballik.DOSSIER_TERRAINS + "/" + terrain;
+        this.multijoueur = true;
+
+        readProperties();
+    }
+
     public ConfigurationPartie(String nomJoueur1, String nomJoueur2, int joueur1ia, int joueur2ia, String terrain) {
         this.nomJoueur1 = nomJoueur1;
         this.nomJoueur2 = nomJoueur2;
 
-        this.joueur1ia = joueur1ia;
-        this.joueur2ia = joueur2ia;
+        this.typeJoueur1 = joueur1ia;
+        this.typeJoueur2 = joueur2ia;
 
         this.estUneSauvegarde = false;
         this.cheminFichier = Diaballik.DOSSIER_TERRAINS + "/" + terrain;
+        this.multijoueur = false;
 
         readProperties();
     }
@@ -42,11 +63,12 @@ public class ConfigurationPartie {
         this.nomJoueur1 = Utils.getNomAleatoire();
         this.nomJoueur2 = Utils.getNomAleatoire();
 
-        this.joueur1ia = joueur1ia;
-        this.joueur2ia = joueur2ia;
+        this.typeJoueur1 = joueur1ia;
+        this.typeJoueur2 = joueur2ia;
 
         this.estUneSauvegarde = false;
         this.cheminFichier = Diaballik.DOSSIER_TERRAINS + "/" + terrain;
+        this.multijoueur = false;
 
         readProperties();
     }
@@ -54,6 +76,7 @@ public class ConfigurationPartie {
     public ConfigurationPartie(String cheminFichier, boolean estUneSauvegarde) {
         this.cheminFichier = cheminFichier;
         this.estUneSauvegarde = estUneSauvegarde;
+        this.multijoueur = false;
 
         readProperties();
     }

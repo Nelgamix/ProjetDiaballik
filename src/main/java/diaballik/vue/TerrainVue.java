@@ -6,27 +6,42 @@ import diaballik.model.Jeu;
 import diaballik.model.Joueur;
 import diaballik.model.Point;
 import diaballik.model.Terrain;
-import javafx.scene.layout.ColumnConstraints;
-import javafx.scene.layout.GridPane;
-import javafx.scene.layout.RowConstraints;
+import javafx.geometry.Insets;
+import javafx.geometry.Pos;
+import javafx.scene.control.Label;
+import javafx.scene.layout.*;
+import javafx.scene.paint.Color;
+import javafx.scene.text.Font;
 
 import java.util.Observable;
 import java.util.Observer;
 
-public class TerrainVue extends GridPane implements Observer {
+public class TerrainVue extends StackPane implements Observer {
     private final TerrainControleur terrainControleur;
     private final Terrain terrain;
 
     private final CaseVue[][] cases; // Représentation visuelle du terrain (l'UI)
     private final PionVue[][] pions;
 
+    private final StackPane tourAdverse;
+
     public TerrainVue(TerrainControleur terrainControleur) {
         super();
+
+        GridPane root = new GridPane();
+
+        // setup le fond quand le joueur adverse jouera
+        tourAdverse = new StackPane();
+        tourAdverse.setBackground(new Background(new BackgroundFill(new Color(0, 0, 0, 0.15), CornerRadii.EMPTY, Insets.EMPTY)));
+        Label l = new Label("Tour du joueur adverse");
+        l.setFont(new Font("Open Sans", 26));
+        StackPane.setAlignment(l, Pos.CENTER);
+        tourAdverse.getChildren().add(l);
 
         this.terrainControleur = terrainControleur;
         this.terrain = terrainControleur.getJeu().getTerrain();
         terrainControleur.getJeu().addObserver(this);
-        this.setId("terrainView");
+        root.setId("terrainView");
 
         this.cases = new CaseVue[Terrain.HAUTEUR][Terrain.LARGEUR];
         this.pions = new PionVue[Jeu.NOMBRE_JOUEURS][Joueur.NOMBRE_PIONS];
@@ -48,14 +63,14 @@ public class TerrainVue extends GridPane implements Observer {
             rc[i] = r;
         }
 
-        this.getColumnConstraints().addAll(cc);
-        this.getRowConstraints().addAll(rc);
+        root.getColumnConstraints().addAll(cc);
+        root.getRowConstraints().addAll(rc);
 
         for (int i = 0; i < Terrain.HAUTEUR; i++) {
             for (int j = 0; j < Terrain.LARGEUR; j++) {
                 CaseVue cv = new CaseVue(this, terrain.getCaseSur(new Point(j, i)));
                 this.cases[i][j] = cv;
-                this.add(cv, j, i);
+                root.add(cv, j, i);
             }
         }
 
@@ -66,6 +81,8 @@ public class TerrainVue extends GridPane implements Observer {
                 this.pions[i][j] = pv;
             }
         }
+
+        this.getChildren().add(root);
 
         update(null, null);
     }
@@ -80,12 +97,19 @@ public class TerrainVue extends GridPane implements Observer {
 
     @Override
     public void update(Observable o, Object arg) {
-        if (terrainControleur.getJeu().getJoueurActuel().getCouleur() == Joueur.VERT) {
+        if (terrainControleur.getJeu().joueurActuelReseau()) {
             for (PionVue p : pions[Joueur.ROUGE]) p.desactiver();
-            for (PionVue p : pions[Joueur.VERT]) p.activer();
-        } else {
-            for (PionVue p : pions[Joueur.ROUGE]) p.activer();
             for (PionVue p : pions[Joueur.VERT]) p.desactiver();
+            if (!this.getChildren().contains(tourAdverse)) this.getChildren().add(tourAdverse);
+        } else {
+            if (this.getChildren().contains(tourAdverse)) this.getChildren().remove(tourAdverse);
+            if (terrainControleur.getJeu().getJoueurActuel().getCouleur() == Joueur.VERT) {
+                for (PionVue p : pions[Joueur.ROUGE]) p.desactiver();
+                for (PionVue p : pions[Joueur.VERT]) p.activer();
+            } else {
+                for (PionVue p : pions[Joueur.ROUGE]) p.activer();
+                for (PionVue p : pions[Joueur.VERT]) p.desactiver();
+            }
         }
 
         int changed_type = (arg != null ? (int)arg : 0);
