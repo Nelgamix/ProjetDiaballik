@@ -1,6 +1,7 @@
 package diaballik.vue;
 
 import diaballik.Diaballik;
+import diaballik.Reseau;
 import diaballik.Utils;
 import diaballik.model.*;
 import javafx.application.Platform;
@@ -14,10 +15,14 @@ import javafx.scene.layout.*;
 import javafx.util.Pair;
 import sun.misc.Launcher;
 
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStreamReader;
+import java.net.InetAddress;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.net.UnknownHostException;
 import java.util.*;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
@@ -519,11 +524,41 @@ public class Dialogs {
 
     private void getReseau(Diaballik diaballik) {
         Dialog<Void> dialog = new Dialog<>();
+        String adresseLocale = "inconnue";
+        String adresseExterne = "inconnue";
+
+        try {
+            URL whatismyip = new URL("http://checkip.amazonaws.com");
+            BufferedReader in = new BufferedReader(new InputStreamReader(
+                    whatismyip.openStream()));
+
+            adresseExterne = in.readLine(); //you get the IP as a String
+        } catch (Exception e) {}
+
+        try {
+            adresseLocale = InetAddress.getLocalHost().getHostAddress();
+        } catch (UnknownHostException uhe) {}
 
         StackPane hostAttente = new StackPane();
-        Label hostLabel = new Label("Attente d'un joueur");
+        hostAttente.setMinWidth(200);
+        Label hostLabel = new Label("Attente d'un joueur\nAdresse IP (locale): " + adresseLocale + "\nAdresse IP (externe): " + adresseExterne);
         StackPane.setAlignment(hostAttente, Pos.CENTER);
         hostAttente.getChildren().add(hostLabel);
+
+        VBox clientChoix = new VBox(10);
+        clientChoix.setPadding(new Insets(10));
+        TextField ip = new TextField("localhost");
+        Button clientChoixValider = new Button("Connexion");
+        clientChoixValider.setMaxWidth(Double.MAX_VALUE);
+        clientChoixValider.setOnAction(e -> {
+            if (ip.getText().length() > 6) {
+                diaballik.reseau.d = dialog;
+                diaballik.reseau.client(ip.getText());
+                dialog.getDialogPane().setContent(hostAttente);
+                dialog.getDialogPane().getScene().getWindow().sizeToScene();
+            }
+        });
+        clientChoix.getChildren().addAll(new Label("Choix de l'host"), ip, clientChoixValider);
 
         VBox choixType = new VBox(12);
         choixType.setPadding(new Insets(10));
@@ -533,16 +568,26 @@ public class Dialogs {
             diaballik.reseau.d = dialog;
             diaballik.reseau.host();
             dialog.getDialogPane().setContent(hostAttente);
+            dialog.getDialogPane().getScene().getWindow().sizeToScene();
         });
         Button choixClient = new Button("Se connecter à un host");
         choixClient.setMaxWidth(Double.MAX_VALUE);
         choixClient.setOnAction(e -> {
-            diaballik.reseau.d = dialog;
-            diaballik.reseau.client("localhost");
-            dialog.getDialogPane().setContent(hostAttente);
+            dialog.getDialogPane().setContent(clientChoix);
         });
 
         choixType.getChildren().addAll(new Label("Choisir entre"), choixHost, choixClient);
+
+        dialog.setResultConverter(b -> {
+            if (
+                        diaballik.reseau.getTacheActuelle() == Reseau.Tache.ATTENTE_SERVEUR
+                    ||  diaballik.reseau.getTacheActuelle() == Reseau.Tache.ATTENTE_CLIENT
+            ) {
+                diaballik.reseau.fermerReseau();
+            }
+
+            return null;
+        });
 
         dialog.getDialogPane().setContent(choixType);
         dialog.setTitle("Partie en réseau");

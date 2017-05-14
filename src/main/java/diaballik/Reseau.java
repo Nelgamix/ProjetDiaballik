@@ -16,6 +16,9 @@ public class Reseau {
     private final Diaballik diaballik;
     public Dialog<Void> d;
 
+    public enum Tache {IDLE, ATTENTE_CLIENT, ATTENTE_SERVEUR, ATTENTE_ACTION, ENVOI_ACTION}
+    private Tache tacheActuelle;
+
     private ExecutorService reseauThread;
     private boolean running;
 
@@ -36,7 +39,7 @@ public class Reseau {
         return reseauThread != null && !reseauThread.isTerminated();
     }
 
-    void fermerReseau() {
+    public void fermerReseau() {
         try {
             if (ois != null) ois.close();
             if (ois != null) oos.close();
@@ -50,14 +53,22 @@ public class Reseau {
         running = false;
     }
 
-    boolean isRunning() {
+    public boolean isRunning() {
         return running;
+    }
+
+    public Tache getTacheActuelle() {
+        return tacheActuelle;
+    }
+    public void setTacheActuelle(Tache tacheActuelle) {
+        this.tacheActuelle = tacheActuelle;
     }
 
     public void host() {
         reseauThread = Executors.newSingleThreadExecutor();
         this.running = true;
         reseauThread.execute(() -> {
+            setTacheActuelle(Tache.ATTENTE_CLIENT);
             try {
                 serverSocket = new ServerSocket(PORT);
                 clientSocket = serverSocket.accept();
@@ -66,6 +77,7 @@ public class Reseau {
                 Platform.runLater(d::close);
                 Platform.runLater(() -> diaballik.nouveauJeuReseau(1));
             } catch (IOException io) {}
+            setTacheActuelle(Tache.IDLE);
         });
     }
 
@@ -73,6 +85,7 @@ public class Reseau {
         reseauThread = Executors.newSingleThreadExecutor();
         this.running = true;
         reseauThread.execute(() -> {
+            setTacheActuelle(Tache.ATTENTE_SERVEUR);
             try {
                 clientSocket = new Socket(remote, PORT);
                 oos = new ObjectOutputStream(clientSocket.getOutputStream());
@@ -80,11 +93,13 @@ public class Reseau {
                 Platform.runLater(d::close);
                 Platform.runLater(() -> diaballik.nouveauJeuReseau(0));
             } catch (IOException io) {}
+            setTacheActuelle(Tache.IDLE);
         });
     }
 
     public void envoyerAction(Action a) {
         reseauThread.execute(() -> {
+            setTacheActuelle(Tache.ENVOI_ACTION);
             try {
                 oos.reset();
                 oos.writeObject(a);
@@ -92,17 +107,20 @@ public class Reseau {
             } catch (IOException io) {
                 io.printStackTrace();
             }
+            setTacheActuelle(Tache.IDLE);
         });
     }
 
     public void recevoirAction() {
         reseauThread.execute(() -> {
+            setTacheActuelle(Tache.ATTENTE_ACTION);
             try {
                 Action a = (Action)ois.readObject();
                 Platform.runLater(() -> actionRecue(a));
             } catch (Exception e) {
                 e.printStackTrace();
             }
+            setTacheActuelle(Tache.IDLE);
         });
     }
 
