@@ -7,11 +7,13 @@ import diaballik.model.*;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.geometry.HPos;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.control.*;
 import javafx.scene.layout.*;
+import javafx.scene.text.Font;
 import javafx.util.Pair;
 import sun.misc.Launcher;
 
@@ -235,7 +237,7 @@ public class Dialogs {
         Label terrain = new Label("Variante de terrain");
         autre.add(terrain, 0, 1);
         ComboBox<String> terrains = new ComboBox<>(terrainsDispo);
-        terrains.getSelectionModel().select(0);
+        terrains.getSelectionModel().selectFirst();
         terrains.setMaxWidth(Double.MAX_VALUE);
         autre.add(terrains, 1, 1);
 
@@ -527,6 +529,9 @@ public class Dialogs {
 
     private void getReseau(Diaballik diaballik) {
         Dialog<Void> dialog = new Dialog<>();
+
+        ObservableList<String> terrainsDispo = FXCollections.observableArrayList(getFichiersDansDossier(Diaballik.DOSSIER_TERRAINS, ".txt", true));
+
         String adresseLocale = "inconnue";
         String adresseExterne = "inconnue";
 
@@ -548,35 +553,79 @@ public class Dialogs {
         StackPane.setAlignment(hostAttente, Pos.CENTER);
         hostAttente.getChildren().add(hostLabel);
 
-        VBox clientChoix = new VBox(10);
-        clientChoix.setPadding(new Insets(10));
-        TextField ip = new TextField("localhost");
-        Button clientChoixValider = new Button("Connexion");
-        clientChoixValider.setMaxWidth(Double.MAX_VALUE);
-        clientChoixValider.setOnAction(e -> {
-            if (ip.getText().length() > 6) {
+        GridPane hostChoix = new GridPane();
+        hostChoix.setHgap(10);
+        hostChoix.setVgap(6);
+        hostChoix.setPadding(new Insets(16, 32, 16, 32));
+        TextField hostNom = new TextField("Joueur 1");
+        ComboBox<String> terrains = new ComboBox<>(terrainsDispo);
+        terrains.getSelectionModel().selectFirst();
+        terrains.setMaxWidth(Double.MAX_VALUE);
+        Button hostChoixValider = new Button("Lancer l'attente");
+        hostChoixValider.setMaxWidth(Double.MAX_VALUE);
+        hostChoixValider.setOnAction(e -> {
+            if (hostNom.getText().length() > 2) {
                 diaballik.reseau.d = dialog;
-                diaballik.reseau.client(ip.getText());
+                diaballik.reseau.host(hostNom.getText(), terrains.getSelectionModel().getSelectedItem() + ".txt");
                 dialog.getDialogPane().setContent(hostAttente);
                 dialog.getDialogPane().getScene().getWindow().sizeToScene();
             }
         });
-        clientChoix.getChildren().addAll(new Label("Choix de l'host"), ip, clientChoixValider);
+        //hostChoix.getChildren().addAll(new Label("Choix de l'host"), serveurNom, terrains, serveurChoixValider);
+        Label hostChoixTitre = new Label("Créer une partie");
+        hostChoixTitre.setFont(new Font(null, 18));
+        hostChoixTitre.setPadding(new Insets(0, 0, 10, 0));
+        GridPane.setHalignment(hostChoixTitre, HPos.CENTER);
+
+        hostChoix.add(hostChoixTitre, 0, 0, 2, 1);
+        hostChoix.add(new Label("Nom du joueur"), 0, 1);
+        hostChoix.add(hostNom, 1, 1);
+        hostChoix.add(new Label("Terrain"), 0, 2);
+        hostChoix.add(terrains, 1, 2);
+        hostChoix.add(hostChoixValider, 0, 3, 2, 1);
+
+        GridPane clientChoix = new GridPane();
+        clientChoix.setHgap(10);
+        clientChoix.setVgap(6);
+        clientChoix.setPadding(new Insets(16, 32, 16, 32));
+        TextField clientNom = new TextField("Joueur 2");
+        TextField ip = new TextField("localhost");
+        Button clientChoixValider = new Button("Connexion");
+        clientChoixValider.setMaxWidth(Double.MAX_VALUE);
+        clientChoixValider.setOnAction(e -> {
+            if (ip.getText().length() > 6 && clientNom.getText().length() > 2) {
+                diaballik.reseau.d = dialog;
+                diaballik.reseau.client(clientNom.getText(), ip.getText());
+                dialog.getDialogPane().setContent(hostAttente);
+                dialog.getDialogPane().getScene().getWindow().sizeToScene();
+            }
+        });
+        //clientChoix.getChildren().addAll(new Label("Choix de l'host"), ip, clientNom, clientChoixValider);
+        Label clientChoixTitre = new Label("Rejoindre une partie");
+        clientChoixTitre.setFont(new Font(null, 18));
+        clientChoixTitre.setPadding(new Insets(0, 0, 10, 0));
+        GridPane.setHalignment(clientChoixTitre, HPos.CENTER);
+
+        clientChoix.add(clientChoixTitre, 0, 0, 2, 1);
+        clientChoix.add(new Label("IP de l'host"), 0, 1);
+        clientChoix.add(ip, 1, 1);
+        clientChoix.add(new Label("Nom du joueur"), 0, 2);
+        clientChoix.add(clientNom, 1, 2);
+        clientChoix.add(clientChoixValider, 0, 3, 2, 1);
 
         VBox choixType = new VBox(12);
         choixType.setPadding(new Insets(10));
         Button choixHost = new Button("Hoster la partie");
         choixHost.setMaxWidth(Double.MAX_VALUE);
         choixHost.setOnAction(e -> {
-            diaballik.reseau.d = dialog;
-            diaballik.reseau.host();
-            dialog.getDialogPane().setContent(hostAttente);
+            dialog.getDialogPane().setContent(hostChoix);
             dialog.getDialogPane().getScene().getWindow().sizeToScene();
         });
         Button choixClient = new Button("Se connecter à un host");
         choixClient.setMaxWidth(Double.MAX_VALUE);
         choixClient.setOnAction(e -> {
             dialog.getDialogPane().setContent(clientChoix);
+            dialog.getDialogPane().getScene().getWindow().sizeToScene();
         });
 
         choixType.getChildren().addAll(new Label("Choisir entre"), choixHost, choixClient);

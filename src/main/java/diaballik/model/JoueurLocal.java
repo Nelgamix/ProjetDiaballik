@@ -25,6 +25,8 @@ public class JoueurLocal extends Joueur {
         if (succes && jeu.cp.multijoueur)
             jeu.diaballik.reseau.envoyerAction(actionAJouer);
 
+        finAction();
+
         return succes;
     }
 

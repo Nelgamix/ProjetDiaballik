@@ -16,7 +16,17 @@ public class Reseau {
     private final Diaballik diaballik;
     public Dialog<Void> d;
 
-    public enum Tache {IDLE, ATTENTE_CLIENT, ATTENTE_SERVEUR, ATTENTE_ACTION, ENVOI_ACTION}
+    public enum Tache {
+        IDLE,
+        ATTENTE_CLIENT,
+        ATTENTE_SERVEUR,
+        ATTENTE_ACTION,
+        ATTENTE_NOM,
+        ATTENTE_TERRAIN,
+        ENVOI_ACTION,
+        ENVOI_NOM,
+        ENVOI_TERRAIN
+    }
     private Tache tacheActuelle;
 
     private ExecutorService reseauThread;
@@ -65,7 +75,7 @@ public class Reseau {
         this.tacheActuelle = tacheActuelle;
     }
 
-    public void host() {
+    public void host(String nom, String terrain) {
         reseauThread = Executors.newSingleThreadExecutor();
         this.running = true;
         reseauThread.execute(() -> {
@@ -77,12 +87,12 @@ public class Reseau {
                 ois = new ObjectInputStream(clientSocket.getInputStream());
                 setTacheActuelle(Tache.IDLE);
                 Platform.runLater(d::close);
-                Platform.runLater(() -> diaballik.nouveauJeuReseau(1));
+                Platform.runLater(() -> diaballik.reseau.preconfigServeur(nom, terrain));
             } catch (IOException io) {}
         });
     }
 
-    public void client(String remote) {
+    public void client(String nom, String remote) {
         reseauThread = Executors.newSingleThreadExecutor();
         this.running = true;
         reseauThread.execute(() -> {
@@ -93,7 +103,7 @@ public class Reseau {
                 ois = new ObjectInputStream(clientSocket.getInputStream());
                 setTacheActuelle(Tache.IDLE);
                 Platform.runLater(d::close);
-                Platform.runLater(() -> diaballik.nouveauJeuReseau(0));
+                Platform.runLater(() -> diaballik.reseau.preconfigClient(nom));
             } catch (IOException io) {}
         });
     }
@@ -122,6 +132,38 @@ public class Reseau {
                 e.printStackTrace();
             }
             setTacheActuelle(Tache.IDLE);
+        });
+    }
+
+    public void preconfigServeur(String nom, String terrain) {
+        reseauThread.execute(() -> {
+            try {
+                String nomClient = (String)ois.readObject();
+
+                oos.reset();
+                oos.writeObject(nom);
+                oos.writeObject(terrain);
+
+                Platform.runLater(() -> diaballik.nouveauJeuReseau(1, nom, nomClient, terrain));
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        });
+    }
+
+    public void preconfigClient(String nom) {
+        reseauThread.execute(() -> {
+            try {
+                oos.reset();
+                oos.writeObject(nom);
+
+                String nomServ = (String)ois.readObject();
+                String terrain = (String)ois.readObject();
+
+                Platform.runLater(() -> diaballik.nouveauJeuReseau(0, nomServ, nom, terrain));
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
         });
     }
 

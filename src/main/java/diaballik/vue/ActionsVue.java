@@ -60,13 +60,14 @@ public class ActionsVue extends BorderPane implements Observer {
     private PopOver getSauvegarderPopover() {
         if (popOverSauvegarde != null) return popOverSauvegarde;
 
-        popOverSauvegarde = new PopOver();
-        popOverSauvegarde.setDetachable(false);
-        popOverSauvegarde.setArrowLocation(PopOver.ArrowLocation.TOP_CENTER);
-
         BorderPane contentSave = new BorderPane();
         BorderPane contentValider = new BorderPane();
         BorderPane contentFin = new BorderPane();
+
+        popOverSauvegarde = new PopOver();
+        popOverSauvegarde.setDetachable(false);
+        popOverSauvegarde.setArrowLocation(PopOver.ArrowLocation.TOP_CENTER);
+        popOverSauvegarde.setOnHidden(e -> popOverSauvegarde.setContentNode(contentSave));
 
         // Déclarations
         // contentSave
@@ -85,7 +86,7 @@ public class ActionsVue extends BorderPane implements Observer {
         // Utils
         Timeline t = new Timeline(new KeyFrame(
                 Duration.seconds(2),
-                e -> popOverSauvegarde.setContentNode(contentSave)
+                e -> popOverSauvegarde.hide()
         ));
 
         Supplier<Void> sp = () -> {
@@ -152,9 +153,18 @@ public class ActionsVue extends BorderPane implements Observer {
 
         final ConfigurationPartie cp = actionsControleur.getJeu().cp;
 
+        CheckBox parametre1 = new CheckBox();
+        CheckBox parametre2 = new CheckBox();
+        CheckBox parametre3 = new CheckBox();
+
         popOverParametres = new PopOver();
         popOverParametres.setDetachable(false);
         popOverParametres.setArrowLocation(PopOver.ArrowLocation.BOTTOM_CENTER);
+        popOverParametres.setOnHidden(e -> {
+            parametre1.setSelected(cp.isAideDeplacement());
+            parametre2.setSelected(cp.isAidePasse());
+            parametre3.setSelected(cp.isAutoSelectionPion());
+        });
 
         BorderPane content = new BorderPane();
         content.setPadding(new Insets(15));
@@ -169,13 +179,8 @@ public class ActionsVue extends BorderPane implements Observer {
         cc2.setPercentWidth(15);
         grid.getColumnConstraints().addAll(cc1, cc2);
 
-        CheckBox parametre1 = new CheckBox();
         parametre1.setSelected(cp.isAideDeplacement());
-
-        CheckBox parametre2 = new CheckBox();
         parametre2.setSelected(cp.isAidePasse());
-
-        CheckBox parametre3 = new CheckBox();
         parametre3.setSelected(cp.isAutoSelectionPion());
 
         Label labelParametre1 = new Label("Aide au déplacement des pions");
@@ -194,13 +199,7 @@ public class ActionsVue extends BorderPane implements Observer {
 
         Button valider = new Button("Valider");
         Button annuler = new Button("Annuler");
-        annuler.setOnAction(e -> {
-            popOverParametres.hide();
-
-            parametre1.setSelected(cp.isAideDeplacement());
-            parametre2.setSelected(cp.isAidePasse());
-            parametre3.setSelected(cp.isAutoSelectionPion());
-        });
+        annuler.setOnAction(e -> popOverParametres.hide());
         valider.setOnAction(e -> {
             cp.setAideDeplacement(parametre1.isSelected());
             cp.setAidePasse(parametre2.isSelected());
@@ -213,7 +212,7 @@ public class ActionsVue extends BorderPane implements Observer {
 
         HBox buttonBar = new HBox(10);
         buttonBar.setPadding(new Insets(10, 0, 0, 0));
-        buttonBar.getChildren().addAll(valider, annuler);
+        buttonBar.getChildren().addAll(annuler, valider);
         buttonBar.setAlignment(Pos.CENTER);
         BorderPane.setAlignment(buttonBar, Pos.CENTER);
 
