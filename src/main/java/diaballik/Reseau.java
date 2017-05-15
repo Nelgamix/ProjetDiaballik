@@ -40,6 +40,7 @@ public class Reseau {
     }
 
     public void fermerReseau() {
+        System.out.println("Shutdown");
         try {
             if (ois != null) ois.close();
             if (ois != null) oos.close();
@@ -74,10 +75,10 @@ public class Reseau {
                 clientSocket = serverSocket.accept();
                 oos = new ObjectOutputStream(clientSocket.getOutputStream());
                 ois = new ObjectInputStream(clientSocket.getInputStream());
+                setTacheActuelle(Tache.IDLE);
                 Platform.runLater(d::close);
                 Platform.runLater(() -> diaballik.nouveauJeuReseau(1));
             } catch (IOException io) {}
-            setTacheActuelle(Tache.IDLE);
         });
     }
 
@@ -90,10 +91,10 @@ public class Reseau {
                 clientSocket = new Socket(remote, PORT);
                 oos = new ObjectOutputStream(clientSocket.getOutputStream());
                 ois = new ObjectInputStream(clientSocket.getInputStream());
+                setTacheActuelle(Tache.IDLE);
                 Platform.runLater(d::close);
                 Platform.runLater(() -> diaballik.nouveauJeuReseau(0));
             } catch (IOException io) {}
-            setTacheActuelle(Tache.IDLE);
         });
     }
 

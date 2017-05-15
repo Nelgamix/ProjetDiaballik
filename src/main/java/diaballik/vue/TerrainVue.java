@@ -42,6 +42,7 @@ public class TerrainVue extends StackPane implements Observer {
         this.terrain = terrainControleur.getJeu().getTerrain();
         terrainControleur.getJeu().addObserver(this);
         root.setId("terrainView");
+        root.setPrefSize(Terrain.LARGEUR * 80, Terrain.LARGEUR * 80);
 
         this.cases = new CaseVue[Terrain.HAUTEUR][Terrain.LARGEUR];
         this.pions = new PionVue[Jeu.NOMBRE_JOUEURS][Joueur.NOMBRE_PIONS];

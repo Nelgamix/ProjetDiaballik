@@ -54,9 +54,15 @@ public class Diaballik extends Application {
 
     public void showSceneJeu() {
         stage.setScene(sceneJeu);
+        stage.sizeToScene();
+        stage.setWidth(stage.getWidth());
+        stage.setHeight(stage.getHeight());
     }
     public void showSceneMenu() {
         stage.setScene(sceneMenu);
+        stage.sizeToScene();
+        stage.setWidth(stage.getWidth());
+        stage.setHeight(stage.getHeight());
     }
 
     public void nouveauJeuReseau(int numJoueur) {
@@ -179,7 +185,7 @@ public class Diaballik extends Application {
         initSceneMenu();
 
         stage.setTitle(NOM_JEU);
-        //stage.setResizable(false);
+        stage.setResizable(true);
         stage.setScene(sceneMenu);
         stage.show();
     }

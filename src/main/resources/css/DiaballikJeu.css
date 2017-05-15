@@ -11,13 +11,13 @@
 
 .indicateurActionsRestantes {
     -fx-font-size: 250%;
-    -fx-padding: -10px 0 -16px 0;
+    -fx-padding: -10px 0 -10px 0;
 }
 
 .vBoxIndicateurs {
     -fx-alignment: center;
     -fx-text-alignment: center;
-    -fx-font-size: 175%;
+    -fx-font-size: 150%;
 }
 
 /*#actionsView > VBox > .button {

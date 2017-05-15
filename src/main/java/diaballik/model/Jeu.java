@@ -250,8 +250,7 @@ public class Jeu extends Observable {
             //    avancerTour();
             //}
 
-            if (getJoueurActuel().peutPasser() || getJoueurActuel().peutDeplacer())
-                preparerJoueur();
+            preparerJoueur();
 
             updateListeners(CHANGEMENT_INFOS);
 
@@ -428,8 +427,7 @@ public class Jeu extends Observable {
             //    avancerTour();
             //}
 
-            if (getJoueurActuel().peutPasser() || getJoueurActuel().peutDeplacer())
-                preparerJoueur();
+            preparerJoueur();
 
             updateListeners(CHANGEMENT_INFOS);
 

@@ -103,9 +103,9 @@ public class Dialogs {
     private Optional<ConfigurationPartie> getDialogNouvellePartie() {
         ObservableList<String> iaDifficultes = FXCollections.observableArrayList(
                 "Humain",
-                "JoueurIA Facile",
-                "JoueurIA Moyen",
-                "JoueurIA Difficile"
+                "IA Facile",
+                "IA Moyen",
+                "IA Difficile"
         );
 
         Dialog<ConfigurationPartie> config = new Dialog<>();
@@ -168,15 +168,15 @@ public class Dialogs {
                     nomJoueur1.setDisable(false);
                     break;
                 case 1:
-                    nomJoueur1.setText("JoueurIA 1 Facile");
+                    nomJoueur1.setText("IA 1 Facile");
                     nomJoueur1.setDisable(true);
                     break;
                 case 2:
-                    nomJoueur1.setText("JoueurIA 1 Moyen");
+                    nomJoueur1.setText("IA 1 Moyen");
                     nomJoueur1.setDisable(true);
                     break;
                 case 3:
-                    nomJoueur1.setText("JoueurIA 1 Difficile");
+                    nomJoueur1.setText("IA 1 Difficile");
                     nomJoueur1.setDisable(true);
                     break;
             }
@@ -200,15 +200,15 @@ public class Dialogs {
                     nomJoueur2.setDisable(false);
                     break;
                 case 1:
-                    nomJoueur2.setText("JoueurIA 2 Facile");
+                    nomJoueur2.setText("IA 2 Facile");
                     nomJoueur2.setDisable(true);
                     break;
                 case 2:
-                    nomJoueur2.setText("JoueurIA 2 Moyen");
+                    nomJoueur2.setText("IA 2 Moyen");
                     nomJoueur2.setDisable(true);
                     break;
                 case 3:
-                    nomJoueur2.setText("JoueurIA 2 Difficile");
+                    nomJoueur2.setText("IA 2 Difficile");
                     nomJoueur2.setDisable(true);
                     break;
             }
@@ -268,11 +268,11 @@ public class Dialogs {
 
     private static int convertirDifficulte(String difficulte) {
         switch (difficulte) {
-            case "JoueurIA Facile":
+            case "IA Facile":
                 return JoueurIA.DIFFICULTE_FACILE;
-            case "JoueurIA Moyen":
+            case "IA Moyen":
                 return JoueurIA.DIFFICULTE_MOYEN;
-            case "JoueurIA Difficile":
+            case "IA Difficile":
                 return JoueurIA.DIFFICULTE_DIFFICILE;
             default:
                 return 0;
@@ -291,8 +291,10 @@ public class Dialogs {
         dialog.setTitle("Charger une partie");
 
         ButtonType boutonOuvrirType = new ButtonType("Ouvrir", ButtonBar.ButtonData.OK_DONE);
-        dialog.getDialogPane().getButtonTypes().addAll(boutonOuvrirType, ButtonType.CANCEL);
+        ButtonType boutonAnnulerType = new ButtonType("Annuler", ButtonBar.ButtonData.CANCEL_CLOSE);
+        dialog.getDialogPane().getButtonTypes().addAll(boutonOuvrirType, boutonAnnulerType);
         Node boutonJouer = dialog.getDialogPane().lookupButton(boutonOuvrirType);
+        Node boutonAnnuler = dialog.getDialogPane().lookupButton(boutonAnnulerType);
         boutonJouer.setDisable(true);
 
         GridPane content = new GridPane();
@@ -332,6 +334,7 @@ public class Dialogs {
         filesView.setMaxHeight(Double.MAX_VALUE);
         filesView.setOnMouseClicked(e -> {
             if (e.getClickCount() == 2) {
+                dialog.setResult(filesView.getSelectionModel().getSelectedItem() + Diaballik.EXTENSION_SAUVEGARDE);
                 dialog.close();
             }
         });
@@ -357,7 +360,7 @@ public class Dialogs {
         content.setPadding(new Insets(10));
 
         dialog.setResultConverter(b -> {
-            if (b == ButtonType.CANCEL) return null;
+            if (b == boutonAnnulerType) return null;
 
             if (filesView.getSelectionModel().getSelectedItem() != null) {
                 return filesView.getSelectionModel().getSelectedItem() + Diaballik.EXTENSION_SAUVEGARDE;

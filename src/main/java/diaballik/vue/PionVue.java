@@ -78,7 +78,7 @@ public class PionVue extends Circle implements Observer {
     private void setRayon() {
         double r = getRayon();
 
-        if (r != this.getRadius()) {
+        if (r > 0 && r != this.getRadius()) {
             final Timeline transitionTaille = new Timeline();
             transitionTaille.setAutoReverse(false);
             transitionTaille.setCycleCount(1);

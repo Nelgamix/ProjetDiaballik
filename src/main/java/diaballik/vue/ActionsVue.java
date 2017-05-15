@@ -249,7 +249,7 @@ public class ActionsVue extends BorderPane implements Observer {
         vBoxInfosPass.getChildren().add(passInd);
 
         Label sectionInd = new Label("Actions restantes");
-        sectionInd.setStyle("-fx-font-size: 20px; -fx-font-style: italic");
+        sectionInd.setStyle("-fx-font-size: 18px; -fx-font-style: italic");
         vBoxInfos.getChildren().add(sectionInd);
         vBoxInfos.getChildren().add(vBoxInfosDepl);
         vBoxInfos.getChildren().add(vBoxInfosPass);
