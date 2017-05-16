@@ -78,34 +78,20 @@ public class Jeu extends Observable {
 
                 // joueur 1
                 if ((sCurrentLine = br.readLine()) != null) {
-                    this.joueurs[0] = new JoueurLocal(this, Joueur.VERT, sCurrentLine);
+                    this.joueurs[0] = constructJoueur(Integer.parseInt(sCurrentLine.split(":")[1]), Joueur.VERT, sCurrentLine.split(":")[0]);
                 }
 
                 // joueur 2
                 if ((sCurrentLine = br.readLine()) != null) {
-                    this.joueurs[1] = new JoueurLocal(this, Joueur.ROUGE, sCurrentLine);
+                    this.joueurs[1] = constructJoueur(Integer.parseInt(sCurrentLine.split(":")[1]), Joueur.ROUGE, sCurrentLine.split(":")[0]);
                 }
             } else {
                 this.tour = 1;
                 this.joueurActuel = 0;
                 this.numAction = 1;
 
-                if (cp.typeJoueur1 == 0)
-                    this.joueurs[0] = new JoueurLocal(this, Joueur.VERT);
-                else if (cp.typeJoueur1 == 1 || cp.typeJoueur1 == 2 || cp.typeJoueur1 == 3)
-                    this.joueurs[0] = new JoueurIA(this, Joueur.VERT, cp.typeJoueur1);
-                else
-                    this.joueurs[0] = new JoueurReseau(this, Joueur.VERT);
-
-                if (cp.typeJoueur2 == 0)
-                    this.joueurs[1] = new JoueurLocal(this, Joueur.ROUGE);
-                else if (cp.typeJoueur2 == 1 || cp.typeJoueur2 == 2 || cp.typeJoueur2 == 3)
-                    this.joueurs[1] = new JoueurIA(this, Joueur.ROUGE, cp.typeJoueur2);
-                else
-                    this.joueurs[1] = new JoueurReseau(this, Joueur.ROUGE);
-
-                if (!this.joueurs[0].setNom(cp.nomJoueur1)) throw new IllegalStateException();
-                if (!this.joueurs[1].setNom(cp.nomJoueur2)) throw new IllegalStateException();
+                this.joueurs[0] = constructJoueur(cp.typeJoueur1, Joueur.VERT, cp.nomJoueur1);
+                this.joueurs[1] = constructJoueur(cp.typeJoueur2, Joueur.ROUGE, cp.nomJoueur2);
             }
 
             StringBuilder terrainString = new StringBuilder();
@@ -124,6 +110,21 @@ public class Jeu extends Observable {
         } catch (IOException ioe) {
             ioe.printStackTrace();
         }
+    }
+
+    private Joueur constructJoueur(int type, int couleur, String nom) {
+        Joueur j;
+
+        if (type == 0)
+            j = new JoueurLocal(this, couleur);
+        else if (type == 1 || type == 2 || type == 3)
+            j = new JoueurIA(this, couleur, type);
+        else
+            j = new JoueurReseau(this, couleur);
+
+        j.setNom(nom);
+
+        return j;
     }
 
     private void setNumAction() {
@@ -222,7 +223,13 @@ public class Jeu extends Observable {
         }
 
         if (n >= 3) {
+            if (diaballik.getJeu().cp.multijoueur) {
+                Action aj = new Action(Action.ANTIJEU);
+                diaballik.reseau.envoyerAction(aj);
+            }
+
             diaballik.finJeu(getJoueurActuel(), VICTOIRE_ANTIJEU);
+
             return "";
         } else {
             return "étape 3 non valide (pions alliés collés à la ligne adverse = " + n + "/3)";

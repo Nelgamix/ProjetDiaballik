@@ -145,7 +145,7 @@ public class Utils {
             if (files != null) {
                 for (File f : files) {
                     if (f.isFile()) {
-                        results.add(f.getName());
+                        results.add(f.getName().substring(0, f.getName().length() - extension.length()));
                     }
                 }
             }

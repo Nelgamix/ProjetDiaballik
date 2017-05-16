@@ -121,6 +121,7 @@ public class Terrain {
 
     public String getSaveString() {
         StringBuilder sb = new StringBuilder();
+        sb.append(nom).append("\n");
         boolean skip = true;
 
         for (Case[] cs : cases) {

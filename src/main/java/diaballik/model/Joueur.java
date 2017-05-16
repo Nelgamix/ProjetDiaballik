@@ -183,6 +183,17 @@ public abstract class Joueur {
     }
 
     String getSaveString() {
-        return this.getNom() + ":" + this.getType() + ":" + this.getDeplacementsRestants() + ":" + this.getPassesRestantes() + "\n";
+        return this.getNom() + ":" + this.getType() + "\n";
+    }
+
+    @Override
+    public String toString() {
+        return "Joueur{" +
+                "nom='" + nom + '\'' +
+                ", couleur=" + couleur +
+                ", deplacementsRestants=" + deplacementsRestants +
+                ", passesRestantes=" + passesRestantes +
+                ", type=" + type +
+                '}';
     }
 }

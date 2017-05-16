@@ -2,6 +2,7 @@ package diaballik;
 
 import diaballik.model.Action;
 import javafx.application.Platform;
+import javafx.scene.control.Alert;
 import javafx.scene.control.Dialog;
 
 import java.io.IOException;
@@ -112,7 +113,7 @@ public class Reseau {
                 oos.writeObject(a);
                 if (a.isInverse()) a.setInverse(false);
             } catch (IOException io) {
-                io.printStackTrace();
+                Platform.runLater(diaballik.reseau::deconnecte);
             }
             setTacheActuelle(Tache.IDLE);
         });
@@ -125,7 +126,7 @@ public class Reseau {
                 Action a = (Action)ois.readObject();
                 Platform.runLater(() -> actionRecue(a));
             } catch (Exception e) {
-                e.printStackTrace();
+                Platform.runLater(diaballik.reseau::deconnecte);
             }
             setTacheActuelle(Tache.IDLE);
         });
@@ -164,15 +165,36 @@ public class Reseau {
     }
 
     private void actionRecue(Action a) {
-        if (a.getAction() == Action.FINTOUR) {
-            diaballik.getJeu().avancerTour();
-        } else if (a.isInverse()) {
-            diaballik.getJeu().mapperDepuisReseau(a);
-            diaballik.getJeu().executerAction(a, true);
-        } else {
-            diaballik.getJeu().mapperDepuisReseau(a);
-            diaballik.getJeu().getJoueurActuel().setActionAJouer(a);
-            diaballik.getJeu().getJoueurActuel().jouer();
+        switch (a.getAction()) {
+            case Action.FINTOUR:
+                diaballik.getJeu().avancerTour();
+                break;
+            case Action.ANTIJEU:
+                Platform.runLater(diaballik.getJeu()::antijeu);
+                break;
+            default:
+                if (a.isInverse()) {
+                    diaballik.getJeu().mapperDepuisReseau(a);
+                    diaballik.getJeu().executerAction(a, true);
+                } else {
+                    diaballik.getJeu().mapperDepuisReseau(a);
+                    diaballik.getJeu().getJoueurActuel().setActionAJouer(a);
+                    diaballik.getJeu().getJoueurActuel().jouer();
+                }
         }
+    }
+
+    private void deconnecte() {
+        fermerReseau();
+
+        Alert alert = new Alert(Alert.AlertType.ERROR);
+
+        alert.setTitle("Déconnecté");
+        alert.setHeaderText("Un joueur a été déconnecté");
+        alert.setContentText("Aïe aïe aïe! Vous (ou votre adversaire) a été déconnecté.");
+
+        alert.showAndWait();
+
+        diaballik.showSceneMenu();
     }
 }

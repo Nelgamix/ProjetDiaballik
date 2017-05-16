@@ -6,6 +6,7 @@ public class Action implements Serializable {
     public final static int PASSE = 0;
     public final static int DEPLACEMENT = 1;
     public final static int FINTOUR = 2;
+    public final static int ANTIJEU = 3;
 
     private Case caseAvant;
     private final int action;

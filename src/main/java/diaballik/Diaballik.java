@@ -87,6 +87,8 @@ public class Diaballik extends Application {
     }
 
     public void finJeu(Joueur gagnant, int victoireType) {
+        reseau.fermerReseau();
+
         Dialogs.montrerFinJeu(gagnant, victoireType);
 
         showSceneMenu();
