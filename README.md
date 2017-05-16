@@ -1,20 +1,28 @@
 # ProjetDiaballik
 ## To do
-Par ordre de priorité:
 voir TODO.md
 
 ## Images (pas à jour)
 IHM réalisées par Loïc Houdebine (voir lien dans la dernière section)
+
 ### Menu
 ![Menu](screenshots/menu.png)
 ### Nouvelle partie
-![Menu](screenshots/newGame.png)
+![New Game](screenshots/newGame.png)
 ### Charger partie
-![Menu](screenshots/loadGame.png)
+![Load Game](screenshots/loadGame.png)
+### Partie en réseau (menu)
+![Multiplayer Menu](screenshots/multiplayerMenu.png)
+### Partie en réseau (menu créer)
+![Multiplayer Menu Host](screenshots/multiplayerHost.png)
+### Partie en réseau (menu rejoindre)
+![Multiplayer Menu Connect](screenshots/multiplayerConnect.png)
 ### Jeu
-![Menu](screenshots/game.png)
+![Game](screenshots/game.png)
+### Jeu contre IA
+![Game vs AI](screenshots/vsAI.png)
 ### Crédits
-![Menu](screenshots/credits.png)
+![Credits](screenshots/credits.png)
 
 ## Liens
 [Site projet](http://inf362.forge.imag.fr/Projet/)

@@ -216,8 +216,8 @@ public class Dialogs {
 
         // autre
         // row noms aléatoires
-        Label nomsAleatoires = new Label("Noms aléatoires");
-        autre.add(nomsAleatoires, 0, 0);
+        /*Label nomsAleatoires = new Label("Noms aléatoires");
+        autre.add(nomsAleatoires, 0, 1);
         CheckBox checkNomsAleatoires = new CheckBox();
         checkNomsAleatoires.setDisable(true);
         checkNomsAleatoires.selectedProperty().addListener((o, ov, nv) -> {
@@ -225,14 +225,14 @@ public class Dialogs {
             nomJoueur2.setDisable(nv);
             boutonJouer.setDisable(!nv);
         });
-        autre.add(checkNomsAleatoires, 1, 0);
+        autre.add(checkNomsAleatoires, 1, 1);*/
 
         // row terrain
         Label terrain = new Label("Variante de terrain");
-        autre.add(terrain, 0, 1);
+        autre.add(terrain, 0, 0);
         TerrainComboBox terrains = new TerrainComboBox();
         terrains.setMaxWidth(Double.MAX_VALUE);
-        autre.add(terrains, 1, 1);
+        autre.add(terrains, 1, 0);
 
         // setup
         Label titre = new Label("Nouvelle partie");
@@ -249,14 +249,14 @@ public class Dialogs {
             if (b == boutonJouerType) {
                 int ia1 = convertirDifficulte(iaJoueur1.getValue());
                 int ia2 = convertirDifficulte(iaJoueur2.getValue());
-                if (checkNomsAleatoires.isSelected()) {
-                    return new ConfigurationPartie(ia1, ia2, terrains.getTerrainSelectionnePath());
-                } else {
+                //if (checkNomsAleatoires.isSelected()) {
+                    //return new ConfigurationPartie(ia1, ia2, terrains.getTerrainSelectionnePath());
+                //} else {
                     if (!Utils.nomValide(nomJoueur1.getText()) || !Utils.nomValide(nomJoueur2.getText()))
                         return null;
                     else
                         return new ConfigurationPartie(nomJoueur1.getText(), nomJoueur2.getText(), ia1, ia2, terrains.getTerrainSelectionnePath());
-                }
+                //}
             }
 
             return null;
