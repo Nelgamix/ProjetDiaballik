@@ -473,6 +473,9 @@ public class Jeu extends Observable {
         preparerJoueur();
 
         updateListeners(CHANGEMENT_TOUR);
+
+        /*if (getJoueurActuel() instanceof JoueurIA)
+            ((JoueurIA) getJoueurActuel()).jouerIA();*/
     }
     public void reculerTour() {
         this.tour--;

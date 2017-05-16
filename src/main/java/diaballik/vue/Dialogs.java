@@ -565,7 +565,7 @@ public class Dialogs {
 
         VBox choixType = new VBox(12);
         choixType.setPadding(new Insets(10));
-        Button choixHost = new Button("Hoster la partie");
+        Button choixHost = new Button("Créer une partie");
         choixHost.setMaxWidth(Double.MAX_VALUE);
         choixHost.setOnAction(e -> {
             diaballik.reseau.d = dialog;
@@ -573,7 +573,7 @@ public class Dialogs {
             dialog.getDialogPane().setContent(hostAttente);
             dialog.getDialogPane().getScene().getWindow().sizeToScene();
         });
-        Button choixClient = new Button("Se connecter à un host");
+        Button choixClient = new Button("Rejoindre une partie");
         choixClient.setMaxWidth(Double.MAX_VALUE);
         choixClient.setOnAction(e -> {
             dialog.getDialogPane().setContent(clientChoix);

@@ -85,6 +85,10 @@ public abstract class Joueur {
         }
     }
 
+    public boolean estUneIA() {
+        return false;
+    }
+
     public abstract boolean preparerJouer();
     public boolean jouer() {
         boolean succes = false;

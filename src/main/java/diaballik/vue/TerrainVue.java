@@ -23,7 +23,7 @@ public class TerrainVue extends StackPane implements Observer {
     private final CaseVue[][] cases; // Représentation visuelle du terrain (l'UI)
     private final PionVue[][] pions;
 
-    private final StackPane tourAdverse;
+    private final StackPane tourAdverseReseau, tourAdverseIA;
 
     public TerrainVue(TerrainControleur terrainControleur) {
         super();
@@ -31,12 +31,19 @@ public class TerrainVue extends StackPane implements Observer {
         GridPane root = new GridPane();
 
         // setup le fond quand le joueur adverse jouera
-        tourAdverse = new StackPane();
-        tourAdverse.setBackground(new Background(new BackgroundFill(new Color(0, 0, 0, 0.15), CornerRadii.EMPTY, Insets.EMPTY)));
+        tourAdverseReseau = new StackPane();
+        tourAdverseReseau.setBackground(new Background(new BackgroundFill(new Color(0, 0, 0, 0.15), CornerRadii.EMPTY, Insets.EMPTY)));
         Label l = new Label("Tour du joueur adverse");
         l.setFont(new Font("Open Sans", 26));
         StackPane.setAlignment(l, Pos.CENTER);
-        tourAdverse.getChildren().add(l);
+        tourAdverseReseau.getChildren().add(l);
+
+        tourAdverseIA = new StackPane();
+        tourAdverseIA.setBackground(new Background(new BackgroundFill(new Color(0, 0, 0, 0.15), CornerRadii.EMPTY, Insets.EMPTY)));
+        Label lia = new Label("Tour de l'IA");
+        lia.setFont(new Font("Open Sans", 26));
+        StackPane.setAlignment(lia, Pos.CENTER);
+        tourAdverseIA.getChildren().add(lia);
 
         this.terrainControleur = terrainControleur;
         this.terrain = terrainControleur.getJeu().getTerrain();
@@ -98,12 +105,14 @@ public class TerrainVue extends StackPane implements Observer {
 
     @Override
     public void update(Observable o, Object arg) {
-        if (terrainControleur.getJeu().joueurActuelReseau()) {
+        if (terrainControleur.getJeu().joueurActuelReseau() || terrainControleur.getJeu().getJoueurActuel().estUneIA()) {
             for (PionVue p : pions[Joueur.ROUGE]) p.desactiver();
             for (PionVue p : pions[Joueur.VERT]) p.desactiver();
-            if (!this.getChildren().contains(tourAdverse)) this.getChildren().add(tourAdverse);
+            if (terrainControleur.getJeu().joueurActuelReseau() && !this.getChildren().contains(tourAdverseReseau)) this.getChildren().add(tourAdverseReseau);
+            if (terrainControleur.getJeu().getJoueurActuel().estUneIA() && !this.getChildren().contains(tourAdverseIA)) this.getChildren().add(tourAdverseIA);
         } else {
-            if (this.getChildren().contains(tourAdverse)) this.getChildren().remove(tourAdverse);
+            if (this.getChildren().contains(tourAdverseReseau)) this.getChildren().remove(tourAdverseReseau);
+            if (this.getChildren().contains(tourAdverseIA)) this.getChildren().remove(tourAdverseIA);
             if (terrainControleur.getJeu().getJoueurActuel().getCouleur() == Joueur.VERT) {
                 for (PionVue p : pions[Joueur.ROUGE]) p.desactiver();
                 for (PionVue p : pions[Joueur.VERT]) p.activer();

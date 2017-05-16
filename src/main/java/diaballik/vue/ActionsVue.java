@@ -360,11 +360,12 @@ public class ActionsVue extends BorderPane implements Observer {
         else pass.setTextFill(Color.BLACK);
 
         boolean jaReseau = jeu.joueurActuelReseau();
+        boolean jaIA = jeu.getJoueurActuel().estUneIA();
 
-        passerTour.setDisable(jaReseau);
-        antijeu.setDisable(jaReseau);
+        passerTour.setDisable(jaReseau || jaIA);
+        antijeu.setDisable(jaReseau || jaIA);
 
-        annuler.setDisable(jaReseau || !jeu.historique.peutDefaire());
-        refaire.setDisable(jaReseau || !jeu.historique.peutRefaire());
+        annuler.setDisable(jaReseau || jaIA || !jeu.historique.peutDefaire());
+        refaire.setDisable(jaReseau || jaIA || !jeu.historique.peutRefaire());
     }
 }
