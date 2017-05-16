@@ -3,6 +3,7 @@ package diaballik;
 import diaballik.model.Joueur;
 import diaballik.model.JoueurLocal;
 import diaballik.model.Metadonnees;
+import diaballik.model.Terrain;
 import sun.misc.Launcher;
 
 import java.io.*;
@@ -87,6 +88,15 @@ public class Utils {
             if ((sCurrentLine = i.readLine()) != null) { // joueur rouge
                 md.joueurRouge = new JoueurLocal(Joueur.ROUGE, sCurrentLine);
             }
+
+            int n = 0;
+            StringBuilder ts = new StringBuilder();
+            while (n < Terrain.HAUTEUR + 1 && (sCurrentLine = i.readLine()) != null) {
+                ts.append(sCurrentLine).append("\n");
+                n++;
+            }
+
+            md.terrain = new Terrain(ts.toString());
 
             return md;
         } catch (IOException ignored) {}

@@ -36,3 +36,8 @@
 #dialogReseau > #labelAttente {
     -fx-font-size: 16px;
 }
+
+.apercuTerrain {
+    -fx-border-color: #737373;
+    -fx-border-width: 1px;
+}

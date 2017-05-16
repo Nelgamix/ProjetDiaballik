@@ -303,7 +303,7 @@ public class Dialogs {
 
         GridPane content = new GridPane();
         content.setHgap(20);
-        //content.setVgap(15);
+        content.setVgap(5);
         ColumnConstraints cc1 = new ColumnConstraints();
         ColumnConstraints cc2 = new ColumnConstraints();
         cc1.setPercentWidth(33);
@@ -325,13 +325,19 @@ public class Dialogs {
         Label labelInfoTour = new Label(),
                 labelInfoNomJoueur1 = new Label(),
                 labelInfoNomJoueur2 = new Label();
+        TerrainApercu ta = new TerrainApercu();
         infosSave.add(new Label("Tour"), 0, 0);
         infosSave.add(new Label("Nom joueur 1"), 0, 1);
         infosSave.add(new Label("Nom joueur 2"), 0, 2);
+        infosSave.add(new Label("Aperçu du terrain"), 0, 3);
 
         infosSave.add(labelInfoTour, 1, 0);
         infosSave.add(labelInfoNomJoueur1, 1, 1);
         infosSave.add(labelInfoNomJoueur2, 1, 2);
+
+        GridPane.setHgrow(ta, Priority.ALWAYS);
+        GridPane.setVgrow(ta, Priority.ALWAYS);
+        infosSave.add(ta, 1, 3);
 
         // Partie de gauche (liste de saves)
         ListView<String> filesView = new ListView<>(obs);
@@ -349,9 +355,11 @@ public class Dialogs {
 
             // update infos
             if (filesView.getSelectionModel().getSelectedIndex() > -1) {
-                labelInfoTour.setText(mds.get(filesView.getSelectionModel().getSelectedIndex()).tour + "");
-                labelInfoNomJoueur1.setText(mds.get(filesView.getSelectionModel().getSelectedIndex()).joueurVert.getNom());
-                labelInfoNomJoueur2.setText(mds.get(filesView.getSelectionModel().getSelectedIndex()).joueurRouge.getNom());
+                Metadonnees md = mds.get(filesView.getSelectionModel().getSelectedIndex());
+                labelInfoTour.setText(md.tour + "");
+                labelInfoNomJoueur1.setText(md.joueurVert.getNom());
+                labelInfoNomJoueur2.setText(md.joueurRouge.getNom());
+                ta.setTerrain(md.terrain);
             }
         });
         filesView.getSelectionModel().selectFirst();
@@ -382,7 +390,7 @@ public class Dialogs {
         contentWrapper.setCenter(content);
         dialog.getDialogPane().setContent(contentWrapper);
         dialog.getDialogPane().getStylesheets().add(Diaballik.class.getResource(Diaballik.CSS_DIALOG).toExternalForm());
-        dialog.getDialogPane().setPrefSize(500, 400);
+        dialog.getDialogPane().setPrefSize(640, 440);
 
         return dialog.showAndWait();
     }
@@ -483,6 +491,7 @@ public class Dialogs {
 
     private void getReseau(Diaballik diaballik) {
         Dialog<Void> dialog = new Dialog<>();
+        VBox choixType = new VBox(12);
 
         dialog.getDialogPane().getButtonTypes().add(ButtonType.CLOSE);
         Node closeButton = dialog.getDialogPane().lookupButton(ButtonType.CLOSE);
@@ -496,12 +505,16 @@ public class Dialogs {
         contentWrapper.setPadding(new Insets(20));
         Label titre = new Label("Partie en réseau");
 
-        StackPane hostAttente = new StackPane();
+        BorderPane hostAttente = new BorderPane();
         hostAttente.setMinWidth(200);
         hostAttente.setId("labelAttente");
         Label hostLabel = new Label("Adresse IP (locale): " + adresseLocale + "\nAdresse IP (externe): " + adresseExterne);
-        StackPane.setAlignment(hostAttente, Pos.CENTER);
-        hostAttente.getChildren().add(hostLabel);
+        BorderPane.setAlignment(hostAttente, Pos.CENTER);
+        Button quitter = new Button("Annuler");
+        quitter.setMaxWidth(Double.MAX_VALUE);
+        quitter.setOnAction(e -> dialog.close());
+        hostAttente.setCenter(hostLabel);
+        hostAttente.setBottom(quitter);
 
         GridPane hostChoix = new GridPane();
         hostChoix.setHgap(14);
@@ -518,7 +531,7 @@ public class Dialogs {
 
         HBox hostBoutons = new HBox(10);
         Button hostChoixValider = new Button("Lancer l'attente");
-        Button hostChoixAnnuler = new Button("Annuler");
+        Button hostChoixAnnuler = new Button("Retour");
         hostChoixValider.setMaxWidth(Double.MAX_VALUE);
         hostChoixAnnuler.setMaxWidth(Double.MAX_VALUE);
         hostChoixValider.setOnAction(e -> {
@@ -530,7 +543,11 @@ public class Dialogs {
                 dialog.getDialogPane().getScene().getWindow().sizeToScene();
             }
         });
-        hostChoixAnnuler.setOnAction(e -> dialog.close());
+        hostChoixAnnuler.setOnAction(e -> {
+            titre.setText("Partie en réseau");
+            contentWrapper.setCenter(choixType);
+            dialog.getDialogPane().getScene().getWindow().sizeToScene();
+        });
         HBox.setHgrow(hostChoixAnnuler, Priority.ALWAYS);
         HBox.setHgrow(hostChoixValider, Priority.ALWAYS);
         hostBoutons.getChildren().addAll(hostChoixAnnuler, hostChoixValider);
@@ -562,7 +579,7 @@ public class Dialogs {
 
         HBox clientBoutons = new HBox(10);
         Button clientChoixValider = new Button("Connexion");
-        Button clientChoixAnnuler = new Button("Annuler");
+        Button clientChoixAnnuler = new Button("Retour");
         clientChoixValider.setMaxWidth(Double.MAX_VALUE);
         clientChoixAnnuler.setMaxWidth(Double.MAX_VALUE);
         clientChoixValider.setOnAction(e -> {
@@ -574,7 +591,11 @@ public class Dialogs {
                 dialog.getDialogPane().getScene().getWindow().sizeToScene();
             }
         });
-        clientChoixAnnuler.setOnAction(e -> dialog.close());
+        clientChoixAnnuler.setOnAction(e -> {
+            titre.setText("Partie en réseau");
+            contentWrapper.setCenter(choixType);
+            dialog.getDialogPane().getScene().getWindow().sizeToScene();
+        });
         HBox.setHgrow(clientChoixAnnuler, Priority.ALWAYS);
         HBox.setHgrow(clientChoixValider, Priority.ALWAYS);
         clientBoutons.getChildren().addAll(clientChoixAnnuler, clientChoixValider);
@@ -592,7 +613,6 @@ public class Dialogs {
         clientChoix.add(clientNom, 1, 1);
         clientChoix.add(clientBoutons, 0, 2, 2, 1);
 
-        VBox choixType = new VBox(12);
         choixType.setId("reseauChoix");
         choixType.setPadding(new Insets(10));
         Button choixHost = new Button("Créer une partie");
@@ -637,7 +657,7 @@ public class Dialogs {
         dialog.getDialogPane().setContent(contentWrapper);
         dialog.setTitle("Partie en réseau");
         dialog.getDialogPane().getStylesheets().add(Diaballik.class.getResource(Diaballik.CSS_DIALOG).toExternalForm());
-        dialog.getDialogPane().setPrefSize(360, 200);
+        dialog.getDialogPane().setPrefSize(400, 200);
         //dialog.getDialogPane().getButtonTypes().addAll(ButtonType.CANCEL);
         dialog.showAndWait();
     }

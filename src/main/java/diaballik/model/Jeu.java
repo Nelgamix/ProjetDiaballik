@@ -94,16 +94,18 @@ public class Jeu extends Observable {
                 this.joueurs[1] = constructJoueur(cp.typeJoueur2, Joueur.ROUGE, cp.nomJoueur2);
             }
 
+            int n = 0;
             StringBuilder terrainString = new StringBuilder();
-            while ((sCurrentLine = br.readLine()) != null) {
+            while (n++ < Terrain.HAUTEUR + 1 && (sCurrentLine = br.readLine()) != null) {
                 terrainString.append(sCurrentLine).append("\n");
             }
 
             terrain = new Terrain(terrainString.toString());
 
             if (cp.estUneSauvegarde) {
-                while ((sCurrentLine = br.readLine()) != null) // on lit les configurations
+                while ((sCurrentLine = br.readLine()) != null) { // on lit les configurations
                     historique.addAction(this, sCurrentLine);
+                }
 
                 this.setNumAction();
             }
@@ -390,18 +392,23 @@ public class Jeu extends Observable {
                 }
             }
         } else if (Math.abs(pEnvoyeur.getX() - pReceptionneur.getX()) == Math.abs(pEnvoyeur.getY() - pReceptionneur.getY())) { // diagonale
-            int xMax = Math.max(pEnvoyeur.getX(), pReceptionneur.getX());
-            int xMin = Math.min(pEnvoyeur.getX(), pReceptionneur.getX());
-            int yMax = Math.max(pEnvoyeur.getY(), pReceptionneur.getY());
+            int xMax = pReceptionneur.getX();
+            int yMax = pReceptionneur.getY();
+            int x = pEnvoyeur.getX();
+            int y = pEnvoyeur.getY();
+            Pion pionPresent;
+            do {
+                if (pReceptionneur.getX() > x) x++;
+                else x--;
 
-            int y = yMax;
-            for (int x = xMax - 1; x > xMin; x--) {
-                y--;
-                Pion pionPresent = getTerrain().getCaseSur(new Point(x, y)).getPion();
-                if (pionPresent != null && pionPresent.getCouleur() != getJoueurActuel().getCouleur()) {
+                if (pReceptionneur.getY() > y) y++;
+                else y--;
+
+                pionPresent = getTerrain().getCaseSur(new Point(x, y)).getPion();
+
+                if (pionPresent != null && pionPresent.getCouleur() != getJoueurActuel().getCouleur())
                     return false;
-                }
-            }
+            } while (x != xMax && y != yMax);
         } else {
             return false;
         }
@@ -493,6 +500,10 @@ public class Jeu extends Observable {
 
         setNumAction();
 
+        while (getJoueurActuel().estUneIA()) {
+            defaire();
+        }
+
         updateListeners(CHANGEMENT_TOUR);
     }
 
@@ -531,9 +542,10 @@ public class Jeu extends Observable {
 
         this.executerAction(a, true);
 
-        a.setInverse(true);
-        if (cp.multijoueur)
+        if (cp.multijoueur) {
+            a.setInverse(true);
             diaballik.reseau.envoyerAction(a);
+        }
     }
     public void refaire() {
         if (!historique.peutRefaire()) return;
@@ -601,7 +613,8 @@ public class Jeu extends Observable {
             else
                 getJoueurActuel().moinsAction(a);
 
-        preparerJoueur();
+        if (cp.multijoueur)
+            preparerJoueur();
 
         updateListeners(CHANGEMENT_GLOBAL);
     }

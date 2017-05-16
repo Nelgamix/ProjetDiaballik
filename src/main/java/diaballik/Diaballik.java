@@ -35,8 +35,8 @@ public class Diaballik extends Application {
 
     public final static String EXTENSION_SAUVEGARDE = ".txt";
 
-    private final static String CSS_MENU = DOSSIER_CSS + "/DiaballikMenu.css";
-    private final static String CSS_JEU = DOSSIER_CSS + "/DiaballikJeu.css";
+    public final static String CSS_MENU = DOSSIER_CSS + "/DiaballikMenu.css";
+    public final static String CSS_JEU = DOSSIER_CSS + "/DiaballikJeu.css";
     public final static String CSS_DIALOG = DOSSIER_CSS + "/DiaballikDialogs.css";
     public final static String CSS_POPOVER = DOSSIER_CSS + "/DiaballikPopover.css";
 
@@ -87,7 +87,8 @@ public class Diaballik extends Application {
     }
 
     public void finJeu(Joueur gagnant, int victoireType) {
-        reseau.fermerReseau();
+        if (getJeu().cp.multijoueur)
+            reseau.fermerReseau();
 
         Dialogs.montrerFinJeu(gagnant, victoireType);
 
