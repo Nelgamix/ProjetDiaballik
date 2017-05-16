@@ -50,8 +50,6 @@ public class Jeu extends Observable {
 
         charger(cp);
 
-        this.joueurActuel = this.getTour() - 1;
-
         getJoueurActuel().preparerJouer();
 
         updateListeners(CHANGEMENT_GLOBAL);
@@ -74,6 +72,7 @@ public class Jeu extends Observable {
                 if ((sCurrentLine = br.readLine()) != null) {
                     parts = sCurrentLine.split(":");
                     this.tour = Integer.parseInt(parts[0]);
+                    this.joueurActuel = this.tour - 1;
                     this.numAction = Integer.parseInt(parts[1]);
                 }
 
@@ -88,6 +87,7 @@ public class Jeu extends Observable {
                 }
             } else {
                 this.tour = 1;
+                this.joueurActuel = 0;
                 this.numAction = 1;
 
                 if (cp.typeJoueur1 == 0)
@@ -416,11 +416,6 @@ public class Jeu extends Observable {
 
             historique.addAction(action);
 
-            if (partieTerminee(receptionneur)) {
-                // la partie est terminée (le vainqueur est joueurActuel())
-                diaballik.finJeu(getJoueurActuel(), VICTOIRE_NORMALE);
-            }
-
             this.getJoueurActuel().moinsAction(action);
             this.numAction++;
             //if (!this.getJoueurActuel().moinsAction(Joueur.ACTION_PASSE)) {
@@ -452,6 +447,15 @@ public class Jeu extends Observable {
                 if (e.getX() == p.getX() && e.getY() == p.getY()) {
                     return true;
                 }
+            }
+        }
+
+        return false;
+    }
+    public boolean partieTerminee() {
+        for (Pion p : this.terrain.getPions()[getJoueurActuel().getCouleur()]) {
+            if (p.aLaBalle() && partieTerminee(p)) {
+                return true;
             }
         }
 
@@ -541,7 +545,6 @@ public class Jeu extends Observable {
 
         this.executerAction(a, false);
 
-        System.out.println("Refaire");
         if (cp.multijoueur)
             diaballik.reseau.envoyerAction(a);
     }

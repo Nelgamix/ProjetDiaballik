@@ -26,9 +26,9 @@ public class ConfigurationPartie {
 
     private final static String CONFIG_FILE = "config.properties";
 
-    public ConfigurationPartie(int numJoueurReseau, String terrain) {
-        this.nomJoueur1 = "Joueur 1";
-        this.nomJoueur2 = "Joueur 2";
+    public ConfigurationPartie(int numJoueurReseau, String nomJoueur1, String nomJoueur2, String terrain) {
+        this.nomJoueur1 = nomJoueur1;
+        this.nomJoueur2 = nomJoueur2;
 
         if (numJoueurReseau == 1) {
             this.typeJoueur1 = 0;

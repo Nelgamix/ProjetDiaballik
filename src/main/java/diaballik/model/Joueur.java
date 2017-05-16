@@ -1,5 +1,7 @@
 package diaballik.model;
 
+import static diaballik.model.Jeu.VICTOIRE_NORMALE;
+
 public abstract class Joueur {
     protected final Jeu jeu;
     protected String nom;
@@ -106,6 +108,12 @@ public abstract class Joueur {
         }
 
         return succes;
+    }
+    protected void finAction() {
+        if (jeu.partieTerminee()) {
+            // la partie est terminée (le vainqueur est joueurActuel())
+            jeu.diaballik.finJeu(jeu.getJoueurActuel(), VICTOIRE_NORMALE);
+        }
     }
 
     public void finTour() {

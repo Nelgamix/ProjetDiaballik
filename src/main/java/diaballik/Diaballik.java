@@ -65,8 +65,8 @@ public class Diaballik extends Application {
         stage.setHeight(stage.getHeight());
     }
 
-    public void nouveauJeuReseau(int numJoueur) {
-        ConfigurationPartie cp = new ConfigurationPartie(numJoueur, "defaultTerrain.txt");
+    public void nouveauJeuReseau(int numJoueur, String nomJoueur1, String nomJoueur2, String terrain) {
+        ConfigurationPartie cp = new ConfigurationPartie(numJoueur, nomJoueur1, nomJoueur2, terrain);
         initSceneJeu(cp);
         showSceneJeu();
     }

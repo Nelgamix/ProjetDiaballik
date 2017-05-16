@@ -20,4 +20,11 @@ public class JoueurReseau extends Joueur {
         jeu.diaballik.reseau.recevoirAction();
         return false;
     }
+
+    @Override
+    public boolean jouer() {
+        boolean succes = super.jouer();
+        finAction();
+        return succes;
+    }
 }
