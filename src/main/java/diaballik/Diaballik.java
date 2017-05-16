@@ -46,6 +46,7 @@ public class Diaballik extends Application {
 
     private final KeyCombination ctrlS = new KeyCodeCombination(KeyCode.S, KeyCombination.CONTROL_DOWN); // sauvegarde
     private final KeyCombination ctrlZ = new KeyCodeCombination(KeyCode.Z, KeyCombination.CONTROL_DOWN); // actionDefaire
+    private final KeyCombination ctrlShiftZ = new KeyCodeCombination(KeyCode.Z, KeyCombination.CONTROL_DOWN, KeyCombination.SHIFT_DOWN); // actionRefaire
 
     private Scene sceneJeu;
     private Scene sceneMenu;
@@ -117,7 +118,8 @@ public class Diaballik extends Application {
                 actionsControleur.getActionsVue().montrerPopupSauvegarde();
             } else if (ctrlZ.match(k)) {
                 actionsControleur.actionDefaire();
-            }
+            } else if (ctrlShiftZ.match(k))
+                actionsControleur.actionRefaire();
         });
         sceneJeu.getStylesheets().add(getClass().getResource(CSS_JEU).toExternalForm());
     }

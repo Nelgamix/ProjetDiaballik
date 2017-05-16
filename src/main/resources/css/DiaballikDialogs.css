@@ -19,3 +19,20 @@
     -fx-font-weight: bold;
     -fx-font-size: 14px;
 }
+
+.titre {
+    -fx-font-size: 22px;
+    -fx-font-weight: bold;
+}
+
+#dialogReseau > #reseauChoix > .button {
+    -fx-font-size: 18;
+}
+
+#dialogReseau > #reseauChoix > .button:hover {
+    -fx-cursor: hand;
+}
+
+#dialogReseau > #labelAttente {
+    -fx-font-size: 16px;
+}

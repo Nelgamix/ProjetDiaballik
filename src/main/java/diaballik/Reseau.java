@@ -21,11 +21,7 @@ public class Reseau {
         ATTENTE_CLIENT,
         ATTENTE_SERVEUR,
         ATTENTE_ACTION,
-        ATTENTE_NOM,
-        ATTENTE_TERRAIN,
-        ENVOI_ACTION,
-        ENVOI_NOM,
-        ENVOI_TERRAIN
+        ENVOI_ACTION
     }
     private Tache tacheActuelle;
 

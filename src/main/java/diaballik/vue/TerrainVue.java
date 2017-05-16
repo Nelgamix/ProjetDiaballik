@@ -6,12 +6,14 @@ import diaballik.model.Jeu;
 import diaballik.model.Joueur;
 import diaballik.model.Point;
 import diaballik.model.Terrain;
+import javafx.animation.FadeTransition;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.Label;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
+import javafx.util.Duration;
 
 import java.util.Observable;
 import java.util.Observer;
@@ -20,6 +22,8 @@ public class TerrainVue extends StackPane implements Observer {
     private final TerrainControleur terrainControleur;
     private final Terrain terrain;
 
+    private final FadeTransition ft;
+
     private final CaseVue[][] cases; // Représentation visuelle du terrain (l'UI)
     private final PionVue[][] pions;
 
@@ -27,6 +31,8 @@ public class TerrainVue extends StackPane implements Observer {
 
     public TerrainVue(TerrainControleur terrainControleur) {
         super();
+
+        ft = new FadeTransition(Duration.millis(400));
 
         GridPane root = new GridPane();
 
@@ -108,11 +114,11 @@ public class TerrainVue extends StackPane implements Observer {
         if (terrainControleur.getJeu().joueurActuelReseau() || terrainControleur.getJeu().getJoueurActuel().estUneIA()) {
             for (PionVue p : pions[Joueur.ROUGE]) p.desactiver();
             for (PionVue p : pions[Joueur.VERT]) p.desactiver();
-            if (terrainControleur.getJeu().joueurActuelReseau() && !this.getChildren().contains(tourAdverseReseau)) this.getChildren().add(tourAdverseReseau);
-            if (terrainControleur.getJeu().getJoueurActuel().estUneIA() && !this.getChildren().contains(tourAdverseIA)) this.getChildren().add(tourAdverseIA);
+            if (terrainControleur.getJeu().joueurActuelReseau()) fade(true, tourAdverseReseau);
+            if (terrainControleur.getJeu().getJoueurActuel().estUneIA()) fade(true, tourAdverseIA);
         } else {
-            if (this.getChildren().contains(tourAdverseReseau)) this.getChildren().remove(tourAdverseReseau);
-            if (this.getChildren().contains(tourAdverseIA)) this.getChildren().remove(tourAdverseIA);
+            fade(false, tourAdverseReseau);
+            fade(false, tourAdverseIA);
             if (terrainControleur.getJeu().getJoueurActuel().getCouleur() == Joueur.VERT) {
                 for (PionVue p : pions[Joueur.ROUGE]) p.desactiver();
                 for (PionVue p : pions[Joueur.VERT]) p.activer();
@@ -136,6 +142,25 @@ public class TerrainVue extends StackPane implements Observer {
                 default:
                     break;
             }
+        }
+    }
+
+    private void fade(boolean in, StackPane s) {
+        if (in && !this.getChildren().contains(s)) {
+            s.setOpacity(0);
+            getChildren().add(s);
+
+            ft.setNode(s);
+            ft.setToValue(1);
+            ft.setOnFinished(e -> s.setOpacity(1));
+
+            ft.play();
+        } else if (!in && this.getChildren().contains(s)) {
+            ft.setNode(s);
+            ft.setToValue(0);
+            ft.setOnFinished(e -> getChildren().remove(s));
+
+            ft.play();
         }
     }
 }

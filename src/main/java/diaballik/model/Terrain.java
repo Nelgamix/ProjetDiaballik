@@ -1,7 +1,11 @@
 package diaballik.model;
 
-// TODO: x et y *inversé*, ajouter méthodes propres pour l'accès
+import java.util.ArrayList;
+import java.util.Arrays;
+
 public class Terrain {
+    private final String nom;
+
     private final Case cases[][];
     private final Pion pions[][];
 
@@ -11,6 +15,8 @@ public class Terrain {
     public Terrain(String terrainString) {
         this.cases = new Case[HAUTEUR][LARGEUR];
         this.pions = new Pion[Jeu.NOMBRE_JOUEURS][Joueur.NOMBRE_PIONS];
+
+        this.nom = terrainString.split("\n")[0];
 
         for (int i = 0; i < HAUTEUR; i++) {
             for (int j = 0; j < LARGEUR; j++) {
@@ -26,10 +32,12 @@ public class Terrain {
 
         int nbv = 0, nbr = 0;
 
-        String[] lines = terrainString.split("\n"), parts;
+        ArrayList<String> lines = new ArrayList<>(Arrays.asList(terrainString.split("\n")));
+        lines.remove(0);
+        String[] parts;
 
         while (y < HAUTEUR) {
-            parts = lines[y].split(";");
+            parts = lines.get(y).split(";");
 
             x = 0;
             for (String c : parts) {

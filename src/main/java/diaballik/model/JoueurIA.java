@@ -23,8 +23,12 @@ public class JoueurIA extends Joueur {
                 @Override
                 protected Void call() throws Exception {
                     Thread.sleep(1500);
-                    jouerFacile();
-                    Thread.sleep(500);
+
+                    for (int i = 0; i < r.nextInt(DEPLACEMENTS_MAX + PASSES_MAX) + 1; i++) {
+                        jouerFacile();
+                        Thread.sleep(1000);
+                    }
+
                     Platform.runLater(t::finTour);
                     return null;
                 }
@@ -60,31 +64,63 @@ public class JoueurIA extends Joueur {
     public boolean preparerJouer() {
         if (!sJouerFacile.isRunning())
             jouerIA();
-        return false;
+        else
+            return false;
+
+        return true;
     }
 
     void jouerIA() {
-        sJouerFacile.restart();
+        switch (type) {
+            case DIFFICULTE_FACILE:
+                sJouerFacile.restart();
+                break;
+            case DIFFICULTE_MOYEN:
+                // ??
+                break;
+            case DIFFICULTE_DIFFICILE:
+                // minimax
+                break;
+            default:
+                System.err.println("(JoueurIA.jouerIA) Difficulté non reconnue.");
+                break;
+        }
     }
 
     private boolean jouerFacile() {
-        Case c = jeu.getTerrain().getPionDe(getCouleur(), r.nextInt(NOMBRE_PIONS)).getPosition();
-        Case d;
+        boolean valide = false;
+        Pion a = null;
+        Case b;
         int aType;
-        if (c.getPion().aLaBalle()) {
-            ArrayList<Pion> pp = jeu.getPassesPossibles(c.getPion());
-            d = pp.get(r.nextInt(pp.size())).getPosition();
+
+        while (!valide) {
+            a = jeu.getTerrain().getPionDe(getCouleur(), r.nextInt(NOMBRE_PIONS));
+            valide = true;
+            if (a.aLaBalle() && !peutPasser()) {
+                valide = false;
+            } else if (!a.aLaBalle() && !peutDeplacer()) {
+                valide = false;
+            }
+        }
+
+        if (a.aLaBalle()) {
+            ArrayList<Pion> pp = jeu.getPassesPossibles(a);
+            b = pp.get(r.nextInt(pp.size())).getPosition();
             aType = Action.PASSE;
         } else {
-            ArrayList<Case> pp = jeu.getDeplacementsPossibles(c.getPion());
-            d = pp.get(r.nextInt(pp.size()));
+            ArrayList<Case> pp = jeu.getDeplacementsPossibles(a);
+            b = pp.get(r.nextInt(pp.size()));
             aType = Action.DEPLACEMENT;
         }
 
-        Action a = new Action(c, aType, d, jeu.getTour());
+        Action action = new Action(a.getPosition(), aType, b, jeu.getTour());
 
-        setActionAJouer(a);
-        Platform.runLater(t::jouer);
+        setActionAJouer(action);
+
+        Platform.runLater(() -> {
+            t.jouer();
+            t.finAction();
+        });
 
         return true;
     }

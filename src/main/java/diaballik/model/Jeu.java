@@ -109,10 +109,8 @@ public class Jeu extends Observable {
             }
 
             StringBuilder terrainString = new StringBuilder();
-            int y = 0;
-            while (y < Terrain.HAUTEUR && (sCurrentLine = br.readLine()) != null) {
+            while ((sCurrentLine = br.readLine()) != null) {
                 terrainString.append(sCurrentLine).append("\n");
-                y++;
             }
 
             terrain = new Terrain(terrainString.toString());
@@ -508,6 +506,8 @@ public class Jeu extends Observable {
     }
 
     public void defaire() {
+        if (!historique.peutDefaire()) return;
+
         Action a = historique.getActionTourNum(this.tour, this.numAction - 1);
 
         if (a == null) {
@@ -529,6 +529,8 @@ public class Jeu extends Observable {
             diaballik.reseau.envoyerAction(a);
     }
     public void refaire() {
+        if (!historique.peutRefaire()) return;
+
         Action a = historique.getActionTourNum(this.tour, this.numAction);
 
         if (a == null) {
