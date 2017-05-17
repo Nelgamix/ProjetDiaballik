@@ -42,8 +42,10 @@ public class ActionsVue extends BorderPane implements Observer {
     private final Button passerTour;
     private final Button antijeu;
 
-    private final Button sauvegarde;
+    private final Button aideCoup;
     private final Button parametres;
+
+    private final Button sauvegarde;
 
     private PopOver popOverSauvegarde;
     private boolean saveExists = false;
@@ -229,7 +231,7 @@ public class ActionsVue extends BorderPane implements Observer {
         // Infos
         VBox vBoxInfos = new VBox(20);
         vBoxInfos.setAlignment(Pos.CENTER);
-        vBoxInfos.setPadding(new Insets(20));
+        vBoxInfos.setPadding(new Insets(20, 20, 10, 20));
 
         VBox vBoxInfosDepl = new VBox();
         VBox vBoxInfosPass = new VBox();
@@ -275,51 +277,73 @@ public class ActionsVue extends BorderPane implements Observer {
 
         this.jeu.addObserver(this);
 
-        passerTour = new Button("Fin tour");
+        double glyphFontSize = 22f;
+
+        Glyph next = new Glyph("FontAwesome", FontAwesome.Glyph.ARROW_RIGHT);
+        next.setFontSize(glyphFontSize);
+        next.setPadding(new Insets(0, 6, 2, 0));
+        passerTour = new Button("Fin tour", next);
         passerTour.setOnAction(e -> actionsControleur.actionFinTour());
         passerTour.setMaxWidth(Double.MAX_VALUE);
         passerTour.setId("passerTour");
         gpActions.add(passerTour, 0, 0, 2, 1);
 
-        antijeu = new Button("Antijeu");
+        Glyph flag = new Glyph("FontAwesome", FontAwesome.Glyph.FLAG);
+        flag.setFontSize(glyphFontSize);
+        flag.setPadding(new Insets(0, 6, 2, 0));
+        antijeu = new Button("Antijeu", flag);
         antijeu.setOnAction(e -> actionsControleur.actionAntijeu());
         antijeu.setMaxWidth(Double.MAX_VALUE);
         gpActions.add(antijeu, 0, 1, 2, 1);
 
         Glyph undo = new Glyph("FontAwesome", FontAwesome.Glyph.UNDO);
-        undo.setFontSize(22f);
+        undo.setFontSize(glyphFontSize);
+        undo.setPadding(new Insets(0, 0, 1, 0));
         annuler = new Button("", undo);
         annuler.setOnAction(e -> actionsControleur.actionDefaire());
         annuler.setMaxWidth(Double.MAX_VALUE);
         gpActions.add(annuler, 0, 2);
 
         Glyph repeat = new Glyph("FontAwesome", FontAwesome.Glyph.REPEAT);
-        repeat.setFontSize(22f);
+        repeat.setFontSize(glyphFontSize);
+        repeat.setPadding(new Insets(0, 0, 1, 0));
         refaire = new Button("", repeat);
         refaire.setOnAction(e -> actionsControleur.actionRefaire());
         refaire.setMaxWidth(Double.MAX_VALUE);
         gpActions.add(refaire, 1, 2);
 
-        sauvegarde = new Button("Sauvegarder");
-        sauvegarde.setOnAction(e -> {
-            montrerPopupSauvegarde();
-            //actionsControleur.actionSauvegarderJeu(Diaballik.DOSSIER_SAUVEGARDES)
-        });
-        sauvegarde.setMaxWidth(Double.MAX_VALUE);
-        if (actionsControleur.getJeu().cp.multijoueur) sauvegarde.setDisable(true);
-        gpActions.add(sauvegarde, 0, 3, 2, 1);
+        Glyph inte = new Glyph("FontAwesome", FontAwesome.Glyph.QUESTION);
+        inte.setFontSize(glyphFontSize);
+        inte.setPadding(new Insets(0, 0, 1, 0));
+        aideCoup = new Button("", inte);
+        aideCoup.setMaxWidth(Double.MAX_VALUE);
+        gpActions.add(aideCoup, 0, 3);
 
         Glyph roue = new Glyph("FontAwesome", FontAwesome.Glyph.COG);
-        roue.setFontSize(22f);
+        roue.setFontSize(glyphFontSize);
+        roue.setPadding(new Insets(0, 0, 1, 0));
         parametres = new Button("", roue);
         parametres.setOnAction(e -> actionsControleur.actionParametres());
         parametres.setMaxWidth(Double.MAX_VALUE);
-        gpActions.add(parametres, 0, 4);
+        gpActions.add(parametres, 1, 3);
 
-        Button menu = new Button("Menu");
-        menu.setOnAction(e -> actionsControleur.actionMenu());
-        menu.setMaxWidth(Double.MAX_VALUE);
-        gpActions.add(menu, 1, 4);
+        Glyph save = new Glyph("FontAwesome", FontAwesome.Glyph.FLOPPY_ALT);
+        save.setFontSize(glyphFontSize);
+        save.setPadding(new Insets(0, 6, 2, 0));
+        sauvegarde = new Button("Sauvegarder", save);
+        sauvegarde.setOnAction(e -> montrerPopupSauvegarde());
+        GridPane.setMargin(sauvegarde, new Insets(18, 0, 0, 0));
+        sauvegarde.setMaxWidth(Double.MAX_VALUE);
+        if (actionsControleur.getJeu().cp.multijoueur) sauvegarde.setDisable(true);
+        gpActions.add(sauvegarde, 0, 4, 2, 1);
+
+        Glyph menu = new Glyph("FontAwesome", FontAwesome.Glyph.BARS);
+        menu.setFontSize(glyphFontSize);
+        menu.setPadding(new Insets(0, 6, 2, 0));
+        Button accueil = new Button("Accueil", menu);
+        accueil.setOnAction(e -> actionsControleur.actionAccueil());
+        accueil.setMaxWidth(Double.MAX_VALUE);
+        gpActions.add(accueil, 0, 5, 2, 1);
 
         this.setTop(vBoxInfos);
         this.setBottom(gpActions);
@@ -328,15 +352,25 @@ public class ActionsVue extends BorderPane implements Observer {
     }
 
     public void montrerPopupSauvegarde() {
-        getSauvegarderPopover().show(sauvegarde);
-        ((Parent)popOverSauvegarde.getSkin().getNode()).getStylesheets()
-                .add(getClass().getResource(Diaballik.CSS_POPOVER).toExternalForm());
+        PopOver pop = getSauvegarderPopover();
+        if (pop.isShowing())
+            pop.hide();
+        else {
+            pop.show(sauvegarde);
+            ((Parent)popOverSauvegarde.getSkin().getNode()).getStylesheets()
+                    .add(getClass().getResource(Diaballik.CSS_POPOVER).toExternalForm());
+        }
     }
 
     public void montrerPopupParametres() {
-        getParametresPopover().show(parametres);
-        ((Parent)popOverParametres.getSkin().getNode()).getStylesheets()
-                .add(getClass().getResource(Diaballik.CSS_POPOVER).toExternalForm());
+        PopOver pop = getParametresPopover();
+        if (pop.isShowing())
+            pop.hide();
+        else {
+            pop.show(parametres);
+            ((Parent)popOverParametres.getSkin().getNode()).getStylesheets()
+                    .add(getClass().getResource(Diaballik.CSS_POPOVER).toExternalForm());
+        }
     }
 
     @Override
@@ -366,5 +400,8 @@ public class ActionsVue extends BorderPane implements Observer {
 
         annuler.setDisable(jaReseau || jaIA || !jeu.historique.peutDefaire());
         refaire.setDisable(jaReseau || jaIA || !jeu.historique.peutRefaire());
+
+        if (!actionsControleur.getJeu().cp.multijoueur) sauvegarde.setDisable(jaIA);
+        aideCoup.setDisable(jaReseau || jaIA);
     }
 }

@@ -33,9 +33,10 @@ public class Jeu extends Observable {
 
     public final static int CHANGEMENT_INIT = 0;
     public final static int CHANGEMENT_POSITION = 1;
-    public final static int CHANGEMENT_INFOS = 2;
-    public final static int CHANGEMENT_TOUR = 3;
-    public final static int CHANGEMENT_GLOBAL = 4;
+    public final static int CHANGEMENT_PASSE = 2;
+    public final static int CHANGEMENT_INFOS = 3;
+    public final static int CHANGEMENT_TOUR = 4;
+    public final static int CHANGEMENT_GLOBAL = 5;
 
     public final static int VICTOIRE_NORMALE = 1;
     public final static int VICTOIRE_ANTIJEU = 2;
@@ -287,82 +288,15 @@ public class Jeu extends Observable {
     }
 
     public ArrayList<Case> getDeplacementsPossibles(Pion pion) {
-        ArrayList<Case> c = new ArrayList<>();
+        if (!getJoueurActuel().peutDeplacer()) return new ArrayList<>();
 
-        if (!getJoueurActuel().peutDeplacer()) return c;
-
-        Point pbase = pion.getPosition().getPoint();
-        Case ca;
-
-        ca = getTerrain().getCaseSur(new Point(pbase.getX() + 1, pbase.getY()));
-        if (ca != null && ca.getPion() == null) c.add(ca);
-        ca = getTerrain().getCaseSur(new Point(pbase.getX(), pbase.getY() + 1));
-        if (ca != null && ca.getPion() == null) c.add(ca);
-        ca = getTerrain().getCaseSur(new Point(pbase.getX() - 1, pbase.getY()));
-        if (ca != null && ca.getPion() == null) c.add(ca);
-        ca = getTerrain().getCaseSur(new Point(pbase.getX(), pbase.getY() - 1));
-        if (ca != null && ca.getPion() == null) c.add(ca);
-
-        return c;
+        return terrain.getDeplacementsPossibles(pion);
     }
 
     public ArrayList<Pion> getPassesPossibles(Pion pion) {
-        ArrayList<Pion> pions = new ArrayList<>();
+        if (!getJoueurActuel().peutPasser()) return new ArrayList<>();
 
-        if (!getJoueurActuel().peutPasser()) return pions;
-
-        Case c;
-        Point p = pion.getPosition().getPoint();
-
-        int i = 0;
-        while ((c = getTerrain().getCaseSur(new Point(p.getX() - ++i, p.getY()))) != null && (c.getPion() == null || pionAllie(c.getPion()))) {
-            if (c.getPion() != null && pionAllie(c.getPion()))
-            pions.add(c.getPion());
-        }
-
-        i = 0;
-        while ((c = getTerrain().getCaseSur(new Point(p.getX() + ++i, p.getY()))) != null && (c.getPion() == null || pionAllie(c.getPion()))) {
-            if (c.getPion() != null && pionAllie(c.getPion()))
-            pions.add(c.getPion());
-        }
-
-        i = 0;
-        while ((c = getTerrain().getCaseSur(new Point(p.getX(), p.getY() + --i))) != null && (c.getPion() == null || pionAllie(c.getPion()))) {
-            if (c.getPion() != null && pionAllie(c.getPion()))
-            pions.add(c.getPion());
-        }
-
-        i = 0;
-        while ((c = getTerrain().getCaseSur(new Point(p.getX(), p.getY() + ++i))) != null && (c.getPion() == null || pionAllie(c.getPion()))) {
-            if (c.getPion() != null && pionAllie(c.getPion()))
-            pions.add(c.getPion());
-        }
-
-        i = 0;
-        while ((c = getTerrain().getCaseSur(new Point(p.getX() + ++i, p.getY() + i))) != null && (c.getPion() == null || pionAllie(c.getPion()))) {
-            if (c.getPion() != null && pionAllie(c.getPion()))
-            pions.add(c.getPion());
-        }
-
-        i = 0;
-        while ((c = getTerrain().getCaseSur(new Point(p.getX() + ++i, p.getY() - i))) != null && (c.getPion() == null || pionAllie(c.getPion()))) {
-            if (c.getPion() != null && pionAllie(c.getPion()))
-            pions.add(c.getPion());
-        }
-
-        i = 0;
-        while ((c = getTerrain().getCaseSur(new Point(p.getX() + --i, p.getY() + i))) != null && (c.getPion() == null || pionAllie(c.getPion()))) {
-            if (c.getPion() != null && pionAllie(c.getPion()))
-            pions.add(c.getPion());
-        }
-
-        i = 0;
-        while ((c = getTerrain().getCaseSur(new Point(p.getX() + --i, p.getY() - i))) != null && (c.getPion() == null || pionAllie(c.getPion()))) {
-            if (c.getPion() != null && pionAllie(c.getPion()))
-            pions.add(c.getPion());
-        }
-
-        return pions;
+        return terrain.getPassesPossibles(pion);
     }
 
     // Vérifie la possibilité d'une passe (uniquement dans les axes, la couleur n'est pas vérifiée, ...)
@@ -502,7 +436,11 @@ public class Jeu extends Observable {
 
         while (getJoueurActuel().estUneIA()) {
             defaire();
+            if (tour == 1 && numAction == 1)
+                break;
         }
+
+        preparerJoueur();
 
         updateListeners(CHANGEMENT_TOUR);
     }

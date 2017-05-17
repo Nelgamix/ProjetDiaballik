@@ -12,6 +12,34 @@ public class Terrain {
     public final static int HAUTEUR = 7;
     public final static int LARGEUR = 7;
 
+    public Terrain(Terrain t) {
+        this.cases = new Case[HAUTEUR][LARGEUR];
+        this.pions = new Pion[Jeu.NOMBRE_JOUEURS][Joueur.NOMBRE_PIONS];
+
+        this.nom = t.nom;
+
+        for (int i = 0; i < HAUTEUR; i++) {
+            for (int j = 0; j < LARGEUR; j++) {
+                this.cases[i][j] = new Case(new Point(j, i));
+            }
+        }
+
+        Pion pt, p;
+        Case ctmp;
+        for (int c = 0; c < 2; c++)
+            for (int i = 0; i < Joueur.NOMBRE_PIONS; i++) {
+                pt = t.getPionDe(c, i);
+                ctmp = getCaseSur(pt.getPosition().getPoint());
+                p = new Pion(c, i, ctmp);
+                this.pions[c][i] = p;
+            }
+
+        System.out.println("Entrée");
+        System.out.println(t);
+        System.out.println("Sortie");
+        System.out.println(t);
+    }
+
     public Terrain(String terrainString) {
         this.cases = new Case[HAUTEUR][LARGEUR];
         this.pions = new Pion[Jeu.NOMBRE_JOUEURS][Joueur.NOMBRE_PIONS];
@@ -92,6 +120,9 @@ public class Terrain {
     public Pion getPionDe(int joueur, int num) {
         return this.pions[joueur][num];
     }
+    public Pion[] getPionsDe(int joueur) {
+        return this.pions[joueur];
+    }
 
     public Case getCaseSur(Point point) {
         if (estValide(point)) return this.cases[point.getY()][point.getX()];
@@ -141,6 +172,91 @@ public class Terrain {
 
     public Pion[][] getPions() {
         return pions;
+    }
+
+    public Case[][] getCases() {
+        return cases;
+    }
+
+    ArrayList<Pion> getPassesPossibles(Pion pion) {
+        ArrayList<Pion> ret = new ArrayList<>();
+
+        Case c;
+        Point p = pion.getPosition().getPoint();
+
+        int i = 0;
+        while ((c = getCaseSur(new Point(p.getX() - ++i, p.getY()))) != null && (c.getPion() == null || pion.pionAllie(c.getPion()))) {
+            if (c.getPion() != null && pion.pionAllie(c.getPion()))
+                ret.add(c.getPion());
+        }
+
+        i = 0;
+        while ((c = getCaseSur(new Point(p.getX() + ++i, p.getY()))) != null && (c.getPion() == null || pion.pionAllie(c.getPion()))) {
+            if (c.getPion() != null && pion.pionAllie(c.getPion()))
+                ret.add(c.getPion());
+        }
+
+        i = 0;
+        while ((c = getCaseSur(new Point(p.getX(), p.getY() + --i))) != null && (c.getPion() == null || pion.pionAllie(c.getPion()))) {
+            if (c.getPion() != null && pion.pionAllie(c.getPion()))
+                ret.add(c.getPion());
+        }
+
+        i = 0;
+        while ((c = getCaseSur(new Point(p.getX(), p.getY() + ++i))) != null && (c.getPion() == null || pion.pionAllie(c.getPion()))) {
+            if (c.getPion() != null && pion.pionAllie(c.getPion()))
+                ret.add(c.getPion());
+        }
+
+        i = 0;
+        while ((c = getCaseSur(new Point(p.getX() + ++i, p.getY() + i))) != null && (c.getPion() == null || pion.pionAllie(c.getPion()))) {
+            if (c.getPion() != null && pion.pionAllie(c.getPion()))
+                ret.add(c.getPion());
+        }
+
+        i = 0;
+        while ((c = getCaseSur(new Point(p.getX() + ++i, p.getY() - i))) != null && (c.getPion() == null || pion.pionAllie(c.getPion()))) {
+            if (c.getPion() != null && pion.pionAllie(c.getPion()))
+                ret.add(c.getPion());
+        }
+
+        i = 0;
+        while ((c = getCaseSur(new Point(p.getX() + --i, p.getY() + i))) != null && (c.getPion() == null || pion.pionAllie(c.getPion()))) {
+            if (c.getPion() != null && pion.pionAllie(c.getPion()))
+                ret.add(c.getPion());
+        }
+
+        i = 0;
+        while ((c = getCaseSur(new Point(p.getX() + --i, p.getY() - i))) != null && (c.getPion() == null || pion.pionAllie(c.getPion()))) {
+            if (c.getPion() != null && pion.pionAllie(c.getPion()))
+                ret.add(c.getPion());
+        }
+
+        return ret;
+    }
+
+    ArrayList<Case> getDeplacementsPossibles(Pion pion) {
+        ArrayList<Case> ret = new ArrayList<>();
+
+        Point pbase = pion.getPosition().getPoint();
+        Case ca;
+
+        ca = getCaseSur(new Point(pbase.getX() + 1, pbase.getY()));
+        if (ca != null && ca.getPion() == null) ret.add(ca);
+        ca = getCaseSur(new Point(pbase.getX(), pbase.getY() + 1));
+        if (ca != null && ca.getPion() == null) ret.add(ca);
+        ca = getCaseSur(new Point(pbase.getX() - 1, pbase.getY()));
+        if (ca != null && ca.getPion() == null) ret.add(ca);
+        ca = getCaseSur(new Point(pbase.getX(), pbase.getY() - 1));
+        if (ca != null && ca.getPion() == null) ret.add(ca);
+
+        return ret;
+    }
+
+    Pion getPionALaBalle(int joueur) {
+        for (Pion p : getPionsDe(joueur))
+            if (p.aLaBalle()) return p;
+        return null;
     }
 
     @Override

@@ -51,9 +51,13 @@ public class Pion extends Observable {
     public void passe(Pion receptionneur) {
         this.setaLaBalle(false); // on n'a plus la balle
         receptionneur.setaLaBalle(true); // la balle est au pion de la case alliée
-        receptionneur.updateListeneners(Jeu.CHANGEMENT_POSITION);
+        receptionneur.updateListeneners(Jeu.CHANGEMENT_PASSE);
 
-        updateListeneners(Jeu.CHANGEMENT_POSITION);
+        //updateListeneners(Jeu.CHANGEMENT_POSITION);
+    }
+
+    public boolean pionAllie(Pion p) {
+        return p.couleur == this.couleur;
     }
 
     public void updateListeneners(int changement) {
@@ -63,7 +67,12 @@ public class Pion extends Observable {
 
     @Override
     public String toString() {
-        return "X";
-        //return this.getPosition().getPoint().toString();
+        String s = "";
+        if (aLaBalle()) s += "B";
+
+        if (couleur == Joueur.VERT) s += "V";
+        else s += "R";
+
+        return s;
     }
 }

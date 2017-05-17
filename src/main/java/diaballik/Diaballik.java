@@ -73,7 +73,7 @@ public class Diaballik extends Application {
     }
 
     public void nouveauJeu() {
-        Optional<ConfigurationPartie> cp = Dialogs.montrerDialogNouvellePartie();
+        Optional<ConfigurationPartie> cp = Dialogs.montrerDialogNouvellePartie(jeu != null ? jeu.cp : null);
         if (cp.isPresent()) {
             initSceneJeu(cp.get());
             showSceneJeu();
@@ -121,8 +121,11 @@ public class Diaballik extends Application {
                 actionsControleur.getActionsVue().montrerPopupSauvegarde();
             } else if (ctrlZ.match(k)) {
                 actionsControleur.actionDefaire();
-            } else if (ctrlShiftZ.match(k))
+            } else if (ctrlShiftZ.match(k)) {
                 actionsControleur.actionRefaire();
+            } else if (k.getCode() == KeyCode.SPACE) {
+                actionsControleur.actionFinTour();
+            }
         });
         sceneJeu.getStylesheets().add(getClass().getResource(CSS_JEU).toExternalForm());
     }

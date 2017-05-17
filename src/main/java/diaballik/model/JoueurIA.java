@@ -5,6 +5,8 @@ import javafx.concurrent.Service;
 import javafx.concurrent.Task;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
 import java.util.Random;
 
 public class JoueurIA extends Joueur {
@@ -123,5 +125,98 @@ public class JoueurIA extends Joueur {
         });
 
         return true;
+    }
+
+    private void enumConfigs(Terrain configCourante) {
+        //ArrayList<Pion> pp;
+        HashMap<String, String> H;
+        Terrain c3, c2, configPossible;
+        ArrayList<Pion> pionsNonTraites = new ArrayList<>(Arrays.asList(configCourante.getPionsDe(couleur)));
+
+        for (Pion p1 : pionsNonTraites) {
+            if (p1.aLaBalle()) {
+                for (Pion i : configCourante.getPassesPossibles(p1)) {
+                    configPossible = new Terrain(configCourante);
+                    passe(p1, i, configPossible);
+                    //ajouter(H,L,configPossible)
+                    c2 = new Terrain(configPossible);
+                    for (Pion p2 : c2.getPionsDe(couleur)) {
+                        for (Case m : configPossible.getDeplacementsPossibles(p2)) {
+                            c2 = new Terrain(configPossible);
+                            deplacement(p2, m, c2);
+                            //ajouter(H,L,c2)
+                            for (Pion p3 : c2.getPionsDe(couleur)) {
+                                for (Case m2 : c2.getDeplacementsPossibles(p3)) {
+                                    c3 = new Terrain(c2);
+                                    deplacement(p3, m2, c3);
+                                    //ajouter(H,L,c3)
+                                }
+                            }
+                        }
+                    }
+                }
+            } else {
+                pionsNonTraites.remove(p1);
+                for (Case m : configCourante.getDeplacementsPossibles(p1)) {
+                    configPossible = new Terrain(configCourante);
+                    deplacement(p1, m, configPossible);
+                    //ajouter(H,L,configPossible)
+                    if (configPossible.getPassesPossibles(configPossible.getPionALaBalle(couleur)).contains(p1)) {
+                        c2 = new Terrain(configPossible);
+                        passe(configPossible.getPionALaBalle(couleur), p1, c2);
+                        //ajouter(H,L,c2)
+                    }
+                    for (Pion p2 : pionsNonTraites) {
+                        for (Case m2 : configPossible.getDeplacementsPossibles(p2)) {
+                            c2 = new Terrain(configPossible);
+                            deplacement(p2, m2, c2);
+                            //ajouter(H,L,c2)
+                            if (c2.getPassesPossibles(c2.getPionALaBalle(couleur)).contains(p2)) {
+                                c3 = new Terrain(c2);
+                                passe(c2.getPionALaBalle(couleur), p2, c3);
+                                //ajouter(H,L,c3)
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    private void ajouter() {
+        /// ??
+    }
+
+    private void evalPosition() {
+        int[] vals = {5, 12, 21, 32, 45, 60, 77};
+        int valTotal = 0;
+
+        Case c;
+        for (int i = 0; i < Terrain.HAUTEUR; i++) {
+            for (int j = 0; j < Terrain.LARGEUR; j++) {
+                c = jeu.getTerrain().getCaseSur(new Point(i, j));
+
+                if (c.pionPresent()) {
+                    valTotal += vals[i];
+                } else {
+                    valTotal += vals[i];
+                    valTotal *= 1.2;
+                }
+            }
+        }
+    }
+
+    private void passe(Pion e, Pion r, Terrain config) {
+        Pion eDansConfig = config.getCaseSur(e.getPosition().getPoint()).getPion();
+        Pion rDansConfig = config.getCaseSur(r.getPosition().getPoint()).getPion();
+
+        eDansConfig.passe(rDansConfig);
+    }
+
+    private void deplacement(Pion p, Case c, Terrain config) {
+        Pion pDansConfig = config.getCaseSur(p.getPosition().getPoint()).getPion();
+        Case cDansConfig = config.getCaseSur(c.getPoint());
+
+        pDansConfig.deplacer(cDansConfig);
     }
 }

@@ -132,4 +132,20 @@ public class ConfigurationPartie {
     public boolean isAutoSelectionPion() {
         return autoSelectionPion;
     }
+
+    public String getNomJoueur1() {
+        return nomJoueur1;
+    }
+
+    public String getNomJoueur2() {
+        return nomJoueur2;
+    }
+
+    public int getTypeJoueur1() {
+        return typeJoueur1;
+    }
+
+    public int getTypeJoueur2() {
+        return typeJoueur2;
+    }
 }

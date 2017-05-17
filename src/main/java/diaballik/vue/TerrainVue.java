@@ -105,8 +105,16 @@ public class TerrainVue extends StackPane implements Observer {
         return cases[p.getY()][p.getX()];
     }
 
-    public TerrainControleur getTerrainControleur() {
+    TerrainControleur getTerrainControleur() {
         return terrainControleur;
+    }
+
+    PionVue getPionVueBalle(int couleur) {
+        for (PionVue p : this.pions[couleur]) {
+            if (p.aLaBalle()) return p;
+        }
+
+        return null;
     }
 
     @Override

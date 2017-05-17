@@ -88,12 +88,12 @@ public class Dialogs {
         credits.showAndWait();
     }
 
-    public static Optional<ConfigurationPartie> montrerDialogNouvellePartie() {
+    public static Optional<ConfigurationPartie> montrerDialogNouvellePartie(ConfigurationPartie cp) {
         Dialogs d = new Dialogs();
-        return d.getDialogNouvellePartie();
+        return d.getDialogNouvellePartie(cp);
     }
 
-    private Optional<ConfigurationPartie> getDialogNouvellePartie() {
+    private Optional<ConfigurationPartie> getDialogNouvellePartie(ConfigurationPartie cp) {
         ObservableList<String> iaDifficultes = FXCollections.observableArrayList(
                 "Humain",
                 "IA Facile",
@@ -152,12 +152,12 @@ public class Dialogs {
 
         // Row joueur 1
         TextField nomJoueur1 = new TextField("Joueur 1");
+        if (cp != null) nomJoueur1.setText(cp.getNomJoueur1());
         nomJoueur1.setPromptText("Nom");
         nomJoueur1.textProperty().addListener((o, ov, nv) -> {
             boutonJouer.setDisable(nv.trim().length() < 3);
         });
         ComboBox<String> iaJoueur1 = new ComboBox<>(iaDifficultes);
-        iaJoueur1.getSelectionModel().select(0);
         iaJoueur1.setOnAction(e -> {
             switch (iaJoueur1.getSelectionModel().getSelectedIndex()) {
                 case 0:
@@ -178,18 +178,19 @@ public class Dialogs {
                     break;
             }
         });
+        Platform.runLater(() -> iaJoueur1.getSelectionModel().select(cp != null ? cp.getTypeJoueur1() : 0));
         configJoueurs.add(new Label("1"), 0, 1);
         configJoueurs.add(nomJoueur1, 1, 1);
         configJoueurs.add(iaJoueur1, 2, 1);
 
         // Row joueur 2
         TextField nomJoueur2 = new TextField("Joueur 2");
+        if (cp != null) nomJoueur2.setText(cp.getNomJoueur2());
         nomJoueur2.setPromptText("Nom");
         nomJoueur2.textProperty().addListener((o, ov, nv) -> {
             boutonJouer.setDisable(nv.trim().length() < 3);
         });
         ComboBox<String> iaJoueur2 = new ComboBox<>(iaDifficultes);
-        iaJoueur2.getSelectionModel().select(0);
         iaJoueur2.setOnAction(e -> {
             switch (iaJoueur2.getSelectionModel().getSelectedIndex()) {
                 case 0:
@@ -210,6 +211,7 @@ public class Dialogs {
                     break;
             }
         });
+        Platform.runLater(() -> iaJoueur2.getSelectionModel().select(cp != null ? cp.getTypeJoueur2() : 0));
         configJoueurs.add(new Label("2"), 0, 2);
         configJoueurs.add(nomJoueur2, 1, 2);
         configJoueurs.add(iaJoueur2, 2, 2);

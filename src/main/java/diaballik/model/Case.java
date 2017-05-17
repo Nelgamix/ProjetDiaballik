@@ -21,6 +21,10 @@ public class Case extends Observable implements Serializable {
         notifyObservers();
     }
 
+    public boolean pionPresent() {
+        return pion != null;
+    }
+
     public void setPion(Pion pion) {
         this.pion = pion;
     }
