@@ -39,6 +39,7 @@ public class Diaballik extends Application {
     public final static String CSS_JEU = DOSSIER_CSS + "/DiaballikJeu.css";
     public final static String CSS_DIALOG = DOSSIER_CSS + "/DiaballikDialogs.css";
     public final static String CSS_POPOVER = DOSSIER_CSS + "/DiaballikPopover.css";
+    public final static String CSS_FONT = DOSSIER_CSS + "/DiaballikFonts.css";
 
     public final static String NOM_JEU = "Diaballik";
 

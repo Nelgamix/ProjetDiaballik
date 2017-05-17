@@ -40,14 +40,14 @@ public class TerrainVue extends StackPane implements Observer {
         tourAdverseReseau = new StackPane();
         tourAdverseReseau.setBackground(new Background(new BackgroundFill(new Color(0, 0, 0, 0.15), CornerRadii.EMPTY, Insets.EMPTY)));
         Label l = new Label("Tour du joueur adverse");
-        l.setFont(new Font("Open Sans", 26));
+        l.setFont(new Font(null, 26));
         StackPane.setAlignment(l, Pos.CENTER);
         tourAdverseReseau.getChildren().add(l);
 
         tourAdverseIA = new StackPane();
         tourAdverseIA.setBackground(new Background(new BackgroundFill(new Color(0, 0, 0, 0.15), CornerRadii.EMPTY, Insets.EMPTY)));
         Label lia = new Label("Tour de l'IA");
-        lia.setFont(new Font("Open Sans", 26));
+        lia.setFont(new Font(null, 26));
         StackPane.setAlignment(lia, Pos.CENTER);
         tourAdverseIA.getChildren().add(lia);
 

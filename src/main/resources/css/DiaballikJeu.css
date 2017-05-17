@@ -1,4 +1,9 @@
-.root {}
+@import url(DiaballikFonts.css);
+
+.root {
+    -fx-font-family: Raleway;
+    -fx-font-size: 13;
+}
 
 /* ACTIONS VIEW */
 #actionsView {
@@ -6,18 +11,17 @@
     -fx-background-color: linear-gradient(to top, #88848a, #d2d2d2);
     -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.8), 10, 0, 0, 0);
     -fx-scale-z: -1;
-    -fx-font-family: "Open Sans";
 }
 
 .indicateurActionsRestantes {
-    -fx-font-size: 250%;
-    -fx-padding: -10px 0 -10px 0;
+    -fx-font-size: 50;
+    -fx-padding: -16 0 -10 0;
 }
 
 .vBoxIndicateurs {
     -fx-alignment: center;
     -fx-text-alignment: center;
-    -fx-font-size: 150%;
+    -fx-font-size: 20;
 }
 
 /*#actionsView > VBox > .button {
@@ -52,7 +56,6 @@
     -fx-border-radius: 4px;
     -fx-border-color: black;
     -fx-border-width: 2px;
-    -fx-font-family: "Open Sans";
 }
 
 #actionsView > GridPane > .button:hover {
@@ -83,7 +86,6 @@
     -fx-alignment: center;
     -fx-border-color: #4b4b4b;
     -fx-border-width: 2px;
-    -fx-font-family: "Open Sans";
 }
 
 /* COULEURS */

@@ -1,4 +1,17 @@
 @font-face {
     font-family: "Open Sans";
-    src: url("../fonts/OpenSans-Regular.ttf");
+    src: url(../fonts/OpenSans-Regular.ttf);
 }
+
+@font-face {
+    font-family: Raleway;
+    src: url(../fonts/Raleway-Regular.ttf);
+}
+
+@font-face {
+    font-family: Raleway;
+    font-weight: bold;
+    src: url(../fonts/Raleway-Bold.ttf);
+}
+
+

@@ -1,5 +1,8 @@
+@import url(DiaballikFonts.css);
+
 .root {
-    -fx-font-family: "Open Sans";
+    -fx-font-family: Raleway;
+    -fx-font-size: 13;
 }
 
 .button {

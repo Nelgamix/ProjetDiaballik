@@ -1,3 +1,10 @@
+@import url(DiaballikFonts.css);
+
+.root {
+    -fx-font-family: Raleway;
+    -fx-font-size: 13;
+}
+
 #dialogCredits > .label {
     -fx-font-size: 20px;
 }
