@@ -2,7 +2,14 @@
 ## To do
 voir TODO.md
 
-## Images (pas à jour)
+## Liens
+[Site projet](http://inf362.forge.imag.fr/Projet/)
+
+[Règles Diaballik](http://inf362.forge.imag.fr/Projet/Regles/diaballik/)
+
+[IHM](https://app.moqups.com/zackattack/yyQzm1eIJU/view/page/ab2de651c)
+
+## Images (à jour)
 IHM réalisées par Loïc Houdebine (voir lien dans la dernière section)
 
 ### Menu
@@ -17,16 +24,13 @@ IHM réalisées par Loïc Houdebine (voir lien dans la dernière section)
 ![Multiplayer Menu Host](screenshots/multiplayerHost.png)
 ### Partie en réseau (menu rejoindre)
 ![Multiplayer Menu Connect](screenshots/multiplayerConnect.png)
-### Jeu
+### Partie en réseau (attente d'un joueur)
+![Multiplayer Menu Host](screenshots/multiplayerWait.png)
+### Jeu avec notation des cases
+![Game](screenshots/gameWithLabel.png)
+### Jeu sans notation des cases
 ![Game](screenshots/game.png)
 ### Jeu contre IA
 ![Game vs AI](screenshots/vsAI.png)
 ### Crédits
 ![Credits](screenshots/credits.png)
-
-## Liens
-[Site projet](http://inf362.forge.imag.fr/Projet/)
-
-[Règles Diaballik](http://inf362.forge.imag.fr/Projet/Regles/diaballik/)
-
-[IHM](https://app.moqups.com/zackattack/yyQzm1eIJU/view/page/ab2de651c)

@@ -5,9 +5,10 @@ import diaballik.Diaballik;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.Observable;
 import java.util.Properties;
 
-public class ConfigurationPartie {
+public class ConfigurationPartie extends Observable {
     private String cheminFichier; // chemin vers le fichier terrain ou sauvegarde
     private boolean estUneSauvegarde; // vrai si cheminFichier est un fichier de sauvegarde, faux si simple fichier représentant un terrain
     private boolean multijoueur;
@@ -22,6 +23,7 @@ public class ConfigurationPartie {
     private boolean aideDeplacement;
     private boolean aidePasse;
     private boolean autoSelectionPion;
+    private boolean notationsCase;
 
     private final Properties properties = new Properties();
 
@@ -79,10 +81,12 @@ public class ConfigurationPartie {
             this.aideDeplacement = Boolean.parseBoolean(properties.getProperty("aideDeplacement"));
             this.aidePasse = Boolean.parseBoolean(properties.getProperty("aidePasse"));
             this.autoSelectionPion = Boolean.parseBoolean(properties.getProperty("autoSelectionPion"));
+            this.notationsCase = Boolean.parseBoolean(properties.getProperty("notationsCase"));
         } catch (IOException ex) {
             this.aideDeplacement = true;
             this.aidePasse = true;
             this.autoSelectionPion = false;
+            this.notationsCase = false;
 
             this.writeProperties();
         }
@@ -92,6 +96,7 @@ public class ConfigurationPartie {
             properties.setProperty("aideDeplacement", Boolean.toString(aideDeplacement));
             properties.setProperty("autoSelectionPion", Boolean.toString(autoSelectionPion));
             properties.setProperty("aidePasse", Boolean.toString(aidePasse));
+            properties.setProperty("notationsCase", Boolean.toString(notationsCase));
 
             properties.store(o, null);
         } catch (IOException io) {
@@ -107,6 +112,11 @@ public class ConfigurationPartie {
     }
     public void setAutoSelectionPion(boolean autoSelectionPion) {
         this.autoSelectionPion = autoSelectionPion;
+    }
+    public void setNotationsCase(boolean notationsCase) {
+        this.notationsCase = notationsCase;
+        setChanged();
+        notifyObservers(SignalUpdate.SETTINGS);
     }
 
     public void setDureeTimer(int dureeTimer) {
@@ -128,6 +138,9 @@ public class ConfigurationPartie {
     }
     public boolean estMultijoueur() {
         return multijoueur;
+    }
+    public boolean isNotationsCase() {
+        return notationsCase;
     }
 
     public String getNomJoueur1() {

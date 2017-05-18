@@ -11,4 +11,3 @@
 
 # Bugs
 * Tour adverse (si IA ou réseau)
-* Fin partie réseau (antijeu ou normal)

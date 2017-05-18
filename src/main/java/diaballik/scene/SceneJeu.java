@@ -122,9 +122,9 @@ public class SceneJeu {
     }
 
     public void finJeu(Joueur gagnant, int victoireType) {
-        stopReseau();
-
         Dialogs.montrerFinJeu(gagnant, victoireType);
+
+        stopReseau();
 
         retourMenu();
     }

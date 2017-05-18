@@ -7,5 +7,6 @@ public enum SignalUpdate {
     PASSE,
     INFOS,
     TOUR,
+    SETTINGS,
     GLOBAL
 }

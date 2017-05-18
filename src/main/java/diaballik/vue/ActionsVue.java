@@ -157,6 +157,7 @@ public class ActionsVue extends BorderPane implements Observer {
         CheckBox parametre1 = new CheckBox();
         CheckBox parametre2 = new CheckBox();
         CheckBox parametre3 = new CheckBox();
+        CheckBox parametre4 = new CheckBox();
 
         popOverParametres = new PopOver();
         popOverParametres.setDetachable(false);
@@ -165,6 +166,7 @@ public class ActionsVue extends BorderPane implements Observer {
             parametre1.setSelected(cp.isAideDeplacement());
             parametre2.setSelected(cp.isAidePasse());
             parametre3.setSelected(cp.isAutoSelectionPion());
+            parametre4.setSelected(cp.isNotationsCase());
         });
 
         BorderPane content = new BorderPane();
@@ -183,11 +185,13 @@ public class ActionsVue extends BorderPane implements Observer {
         parametre1.setSelected(cp.isAideDeplacement());
         parametre2.setSelected(cp.isAidePasse());
         parametre3.setSelected(cp.isAutoSelectionPion());
+        parametre4.setSelected(cp.isNotationsCase());
 
         Label labelParametre1 = new Label("Aide au déplacement des pions");
-        labelParametre1.setMaxWidth(Double.MAX_VALUE);
+        //labelParametre1.setMaxWidth(Double.MAX_VALUE);
         Label labelParametre2 = new Label("Aide aux passes");
         Label labelParametre3 = new Label("Auto sélectionner le meme pion\nsi déplacement restant");
+        Label labelParametre4 = new Label("Notations des cases");
 
         grid.add(labelParametre1, 0, 0);
         grid.add(parametre1, 1, 0);
@@ -195,6 +199,8 @@ public class ActionsVue extends BorderPane implements Observer {
         grid.add(parametre2, 1, 1);
         grid.add(labelParametre3, 0, 2);
         grid.add(parametre3, 1, 2);
+        grid.add(labelParametre4, 0, 3);
+        grid.add(parametre4, 1, 3);
 
         content.setCenter(grid);
 
@@ -205,6 +211,7 @@ public class ActionsVue extends BorderPane implements Observer {
             cp.setAideDeplacement(parametre1.isSelected());
             cp.setAidePasse(parametre2.isSelected());
             cp.setAutoSelectionPion(parametre3.isSelected());
+            cp.setNotationsCase(parametre4.isSelected());
 
             cp.writeProperties();
 

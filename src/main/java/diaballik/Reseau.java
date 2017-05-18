@@ -53,7 +53,7 @@ public class Reseau {
     }
 
     public void fermerReseau() {
-        System.out.println("Shutdown");
+        System.out.println("Fermeture réseau");
         try {
             if (ois != null) ois.close();
             if (ois != null) oos.close();

@@ -2,7 +2,11 @@ package diaballik.vue;
 
 import diaballik.Diaballik;
 import diaballik.model.Case;
+import diaballik.model.ConfigurationPartie;
 import diaballik.model.Point;
+import diaballik.model.SignalUpdate;
+import javafx.scene.control.Label;
+import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.StackPane;
 
 import java.util.Observable;
@@ -14,6 +18,8 @@ public class CaseVue extends StackPane implements Observer {
     private PionVue pionVue;
 
     private final boolean pair;
+
+    private final BorderPane notationCase;
 
     private boolean marque = false;
     private boolean survol = false;
@@ -29,6 +35,12 @@ public class CaseVue extends StackPane implements Observer {
         c.addObserver(this);
         this.pionVue = null;
 
+        notationCase = new BorderPane();
+        char ligne = (char)(65 + getCase().getPoint().getY());
+        Label caseN = new Label(ligne + "-" + getCase().getPoint().getX());
+        notationCase.setBottom(caseN);
+        terrainVue.getTerrainControleur().getJeu().getConfigurationPartie().addObserver(this);
+
         Point point = c.getPoint();
         pair = Math.abs(point.getX() - point.getY()) % 2 == 0;
 
@@ -38,18 +50,18 @@ public class CaseVue extends StackPane implements Observer {
         this.setOnMouseEntered(e -> survoler(true));
         this.setOnMouseExited(e -> survoler(false));
 
-        update(null, null);
+        update(terrainVue.getTerrainControleur().getJeu().getConfigurationPartie(), SignalUpdate.INIT);
     }
 
     public void setPionVue(PionVue pionVue) {
-        this.pionVue = pionVue;
         if (pionVue != null) {
             this.getChildren().add(pionVue);
             if (survol)
                 survoler(true);
         } else {
-            this.getChildren().clear();
+            this.getChildren().remove(this.pionVue);
         }
+        this.pionVue = pionVue;
     }
 
     public void reinitialiserEtat() {
@@ -95,6 +107,7 @@ public class CaseVue extends StackPane implements Observer {
     @Override
     public void update(Observable o, Object arg) {
         updateStyleClass();
+        setMontrerNumCase(((ConfigurationPartie)o).isNotationsCase());
     }
 
     private void updateStyleClass() {
@@ -108,6 +121,14 @@ public class CaseVue extends StackPane implements Observer {
             this.getStyleClass().add("couleurCasePair");
         else
             this.getStyleClass().add("couleurCaseImpair");
+    }
+
+    public void setMontrerNumCase(boolean in) {
+        if (in && !this.getChildren().contains(notationCase)) {
+            this.getChildren().add(notationCase);
+        } else if (!in && this.getChildren().contains(notationCase)) {
+            this.getChildren().remove(notationCase);
+        }
     }
 
     public Case getCase() {

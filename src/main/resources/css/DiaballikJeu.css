@@ -133,6 +133,16 @@
     -fx-background-color: linear-gradient(to bottom right, #9b9b9b, #878787);
 }
 
+.couleurCasePair > BorderPane > .label {
+    -fx-padding: 2;
+    -fx-text-fill: #373737;
+}
+
+.couleurCaseImpair > BorderPane > .label {
+    -fx-padding: 2;
+    -fx-text-fill: #ffffff;
+}
+
 .couleurMarquage {
     -fx-fill: linear-gradient(to bottom right, #a3ddeb, #88bfcd);
     -fx-background-color: linear-gradient(to bottom right, #a3ddeb, #88bfcd);
