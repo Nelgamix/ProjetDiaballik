@@ -5,13 +5,11 @@ import java.util.Observable;
 public class Pion extends Observable {
     private boolean aLaBalle;
     private int couleur;
-    private int numero;
     private Case position;
 
-    public Pion(int couleur, int numero, Case position) {
+    Pion(int couleur, Case position) {
         this.aLaBalle = false;
         this.couleur = couleur;
-        this.numero = numero;
         this.position = position;
     }
 
@@ -22,15 +20,9 @@ public class Pion extends Observable {
     public boolean aLaBalle() {
         return aLaBalle;
     }
-
     public int getCouleur() {
         return couleur;
     }
-
-    public int getNumero() {
-        return numero;
-    }
-
     public Case getPosition() {
         return position;
     }
@@ -45,13 +37,12 @@ public class Pion extends Observable {
         nouvellePosition.setPion(this); // la nouvelle case doit savoir que le pion est celui ci
         this.position = nouvellePosition; // on change donc la position
 
-        updateListeneners(Jeu.CHANGEMENT_POSITION);
+        updateListeneners(SignalUpdate.POSITION);
     }
-
     public void passe(Pion receptionneur) {
         this.setaLaBalle(false); // on n'a plus la balle
         receptionneur.setaLaBalle(true); // la balle est au pion de la case alliée
-        receptionneur.updateListeneners(Jeu.CHANGEMENT_PASSE);
+        receptionneur.updateListeneners(SignalUpdate.PASSE);
 
         //updateListeneners(Jeu.CHANGEMENT_POSITION);
     }
@@ -60,7 +51,7 @@ public class Pion extends Observable {
         return p.couleur == this.couleur;
     }
 
-    public void updateListeneners(int changement) {
+    private void updateListeneners(SignalUpdate changement) {
         this.setChanged();
         this.notifyObservers(changement);
     }

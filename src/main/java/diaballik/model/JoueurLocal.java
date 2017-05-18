@@ -1,16 +1,13 @@
 package diaballik.model;
 
+import java.io.BufferedReader;
+
 public class JoueurLocal extends Joueur {
     public JoueurLocal(Jeu jeu, int couleur) {
         super(jeu, couleur);
     }
-
-    public JoueurLocal(int couleur, String line) {
-        super(couleur, line);
-    }
-
-    public JoueurLocal(Jeu jeu, int couleur, String line) {
-        super(jeu, couleur, line);
+    public JoueurLocal(int couleur, BufferedReader br) {
+        super(couleur, br);
     }
 
     @Override
@@ -22,8 +19,8 @@ public class JoueurLocal extends Joueur {
     public boolean jouer() {
         boolean succes = super.jouer();
 
-        if (succes && jeu.cp.multijoueur)
-            jeu.diaballik.reseau.envoyerAction(actionAJouer);
+        if (succes && jeu.getConfigurationPartie().estMultijoueur())
+            getSceneJeu().getReseau().envoyerAction(actionAJouer);
 
         finAction();
 
@@ -32,8 +29,8 @@ public class JoueurLocal extends Joueur {
 
     @Override
     public void finTour() {
-        if (jeu.cp.multijoueur)
-            jeu.diaballik.reseau.envoyerAction(new Action(Action.FINTOUR));
+        if (jeu.getConfigurationPartie().estMultijoueur())
+            getSceneJeu().getReseau().envoyerAction(new Action(Action.FINTOUR));
 
         super.finTour();
     }

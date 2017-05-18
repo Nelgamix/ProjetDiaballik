@@ -1,7 +1,7 @@
 package diaballik.controleur;
 
-import diaballik.Diaballik;
 import diaballik.model.*;
+import diaballik.scene.SceneJeu;
 import diaballik.vue.CaseVue;
 import diaballik.vue.PionVue;
 import diaballik.vue.TerrainVue;
@@ -9,9 +9,8 @@ import diaballik.vue.TerrainVue;
 import java.util.ArrayList;
 
 public class TerrainControleur {
-    public final Diaballik diaballik;
+    public final SceneJeu sceneJeu;
 
-    private final Jeu jeu;
     private final TerrainVue terrainVue;
 
     private PionVue pionSelectionne;
@@ -20,9 +19,8 @@ public class TerrainControleur {
     private ArrayList<CaseVue> casesMarquees = new ArrayList<>();
     private ArrayList<PionVue> pionsMarques = new ArrayList<>();
 
-    public TerrainControleur(Diaballik diaballik) {
-        this.diaballik = diaballik;
-        this.jeu = diaballik.getJeu();
+    public TerrainControleur(SceneJeu sceneJeu) {
+        this.sceneJeu = sceneJeu;
         this.terrainVue = new TerrainVue(this);
     }
 
@@ -31,7 +29,7 @@ public class TerrainControleur {
     }
 
     public Jeu getJeu() {
-        return jeu;
+        return sceneJeu.getJeu();
     }
 
     public TerrainVue getTerrainVue() {
@@ -43,7 +41,7 @@ public class TerrainControleur {
 
         if (pionSelectionne == null) { // Si on avait pas mémorisé de pion déjà sélectionnée
             if (pionVueCorrespondant != null) { // il y a un pion sur la case
-                if (pionVueCorrespondant.getPion().getCouleur() == this.jeu.getJoueurActuel().getCouleur()) { // pion de la bonne couleur
+                if (pionVueCorrespondant.getPion().getCouleur() == getJeu().getJoueurActuel().getCouleur()) { // pion de la bonne couleur
                     modeActionDeplacement = pionVueCorrespondant.getPion().aLaBalle(); // on set le bon mode
                     selectionPion(pionVueCorrespondant); // on le sélectionne
                 }
@@ -53,7 +51,7 @@ public class TerrainControleur {
                 finSelection();
             } else if (modeActionDeplacement) { // si on attend une passe, il faut un pion
                 if (pionVueCorrespondant != null) {
-                    if (pionVueCorrespondant.getPion().getCouleur() == this.jeu.getJoueurActuel().getCouleur()) { // de la bonne couleur
+                    if (pionVueCorrespondant.getPion().getCouleur() == getJeu().getJoueurActuel().getCouleur()) { // de la bonne couleur
                         Action a = new Action(pionSelectionne.getPion().getPosition(), Action.PASSE, caseCliquee.getCase(), getJeu().getTour());
                         //this.jeu.passe(pionSelectionne.getPion(), pionVueCorrespondant.getPion());
                         JoueurLocal j = (JoueurLocal)getJeu().getJoueurActuel();
@@ -65,7 +63,7 @@ public class TerrainControleur {
                 finSelection();
             } else { // on attend un déplacement, donc vers une case
                 if (pionVueCorrespondant != null) {
-                    if (pionVueCorrespondant.getPion().getCouleur() == this.jeu.getJoueurActuel().getCouleur()) {
+                    if (pionVueCorrespondant.getPion().getCouleur() == getJeu().getJoueurActuel().getCouleur()) {
                         finSelection();
                         modeActionDeplacement = pionVueCorrespondant.getPion().aLaBalle(); // on set le bon mode
                         selectionPion(pionVueCorrespondant); // on le sélectionne
@@ -79,7 +77,7 @@ public class TerrainControleur {
 
                     if (j.jouer()) { // on tente le déplacement
                         // si on a réussi
-                        if (jeu.getJoueurActuel().peutDeplacer() && jeu.cp.isAutoSelectionPion()) {
+                        if (getJeu().getJoueurActuel().peutDeplacer() && getJeu().getConfigurationPartie().isAutoSelectionPion()) {
                             finSelection();
                             selectionPion(pionVueCorrespondant);
                         } else {
@@ -101,12 +99,12 @@ public class TerrainControleur {
 
     private void calculActionsPossibles(Pion pionClique) {
         if (!modeActionDeplacement) {
-            ArrayList<Case> casesPossibles = jeu.getDeplacementsPossibles(pionClique);
+            ArrayList<Case> casesPossibles = getJeu().getDeplacementsPossibles(pionClique);
 
             for (Case c : casesPossibles) casesMarquees.add(getTerrainVue().getCaseSur(c.getPoint()));
             for (CaseVue c : casesMarquees) c.setMarque(true);
         } else {
-            ArrayList<Pion> pionsPossibles = jeu.getPassesPossibles(pionClique);
+            ArrayList<Pion> pionsPossibles = getJeu().getPassesPossibles(pionClique);
 
             for (Pion p : pionsPossibles) pionsMarques.add(getTerrainVue().getCaseSur(p.getPosition().getPoint()).getPionVue());
             for (PionVue p : pionsMarques) p.setMarque(true);

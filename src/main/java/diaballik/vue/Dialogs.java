@@ -4,6 +4,7 @@ import diaballik.Diaballik;
 import diaballik.Reseau;
 import diaballik.Utils;
 import diaballik.model.*;
+import diaballik.scene.SceneJeu;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -15,6 +16,7 @@ import javafx.scene.control.*;
 import javafx.scene.layout.*;
 import javafx.scene.text.Font;
 import javafx.util.Pair;
+import javafx.util.StringConverter;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -30,69 +32,10 @@ public class Dialogs {
         return result.get() == ButtonType.OK;
     }
 
-    public static void montrerCredits() {
-        int i = 0;
-
-        Dialog<Boolean> credits = new Dialog<>();
-        credits.setTitle("Credits");
-
-        // Layouts
-        BorderPane corps = new BorderPane();
-        corps.setId("dialogCredits");
-
-        GridPane table = new GridPane();
-        VBox infos = new VBox();
-
-        // Controls
-        Label msgTop = new Label("Jeu réalisé par...");
-        msgTop.setAlignment(Pos.TOP_CENTER);
-        msgTop.setPrefWidth(Double.MAX_VALUE);
-
-        ColumnConstraints cc = new ColumnConstraints(200);
-        table.getColumnConstraints().add(cc);
-        table.setAlignment(Pos.TOP_CENTER);
-        table.setPadding(new Insets(10, 0, 20, 0));
-        ArrayList<Pair<String, String>> noms = new ArrayList<>(
-                Arrays.asList(
-                        new Pair<>("Nicolas Huchet", "Domaine"),
-                        new Pair<>("Loïc Houdebine", "Domaine"),
-                        new Pair<>("Paul Reynaud", "Domaine"),
-                        new Pair<>("Rana Sherif", "Domaine"),
-                        new Pair<>("Anis Belahadji", "Domaine"),
-                        new Pair<>("Mourad Idchrife", "Domaine")
-                )
-        );
-        for (Pair<String, String> p : noms) {
-            table.add(new Label(p.getKey()), 0, i);
-            table.add(new Label(p.getValue()), 1, i);
-            i++;
-        }
-
-        Label dapres = new Label("D'après le jeu de stratégie de Philippe Lefrançois");
-        Label plus = new Label("Plus d'informations: www.diaballik.com");
-        infos.getChildren().add(dapres);
-        infos.getChildren().add(plus);
-        infos.setAlignment(Pos.BOTTOM_CENTER);
-        // Hyperlink : getHostServices().showDocument("http://.....");
-
-        // End
-        corps.setTop(msgTop);
-        corps.setCenter(table);
-        corps.setBottom(infos);
-
-        credits.getDialogPane().setContent(corps);
-        credits.getDialogPane().getStylesheets().add(Diaballik.class.getResource(Diaballik.CSS_DIALOG).toExternalForm());
-        credits.getDialogPane().getButtonTypes().add(ButtonType.CANCEL);
-        credits.getDialogPane().setPrefSize(400, 250);
-
-        credits.showAndWait();
-    }
-
     public static Optional<ConfigurationPartie> montrerDialogNouvellePartie(ConfigurationPartie cp) {
         Dialogs d = new Dialogs();
         return d.getDialogNouvellePartie(cp);
     }
-
     private Optional<ConfigurationPartie> getDialogNouvellePartie(ConfigurationPartie cp) {
         ObservableList<String> iaDifficultes = FXCollections.observableArrayList(
                 "Humain",
@@ -107,7 +50,6 @@ public class Dialogs {
         config.getDialogPane().getButtonTypes().addAll(boutonJouerType, ButtonType.CANCEL);
 
         Node boutonJouer = config.getDialogPane().lookupButton(boutonJouerType);
-        //boutonJouer.setDisable(true);
 
         BorderPane contentWrapper = new BorderPane();
         contentWrapper.setPadding(new Insets(20));
@@ -123,7 +65,6 @@ public class Dialogs {
         ColumnConstraints ccNom = new ColumnConstraints();
         ColumnConstraints ccIA = new ColumnConstraints();
         ccJoueur.setPercentWidth(20);
-        //ccJoueur.setHalignment(HPos.CENTER);
         ccNom.setPercentWidth(50);
         ccIA.setPercentWidth(30);
         configJoueurs.getColumnConstraints().addAll(ccJoueur, ccNom, ccIA);
@@ -146,13 +87,9 @@ public class Dialogs {
         l = new Label("Nom");
         l.getStyleClass().add("dialogNewGameHeader");
         configJoueurs.add(l, 1, 0);
-        /*l = new Label("JoueurIA");
-        l.getStyleClass().add("dialogNewGameHeader");
-        configJoueurs.add(l, 2, 0);*/
 
         // Row joueur 1
         TextField nomJoueur1 = new TextField("Joueur 1");
-        if (cp != null) nomJoueur1.setText(cp.getNomJoueur1());
         nomJoueur1.setPromptText("Nom");
         nomJoueur1.textProperty().addListener((o, ov, nv) -> {
             boutonJouer.setDisable(nv.trim().length() < 3);
@@ -178,14 +115,12 @@ public class Dialogs {
                     break;
             }
         });
-        Platform.runLater(() -> iaJoueur1.getSelectionModel().select(cp != null ? cp.getTypeJoueur1() : 0));
         configJoueurs.add(new Label("1"), 0, 1);
         configJoueurs.add(nomJoueur1, 1, 1);
         configJoueurs.add(iaJoueur1, 2, 1);
 
         // Row joueur 2
         TextField nomJoueur2 = new TextField("Joueur 2");
-        if (cp != null) nomJoueur2.setText(cp.getNomJoueur2());
         nomJoueur2.setPromptText("Nom");
         nomJoueur2.textProperty().addListener((o, ov, nv) -> {
             boutonJouer.setDisable(nv.trim().length() < 3);
@@ -211,23 +146,28 @@ public class Dialogs {
                     break;
             }
         });
-        Platform.runLater(() -> iaJoueur2.getSelectionModel().select(cp != null ? cp.getTypeJoueur2() : 0));
         configJoueurs.add(new Label("2"), 0, 2);
         configJoueurs.add(nomJoueur2, 1, 2);
         configJoueurs.add(iaJoueur2, 2, 2);
 
-        // autre
-        // row noms aléatoires
-        /*Label nomsAleatoires = new Label("Noms aléatoires");
-        autre.add(nomsAleatoires, 0, 1);
-        CheckBox checkNomsAleatoires = new CheckBox();
-        checkNomsAleatoires.setDisable(true);
-        checkNomsAleatoires.selectedProperty().addListener((o, ov, nv) -> {
-            nomJoueur1.setDisable(nv);
-            nomJoueur2.setDisable(nv);
-            boutonJouer.setDisable(!nv);
+        Label timer = new Label("Temps maximum par tour");
+        autre.add(timer, 0, 1);
+        ComboBox<Integer> comboTimer = new ComboBox<>();
+        comboTimer.setMaxWidth(Double.MAX_VALUE);
+        comboTimer.setConverter(new StringConverter<Integer>() {
+            @Override
+            public String toString(Integer object) {
+                if (object == 0) return "Pas de timer";
+                return object + " secondes";
+            }
+
+            @Override
+            public Integer fromString(String string) {
+                return null;
+            }
         });
-        autre.add(checkNomsAleatoires, 1, 1);*/
+        comboTimer.getItems().addAll(0, 15, 30, 45, 60);
+        autre.add(comboTimer, 1, 1);
 
         // row terrain
         Label terrain = new Label("Variante de terrain");
@@ -251,18 +191,32 @@ public class Dialogs {
             if (b == boutonJouerType) {
                 int ia1 = convertirDifficulte(iaJoueur1.getValue());
                 int ia2 = convertirDifficulte(iaJoueur2.getValue());
-                //if (checkNomsAleatoires.isSelected()) {
-                    //return new ConfigurationPartie(ia1, ia2, terrains.getTerrainSelectionnePath());
-                //} else {
-                    if (!Utils.nomValide(nomJoueur1.getText()) || !Utils.nomValide(nomJoueur2.getText()))
-                        return null;
-                    else
-                        return new ConfigurationPartie(nomJoueur1.getText(), nomJoueur2.getText(), ia1, ia2, terrains.getTerrainSelectionnePath());
-                //}
+                if (!Utils.nomValide(nomJoueur1.getText()) || !Utils.nomValide(nomJoueur2.getText()))
+                    return null;
+                else
+                    return new ConfigurationPartie(nomJoueur1.getText(), nomJoueur2.getText(), ia1, ia2, comboTimer.getSelectionModel().getSelectedItem(), terrains.getTerrainSelectionnePath());
             }
 
             return null;
         });
+
+        if (cp != null) {
+            Platform.runLater(() -> {
+                nomJoueur1.setText(cp.getNomJoueur1());
+                nomJoueur2.setText(cp.getNomJoueur2());
+                iaJoueur1.getSelectionModel().select(cp.getTypeJoueur1() < 4 ? cp.getTypeJoueur1() : 0);
+                iaJoueur2.getSelectionModel().select(cp.getTypeJoueur2() < 4 ? cp.getTypeJoueur2() : 0);
+
+                terrains.selectionTerrain(cp.getTerrain());
+                comboTimer.getSelectionModel().select((Integer)cp.getDureeTimer());
+            });
+        } else {
+            iaJoueur1.getSelectionModel().selectFirst();
+            iaJoueur2.getSelectionModel().selectFirst();
+
+            terrains.selectionTerrain("");
+            comboTimer.getSelectionModel().select((Integer)30);
+        }
 
         Platform.runLater(nomJoueur1::requestFocus);
 
@@ -286,7 +240,6 @@ public class Dialogs {
         Dialogs d = new Dialogs();
         return d.getDialogChoisirFichier(directory);
     }
-
     private Optional<String> getDialogChoisirFichier(String directory) {
         ObservableList<String> obs = FXCollections.observableArrayList(Utils.getFichiersDansDossier(directory, Diaballik.EXTENSION_SAUVEGARDE, false));
 
@@ -319,7 +272,6 @@ public class Dialogs {
         }
 
         GridPane infosSave = new GridPane();
-        //infosSave.setPadding(new Insets(0, 10, 0, 10));
         ColumnConstraints ccis = new ColumnConstraints();
         ccis.setPercentWidth(40);
         infosSave.getColumnConstraints().addAll(ccis);
@@ -328,6 +280,7 @@ public class Dialogs {
                 labelInfoNomJoueur1 = new Label(),
                 labelInfoNomJoueur2 = new Label();
         TerrainApercu ta = new TerrainApercu();
+        //infosSave.add(new Label("Version de la sauvegarde"), 0, 0);
         infosSave.add(new Label("Tour"), 0, 0);
         infosSave.add(new Label("Nom joueur 1"), 0, 1);
         infosSave.add(new Label("Nom joueur 2"), 0, 2);
@@ -372,7 +325,6 @@ public class Dialogs {
         content.add(filesView, 0, 1);
         content.add(new Label("Sauvegarde sélectionnée"), 1, 0);
         content.add(infosSave, 1, 1);
-        //content.setPadding(new Insets(10));
 
         dialog.setResultConverter(b -> {
             if (b == boutonAnnulerType) return null;
@@ -417,7 +369,6 @@ public class Dialogs {
 
         alert.showAndWait();
     }
-
     public static void montrerAntijeu(String message) {
         Alert alert = new Alert(Alert.AlertType.ERROR);
         alert.setTitle("Antijeu non valide");
@@ -426,72 +377,68 @@ public class Dialogs {
 
         alert.showAndWait();
     }
+    public static void montrerCredits() {
+        int i = 0;
 
-    public static void montrerParametres(ConfigurationPartie cp) {
-        Dialog<Void> parametres = new Dialog<>();
-        parametres.setTitle("Paramètres");
+        Dialog<Boolean> credits = new Dialog<>();
+        credits.setTitle("Credits");
 
-        StackPane content = new StackPane();
-        content.setPadding(new Insets(10));
+        // Layouts
+        BorderPane corps = new BorderPane();
+        corps.setId("dialogCredits");
 
-        GridPane grid = new GridPane();
-        grid.setHgap(10);
-        grid.setVgap(10);
-        ColumnConstraints cc1 = new ColumnConstraints();
-        cc1.setPercentWidth(85);
-        ColumnConstraints cc2 = new ColumnConstraints();
-        cc2.setPercentWidth(15);
-        grid.getColumnConstraints().addAll(cc1, cc2);
+        GridPane table = new GridPane();
+        VBox infos = new VBox();
 
-        CheckBox parametre1 = new CheckBox();
-        parametre1.setSelected(cp.isAideDeplacement());
+        // Controls
+        Label msgTop = new Label("Jeu réalisé par...");
+        msgTop.setAlignment(Pos.TOP_CENTER);
+        msgTop.setPrefWidth(Double.MAX_VALUE);
 
-        CheckBox parametre2 = new CheckBox();
-        parametre2.setSelected(cp.isAidePasse());
+        ColumnConstraints cc = new ColumnConstraints(200);
+        table.getColumnConstraints().add(cc);
+        table.setAlignment(Pos.TOP_CENTER);
+        table.setPadding(new Insets(10, 0, 20, 0));
+        ArrayList<Pair<String, String>> noms = new ArrayList<>(
+                Arrays.asList(
+                        new Pair<>("Nicolas Huchet", "Domaine"),
+                        new Pair<>("Loïc Houdebine", "Domaine"),
+                        new Pair<>("Paul Reynaud", "Domaine"),
+                        new Pair<>("Rana Sherif", "Domaine"),
+                        new Pair<>("Anis Belahadji", "Domaine"),
+                        new Pair<>("Mourad Idchrife", "Domaine")
+                )
+        );
+        for (Pair<String, String> p : noms) {
+            table.add(new Label(p.getKey()), 0, i);
+            table.add(new Label(p.getValue()), 1, i);
+            i++;
+        }
 
-        CheckBox parametre3 = new CheckBox();
-        parametre3.setSelected(cp.isAutoSelectionPion());
+        Label dapres = new Label("D'après le jeu de stratégie de Philippe Lefrançois");
+        Label plus = new Label("Plus d'informations: www.diaballik.com");
+        infos.getChildren().add(dapres);
+        infos.getChildren().add(plus);
+        infos.setAlignment(Pos.BOTTOM_CENTER);
 
-        Label labelParametre1 = new Label("Aide au déplacement des pions");
-        Label labelParametre2 = new Label("Aide aux passes");
-        Label labelParametre3 = new Label("Auto sélectionner le meme pion\nsi déplacement restant");
-        labelParametre3.setWrapText(true);
-        labelParametre3.setMaxHeight(Double.MAX_VALUE);
+        // End
+        corps.setTop(msgTop);
+        corps.setCenter(table);
+        corps.setBottom(infos);
 
-        grid.add(labelParametre1, 0, 0);
-        grid.add(parametre1, 1, 0);
-        grid.add(labelParametre2, 0, 1);
-        grid.add(parametre2, 1, 1);
-        grid.add(labelParametre3, 0, 2);
-        grid.add(parametre3, 1, 2);
+        credits.getDialogPane().setContent(corps);
+        credits.getDialogPane().getStylesheets().add(Diaballik.class.getResource(Diaballik.CSS_DIALOG).toExternalForm());
+        credits.getDialogPane().getButtonTypes().add(ButtonType.CANCEL);
+        credits.getDialogPane().setPrefSize(400, 250);
 
-        content.getChildren().add(grid);
-
-        parametres.getDialogPane().getButtonTypes().addAll(ButtonType.OK);
-        parametres.getDialogPane().setContent(content);
-        parametres.getDialogPane().setPrefSize(320, 160);
-
-        parametres.setResultConverter(bt -> {
-            if (bt == ButtonType.OK) {
-                cp.setAideDeplacement(parametre1.isSelected());
-                cp.setAidePasse(parametre2.isSelected());
-                cp.setAutoSelectionPion(parametre3.isSelected());
-
-                cp.writeProperties();
-            }
-
-            return null;
-        });
-
-        parametres.showAndWait();
+        credits.showAndWait();
     }
 
-    public static void montrerReseau(Diaballik diaballik) {
+    public static void montrerReseau(SceneJeu sceneJeu) {
         Dialogs d = new Dialogs();
-        d.getReseau(diaballik);
+        d.getReseau(sceneJeu);
     }
-
-    private void getReseau(Diaballik diaballik) {
+    private void getReseau(SceneJeu sceneJeu) {
         Dialog<Void> dialog = new Dialog<>();
         VBox choixType = new VBox(12);
 
@@ -526,7 +473,6 @@ public class Dialogs {
         hcc1.setPercentWidth(33);
         hcc2.setPercentWidth(67);
         hostChoix.getColumnConstraints().addAll(hcc1, hcc2);
-        //hostChoix.setPadding(new Insets(16, 32, 16, 32));
         TextField hostNom = new TextField("Joueur 1");
         TerrainComboBox terrains = new TerrainComboBox();
         terrains.setMaxWidth(Double.MAX_VALUE);
@@ -538,8 +484,8 @@ public class Dialogs {
         hostChoixAnnuler.setMaxWidth(Double.MAX_VALUE);
         hostChoixValider.setOnAction(e -> {
             if (hostNom.getText().length() > 2) {
-                diaballik.reseau.d = dialog;
-                diaballik.reseau.host(hostNom.getText(), terrains.getTerrainSelectionnePath());
+                sceneJeu.getReseau().d = dialog;
+                sceneJeu.getReseau().host(hostNom.getText(), terrains.getTerrainSelectionnePath());
                 titre.setText("Partie en réseau: attente");
                 contentWrapper.setCenter(hostAttente);
                 dialog.getDialogPane().getScene().getWindow().sizeToScene();
@@ -554,13 +500,11 @@ public class Dialogs {
         HBox.setHgrow(hostChoixValider, Priority.ALWAYS);
         hostBoutons.getChildren().addAll(hostChoixAnnuler, hostChoixValider);
         hostBoutons.setPadding(new Insets(10, 0, 0, 0));
-        //hostChoix.getChildren().addAll(new Label("Choix de l'host"), serveurNom, terrains, serveurChoixValider);
         Label hostChoixTitre = new Label("Créer une partie");
         hostChoixTitre.setFont(new Font(null, 18));
         hostChoixTitre.setPadding(new Insets(0, 0, 10, 0));
         GridPane.setHalignment(hostChoixTitre, HPos.CENTER);
 
-        //hostChoix.add(hostChoixTitre, 0, 0, 2, 1);
         hostChoix.add(new Label("Nom du joueur"), 0, 0);
         hostChoix.add(hostNom, 1, 0);
         hostChoix.add(new Label("Terrain"), 0, 1);
@@ -575,7 +519,6 @@ public class Dialogs {
         ccc1.setPercentWidth(33);
         ccc2.setPercentWidth(67);
         clientChoix.getColumnConstraints().addAll(ccc1, ccc2);
-        //clientChoix.setPadding(new Insets(16, 32, 16, 32));
         TextField clientNom = new TextField("Joueur 2");
         TextField ip = new TextField("localhost");
 
@@ -586,8 +529,8 @@ public class Dialogs {
         clientChoixAnnuler.setMaxWidth(Double.MAX_VALUE);
         clientChoixValider.setOnAction(e -> {
             if (ip.getText().length() > 6 && clientNom.getText().length() > 2) {
-                diaballik.reseau.d = dialog;
-                diaballik.reseau.client(clientNom.getText(), ip.getText());
+                sceneJeu.getReseau().d = dialog;
+                sceneJeu.getReseau().client(clientNom.getText(), ip.getText());
                 titre.setText("Partie en réseau: attente");
                 contentWrapper.setCenter(hostAttente);
                 dialog.getDialogPane().getScene().getWindow().sizeToScene();
@@ -602,13 +545,11 @@ public class Dialogs {
         HBox.setHgrow(clientChoixValider, Priority.ALWAYS);
         clientBoutons.getChildren().addAll(clientChoixAnnuler, clientChoixValider);
         clientBoutons.setPadding(new Insets(10, 0, 0, 0));
-        //clientChoix.getChildren().addAll(new Label("Choix de l'host"), ip, clientNom, clientChoixValider);
         Label clientChoixTitre = new Label("Rejoindre une partie");
         clientChoixTitre.setFont(new Font(null, 18));
         clientChoixTitre.setPadding(new Insets(0, 0, 10, 0));
         GridPane.setHalignment(clientChoixTitre, HPos.CENTER);
 
-        //clientChoix.add(clientChoixTitre, 0, 0, 2, 1);
         clientChoix.add(new Label("IP de l'host"), 0, 0);
         clientChoix.add(ip, 1, 0);
         clientChoix.add(new Label("Nom du joueur"), 0, 1);
@@ -640,10 +581,10 @@ public class Dialogs {
 
         dialog.setResultConverter(b -> {
             if (
-                        diaballik.reseau.getTacheActuelle() == Reseau.Tache.ATTENTE_SERVEUR
-                    ||  diaballik.reseau.getTacheActuelle() == Reseau.Tache.ATTENTE_CLIENT
+                        sceneJeu.getReseau().getTacheActuelle() == Reseau.Tache.ATTENTE_SERVEUR
+                    ||  sceneJeu.getReseau().getTacheActuelle() == Reseau.Tache.ATTENTE_CLIENT
             ) {
-                diaballik.reseau.fermerReseau();
+                sceneJeu.getReseau().fermerReseau();
             }
 
             return null;
@@ -660,7 +601,6 @@ public class Dialogs {
         dialog.setTitle("Partie en réseau");
         dialog.getDialogPane().getStylesheets().add(Diaballik.class.getResource(Diaballik.CSS_DIALOG).toExternalForm());
         dialog.getDialogPane().setPrefSize(400, 200);
-        //dialog.getDialogPane().getButtonTypes().addAll(ButtonType.CANCEL);
         dialog.showAndWait();
     }
 }

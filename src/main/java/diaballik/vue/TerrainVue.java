@@ -2,17 +2,14 @@ package diaballik.vue;
 
 import diaballik.Diaballik;
 import diaballik.controleur.TerrainControleur;
-import diaballik.model.Jeu;
-import diaballik.model.Joueur;
-import diaballik.model.Point;
-import diaballik.model.Terrain;
+import diaballik.model.*;
 import javafx.animation.FadeTransition;
-import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.Label;
-import javafx.scene.layout.*;
-import javafx.scene.paint.Color;
-import javafx.scene.text.Font;
+import javafx.scene.layout.ColumnConstraints;
+import javafx.scene.layout.GridPane;
+import javafx.scene.layout.RowConstraints;
+import javafx.scene.layout.StackPane;
 import javafx.util.Duration;
 
 import java.util.Observable;
@@ -27,29 +24,30 @@ public class TerrainVue extends StackPane implements Observer {
     private final CaseVue[][] cases; // Représentation visuelle du terrain (l'UI)
     private final PionVue[][] pions;
 
-    private final StackPane tourAdverseReseau, tourAdverseIA;
+    private final StackPane tourAdverse;
+    private boolean tourAdverseVisible;
 
     public TerrainVue(TerrainControleur terrainControleur) {
         super();
 
-        ft = new FadeTransition(Duration.millis(400));
-
         GridPane root = new GridPane();
 
         // setup le fond quand le joueur adverse jouera
-        tourAdverseReseau = new StackPane();
-        tourAdverseReseau.setBackground(new Background(new BackgroundFill(new Color(0, 0, 0, 0.15), CornerRadii.EMPTY, Insets.EMPTY)));
-        Label l = new Label("Tour du joueur adverse");
-        l.setFont(new Font(null, 26));
-        StackPane.setAlignment(l, Pos.CENTER);
-        tourAdverseReseau.getChildren().add(l);
+        tourAdverseVisible = false;
+        tourAdverse = new StackPane();
 
-        tourAdverseIA = new StackPane();
-        tourAdverseIA.setBackground(new Background(new BackgroundFill(new Color(0, 0, 0, 0.15), CornerRadii.EMPTY, Insets.EMPTY)));
-        Label lia = new Label("Tour de l'IA");
-        lia.setFont(new Font(null, 26));
-        StackPane.setAlignment(lia, Pos.CENTER);
-        tourAdverseIA.getChildren().add(lia);
+        Label l = new Label();
+        if (terrainControleur.getJeu().getConfigurationPartie().estMultijoueur())
+            l.setText("Tour du joueur adverse");
+        else
+            l.setText("Tour de l'IA");
+
+        StackPane.setAlignment(l, Pos.CENTER);
+        tourAdverse.setId("tourAdverse");
+        tourAdverse.getChildren().add(l);
+
+        ft = new FadeTransition(Duration.millis(400));
+        ft.setNode(tourAdverse);
 
         this.terrainControleur = terrainControleur;
         this.terrain = terrainControleur.getJeu().getTerrain();
@@ -96,9 +94,9 @@ public class TerrainVue extends StackPane implements Observer {
             }
         }
 
-        this.getChildren().add(root);
+        this.getChildren().addAll(tourAdverse, root);
 
-        update(null, null);
+        update(null, SignalUpdate.INIT);
     }
 
     public CaseVue getCaseSur(Point p) {
@@ -119,32 +117,16 @@ public class TerrainVue extends StackPane implements Observer {
 
     @Override
     public void update(Observable o, Object arg) {
-        if (terrainControleur.getJeu().joueurActuelReseau() || terrainControleur.getJeu().getJoueurActuel().estUneIA()) {
-            for (PionVue p : pions[Joueur.ROUGE]) p.desactiver();
-            for (PionVue p : pions[Joueur.VERT]) p.desactiver();
-            if (terrainControleur.getJeu().joueurActuelReseau()) fade(true, tourAdverseReseau);
-            if (terrainControleur.getJeu().getJoueurActuel().estUneIA()) fade(true, tourAdverseIA);
-        } else {
-            fade(false, tourAdverseReseau);
-            fade(false, tourAdverseIA);
-            if (terrainControleur.getJeu().getJoueurActuel().getCouleur() == Joueur.VERT) {
-                for (PionVue p : pions[Joueur.ROUGE]) p.desactiver();
-                for (PionVue p : pions[Joueur.VERT]) p.activer();
-            } else {
-                for (PionVue p : pions[Joueur.ROUGE]) p.activer();
-                for (PionVue p : pions[Joueur.VERT]) p.desactiver();
-            }
-        }
+        preparerTour();
 
-        int changed_type = (arg != null ? (int)arg : 0);
-        Diaballik d = getTerrainControleur().diaballik;
+        Diaballik d = getTerrainControleur().sceneJeu.getDiaballik();
         if (d.getSceneJeu() != null) {
-            switch (changed_type) {
-                case Jeu.CHANGEMENT_TOUR:
-                    d.setCurseurNormal(d.getSceneJeu());
+            switch ((SignalUpdate)arg) {
+                case TOUR:
+                    d.setCurseurNormal();
                     terrainControleur.finSelection();
                     break;
-                case Jeu.CHANGEMENT_GLOBAL:
+                case GLOBAL:
                     terrainControleur.finSelection();
                     break;
                 default:
@@ -153,22 +135,41 @@ public class TerrainVue extends StackPane implements Observer {
         }
     }
 
-    private void fade(boolean in, StackPane s) {
-        if (in && !this.getChildren().contains(s)) {
-            s.setOpacity(0);
-            getChildren().add(s);
+    private void preparerTour() {
+        Joueur jt = terrainControleur.getJeu().getJoueurActuel();
+        if (jt.estUnJoueurReseau() || jt.estUneIA()) {
+            fade(true);
+            for (PionVue p : pions[Joueur.ROUGE]) p.desactiver();
+            for (PionVue p : pions[Joueur.VERT]) p.desactiver();
+        } else {
+            fade(false);
+            if (jt.getCouleur() == Joueur.VERT) {
+                for (PionVue p : pions[Joueur.ROUGE]) p.desactiver();
+                for (PionVue p : pions[Joueur.VERT]) p.activer();
+            } else {
+                for (PionVue p : pions[Joueur.ROUGE]) p.activer();
+                for (PionVue p : pions[Joueur.VERT]) p.desactiver();
+            }
+        }
+    }
 
-            ft.setNode(s);
+    private void fade(boolean in) {
+        if (in && !tourAdverseVisible) {
+            tourAdverse.setOpacity(0);
+            tourAdverse.toFront();
             ft.setToValue(1);
-            ft.setOnFinished(e -> s.setOpacity(1));
+            ft.setOnFinished(null);
 
             ft.play();
-        } else if (!in && this.getChildren().contains(s)) {
-            ft.setNode(s);
+
+            tourAdverseVisible = true;
+        } else if (!in && tourAdverseVisible) {
             ft.setToValue(0);
-            ft.setOnFinished(e -> getChildren().remove(s));
+            ft.setOnFinished(e -> tourAdverse.toBack());
 
             ft.play();
+
+            tourAdverseVisible = false;
         }
     }
 }

@@ -1,5 +1,7 @@
 package diaballik.model;
 
+import java.io.BufferedReader;
+import java.io.IOException;
 import java.io.Serializable;
 
 public class Action implements Serializable {
@@ -9,17 +11,16 @@ public class Action implements Serializable {
     public final static int ANTIJEU = 3;
 
     private Case caseAvant;
-    private final int action;
+    private int action;
     private Case caseApres;
     private boolean inverse; // si inverse, l'action provient de défaire
-    private final int tour;
+    private int tour;
 
     public Action(int action) {
         this.action = action;
         this.tour = -1;
         this.inverse = false;
     }
-
     public Action(Case caseAvant, int action, Case caseApres, int tour) {
         this.caseAvant = caseAvant;
         this.action = action;
@@ -27,22 +28,28 @@ public class Action implements Serializable {
         this.tour = tour;
         this.inverse = false;
     }
-
-    public Action(Jeu jeu, String s) {
-        String[] parts = s.split(":");
-        this.tour = Integer.parseInt(parts[0]);
-        Point pointCaseAvant = new Point(parts[1]);
-        this.caseAvant = jeu.getTerrain().getCaseSur(pointCaseAvant);
-        this.action = Integer.parseInt(parts[2]);
-        Point pointCaseApres = new Point(parts[3]);
-        this.caseApres = jeu.getTerrain().getCaseSur(pointCaseApres);
-        this.inverse = false;
+    public Action(Jeu jeu, BufferedReader br) throws IOException {
+        String sCurrentLine, parts[];
+        try {
+            if ((sCurrentLine = br.readLine()) != null) {
+                parts = sCurrentLine.split(":");
+                this.tour = Integer.parseInt(parts[0]);
+                Point pointCaseAvant = new Point(parts[1]);
+                this.caseAvant = jeu.getTerrain().getCaseSur(pointCaseAvant);
+                this.action = Integer.parseInt(parts[2]);
+                Point pointCaseApres = new Point(parts[3]);
+                this.caseApres = jeu.getTerrain().getCaseSur(pointCaseApres);
+                this.inverse = false;
+            }
+        } catch (IOException ioe) {
+            System.err.println("(Action.<init>) Erreur de lecture");
+            throw ioe;
+        }
     }
 
     public void setInverse(boolean inverse) {
         this.inverse = inverse;
     }
-
     public boolean isInverse() {
         return inverse;
     }
@@ -75,14 +82,16 @@ public class Action implements Serializable {
         return sb.toString();
     }
 
-    public Case getCaseApres() {
-        return caseApres;
-    }
-
     public int getAction() {
         return action;
     }
+    public int getTour() {
+        return tour;
+    }
 
+    public Case getCaseApres() {
+        return caseApres;
+    }
     public Case getCaseAvant() {
         return caseAvant;
     }
@@ -90,7 +99,6 @@ public class Action implements Serializable {
     public void setCaseAvant(Case caseAvant) {
         this.caseAvant = caseAvant;
     }
-
     public void setCaseApres(Case caseApres) {
         this.caseApres = caseApres;
     }

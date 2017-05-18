@@ -1,10 +1,13 @@
 package diaballik.model;
 
+import javafx.application.Platform;
+
+import java.io.BufferedReader;
+import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
 
 public class Terrain {
-    private final String nom;
+    private String nom;
 
     private final Case cases[][];
     private final Pion pions[][];
@@ -12,6 +15,7 @@ public class Terrain {
     public final static int HAUTEUR = 7;
     public final static int LARGEUR = 7;
 
+    // Constructeur par copie
     public Terrain(Terrain t) {
         this.cases = new Case[HAUTEUR][LARGEUR];
         this.pions = new Pion[Jeu.NOMBRE_JOUEURS][Joueur.NOMBRE_PIONS];
@@ -30,21 +34,20 @@ public class Terrain {
             for (int i = 0; i < Joueur.NOMBRE_PIONS; i++) {
                 pt = t.getPionDe(c, i);
                 ctmp = getCaseSur(pt.getPosition().getPoint());
-                p = new Pion(c, i, ctmp);
+                p = new Pion(c, ctmp);
                 this.pions[c][i] = p;
             }
 
-        System.out.println("Entrée");
+        /*System.out.println("Entrée");
         System.out.println(t);
         System.out.println("Sortie");
-        System.out.println(t);
+        System.out.println(t);*/
     }
 
-    public Terrain(String terrainString) {
+    // Constructeur depuis un flux d'entrée (eg fichier)
+    public Terrain(BufferedReader br) {
         this.cases = new Case[HAUTEUR][LARGEUR];
         this.pions = new Pion[Jeu.NOMBRE_JOUEURS][Joueur.NOMBRE_PIONS];
-
-        this.nom = terrainString.split("\n")[0];
 
         for (int i = 0; i < HAUTEUR; i++) {
             for (int j = 0; j < LARGEUR; j++) {
@@ -53,74 +56,71 @@ public class Terrain {
         }
 
         int x, y = 0;
+        Case cc;
         Pion pion; // le pion qu'on va créer à chaque lecture
-        boolean estPion = true; // pour marquer une lecture erronée ou un vide
-        int couleur = -1;
-        boolean pionBalle = false;
 
-        int nbv = 0, nbr = 0;
+        String sCurrentLine, parts[];
+        try {
+            if ((sCurrentLine = br.readLine()) != null) this.nom = sCurrentLine;
 
-        ArrayList<String> lines = new ArrayList<>(Arrays.asList(terrainString.split("\n")));
-        lines.remove(0);
-        String[] parts;
+            while (y < HAUTEUR && (sCurrentLine = br.readLine()) != null) {
+                parts = sCurrentLine.split(";");
 
-        while (y < HAUTEUR) {
-            parts = lines.get(y).split(";");
+                x = 0;
+                for (String c : parts) {
+                    if (x == LARGEUR) break;
 
-            x = 0;
-            for (String c : parts) {
-                if (x == LARGEUR) break;
+                    cc = getCaseSur(new Point(x, y));
+                    if (!c.equals("0")) {
+                        switch (c) {
+                            case "V":
+                                pion = new Pion(Joueur.VERT, cc);
+                                ajouterPionA(Joueur.VERT, pion);
+                                break;
+                            case "R":
+                                pion = new Pion(Joueur.ROUGE, cc);
+                                ajouterPionA(Joueur.ROUGE, pion);
+                                break;
+                            case "BV":
+                                pion = new Pion(Joueur.VERT, cc);
+                                ajouterPionA(Joueur.VERT, pion);
+                                pion.setaLaBalle(true);
+                                break;
+                            case "BR":
+                                pion = new Pion(Joueur.ROUGE, cc);
+                                ajouterPionA(Joueur.ROUGE, pion);
+                                pion.setaLaBalle(true);
+                                break;
+                            default:
+                                System.err.println("(Terrain.<init>) Terrain invalide.");
+                                return;
+                        }
 
-                switch (c) {
-                    case "V":
-                        couleur = Joueur.VERT;
-                        break;
-                    case "R":
-                        couleur = Joueur.ROUGE;
-                        break;
-                    case "BV":
-                        couleur = Joueur.VERT;
-                        pionBalle = true;
-                        break;
-                    case "BR":
-                        couleur = Joueur.ROUGE;
-                        pionBalle = true;
-                        break;
-                    default:
-                        estPion = false;
-                        break;
-                }
-
-                if (estPion) {
-                    Case ct = this.cases[y][x];
-
-                    pion = new Pion(couleur, x, ct);
-                    this.cases[y][x].setPion(pion);
-
-                    if (couleur == Joueur.VERT)
-                        this.pions[couleur][nbv++] = pion;
-                    else
-                        this.pions[couleur][nbr++] = pion;
-
-                    if (pionBalle) {
-                        pion.setaLaBalle(true);
-                        pionBalle = false;
+                        cc.setPion(pion);
                     }
-                } else {
-                    estPion = true;
+
+                    x++;
                 }
 
-                x++;
+                y++;
             }
-
-            y++;
+        } catch (IOException ioe) {
+            System.err.println("(Terrain.<init>) Erreur de lecture.");
+            Platform.exit();
         }
+    }
+
+    private void ajouterPionA(int joueur, Pion pion) {
+        int i = 0;
+        while (i < Joueur.NOMBRE_PIONS && getPionDe(joueur, i) != null) {i++;}
+
+        if (i < Joueur.NOMBRE_PIONS) this.pions[joueur][i] = pion;
     }
 
     public Pion getPionDe(int joueur, int num) {
         return this.pions[joueur][num];
     }
-    public Pion[] getPionsDe(int joueur) {
+    Pion[] getPionsDe(int joueur) {
         return this.pions[joueur];
     }
 
@@ -133,7 +133,7 @@ public class Terrain {
         return point.getX() >= 0 && point.getX() < LARGEUR && point.getY() >= 0 && point.getY() < HAUTEUR;
     }
 
-    public String getPionRepresentation(Pion pion) {
+    String getPionRepresentation(Pion pion) {
         String res = "";
 
         if (pion == null)
@@ -150,7 +150,7 @@ public class Terrain {
         return res;
     }
 
-    public String getSaveString() {
+    String getSaveString() {
         StringBuilder sb = new StringBuilder();
         sb.append(nom).append("\n");
         boolean skip = true;
@@ -173,7 +173,6 @@ public class Terrain {
     public Pion[][] getPions() {
         return pions;
     }
-
     public Case[][] getCases() {
         return cases;
     }

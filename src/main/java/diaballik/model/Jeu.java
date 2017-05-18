@@ -1,7 +1,7 @@
 package diaballik.model;
 
-import diaballik.Diaballik;
 import diaballik.Utils;
+import diaballik.scene.SceneJeu;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -14,48 +14,42 @@ public class Jeu extends Observable {
     private Terrain terrain;
     private final Joueur[] joueurs;
 
-    public final ConfigurationPartie cp;
+    private final ConfigurationPartie configurationPartie;
 
-    public final Historique historique = new Historique(this);
+    public Historique historique;
 
     private final ArrayList<Point> arriveeJoueurVert = new ArrayList<>();
     private final ArrayList<Point> arriveeJoueurRouge = new ArrayList<>();
 
     private int tour;
     private int numAction;
-    int joueurActuel;
+    private int joueurActuel;
 
-    private final ArrayList<String> nomsDisponibles = new ArrayList<>();
-
-    final Diaballik diaballik;
+    private final SceneJeu sceneJeu;
 
     public final static int NOMBRE_JOUEURS = 2;
-
-    public final static int CHANGEMENT_INIT = 0;
-    public final static int CHANGEMENT_POSITION = 1;
-    public final static int CHANGEMENT_PASSE = 2;
-    public final static int CHANGEMENT_INFOS = 3;
-    public final static int CHANGEMENT_TOUR = 4;
-    public final static int CHANGEMENT_GLOBAL = 5;
 
     public final static int VICTOIRE_NORMALE = 1;
     public final static int VICTOIRE_ANTIJEU = 2;
 
-    public Jeu(ConfigurationPartie cp, Diaballik diaballik) {
-        this.diaballik = diaballik;
-        this.cp = cp;
+    private final static String VERSION_SAUVEGARDE = "0.1.1";
+
+    public Jeu(SceneJeu sceneJeu, ConfigurationPartie configurationPartie) throws OutdatedSave, IOException {
+        this.sceneJeu = sceneJeu;
+        this.configurationPartie = configurationPartie;
 
         initArrivee();
 
         this.joueurs = new Joueur[NOMBRE_JOUEURS];
 
-        charger(cp);
+        charger();
 
         getJoueurActuel().preparerJouer();
 
-        updateListeners(CHANGEMENT_GLOBAL);
+        updateListeners(SignalUpdate.GLOBAL);
     }
 
+    // Initialise les lignes d'arrivées
     private void initArrivee() {
         for (int i = 0; i < Terrain.LARGEUR; i++) {
             arriveeJoueurVert.add(new Point(i, 0));
@@ -63,18 +57,27 @@ public class Jeu extends Observable {
         }
     }
 
-    public void charger(ConfigurationPartie cp) {
-        try (BufferedReader br = Utils.readerConditionnel(cp.cheminFichier, cp.estUneSauvegarde)) {
+    // charge le jeu (avec la config qui contient le chemin du terrain & save)
+    private void charger() throws OutdatedSave, IOException {
+        try (BufferedReader br = Utils.readerConditionnel(getConfigurationPartie().getCheminFichier(), getConfigurationPartie().estUneSauvegarde())) {
             String sCurrentLine;
             String parts[];
 
-            if (cp.estUneSauvegarde) {
+            if (getConfigurationPartie().estUneSauvegarde()) {
+                if ((sCurrentLine = br.readLine()) != null) {
+                    String version = Utils.getSaveVersion(sCurrentLine);
+                    if (!version.equals(VERSION_SAUVEGARDE)) {
+                        throw new OutdatedSave(version);
+                    }
+                }
+
                 // tour actuel
                 if ((sCurrentLine = br.readLine()) != null) {
                     parts = sCurrentLine.split(":");
                     this.tour = Integer.parseInt(parts[0]);
                     this.joueurActuel = this.tour - 1;
                     this.numAction = Integer.parseInt(parts[1]);
+                    getConfigurationPartie().setDureeTimer(Integer.parseInt(parts[2]));
                 }
 
                 // joueur 1
@@ -91,30 +94,29 @@ public class Jeu extends Observable {
                 this.joueurActuel = 0;
                 this.numAction = 1;
 
-                this.joueurs[0] = constructJoueur(cp.typeJoueur1, Joueur.VERT, cp.nomJoueur1);
-                this.joueurs[1] = constructJoueur(cp.typeJoueur2, Joueur.ROUGE, cp.nomJoueur2);
+                this.joueurs[0] = constructJoueur(getConfigurationPartie().getTypeJoueur1(), Joueur.VERT, getConfigurationPartie().getNomJoueur1());
+                this.joueurs[1] = constructJoueur(getConfigurationPartie().getTypeJoueur2(), Joueur.ROUGE, getConfigurationPartie().getNomJoueur2());
             }
 
-            int n = 0;
-            StringBuilder terrainString = new StringBuilder();
-            while (n++ < Terrain.HAUTEUR + 1 && (sCurrentLine = br.readLine()) != null) {
-                terrainString.append(sCurrentLine).append("\n");
-            }
+            terrain = new Terrain(br);
 
-            terrain = new Terrain(terrainString.toString());
-
-            if (cp.estUneSauvegarde) {
-                while ((sCurrentLine = br.readLine()) != null) { // on lit les configurations
-                    historique.addAction(this, sCurrentLine);
-                }
+            if (getConfigurationPartie().estUneSauvegarde()) {
+                historique = new Historique(this, br);
 
                 this.setNumAction();
+            } else {
+                historique = new Historique(this);
             }
         } catch (IOException ioe) {
-            ioe.printStackTrace();
+            System.err.println("(Jeu.<init>) Erreur de lecture dans le flux d'entrée");
+            throw ioe;
+        } catch (OutdatedSave os) {
+            System.err.println("(Jeu.<init>) Sauvegarde non compatible (" + os.versionFound + " trouvée, " + VERSION_SAUVEGARDE + " requise)");
+            throw os;
         }
     }
 
+    // Construit un joueur
     private Joueur constructJoueur(int type, int couleur, String nom) {
         Joueur j;
 
@@ -130,6 +132,7 @@ public class Jeu extends Observable {
         return j;
     }
 
+    // set le numAction en fonction de l'historique
     private void setNumAction() {
         this.numAction = historique.nombreActions(tour) + 1;
 
@@ -148,13 +151,9 @@ public class Jeu extends Observable {
 
     // Save the game state into cheminFichier
     public void sauvegarde(String chemin) {
-        // On écrit les infos suivantes (qui caractérisent l'état du jeu)
-        // tour
-        // nomJ1:depl:pass
-        // nomJ2:depl:pass
-        // terrain...
         try (BufferedWriter bw = new BufferedWriter(new FileWriter(chemin))) {
-            bw.write(this.getTour() + ":" + this.numAction + "\n");
+            bw.write("[v" + VERSION_SAUVEGARDE + "] Sauvegarde Diaballik\n");
+            bw.write(this.getTour() + ":" + this.numAction + ":" + getConfigurationPartie().getDureeTimer() + "\n");
             bw.write(this.joueurs[0].getSaveString());
             bw.write(this.joueurs[1].getSaveString());
             bw.write(this.getTerrain().getSaveString());
@@ -226,12 +225,12 @@ public class Jeu extends Observable {
         }
 
         if (n >= 3) {
-            if (diaballik.getJeu().cp.multijoueur) {
+            if (getConfigurationPartie().estMultijoueur()) {
                 Action aj = new Action(Action.ANTIJEU);
-                diaballik.reseau.envoyerAction(aj);
+                sceneJeu.getReseau().envoyerAction(aj);
             }
 
-            diaballik.finJeu(getJoueurActuel(), VICTOIRE_ANTIJEU);
+            sceneJeu.finJeu(getJoueurActuel(), VICTOIRE_ANTIJEU);
 
             return "";
         } else {
@@ -245,22 +244,16 @@ public class Jeu extends Observable {
         Case c = action.getCaseApres();
 
         if (!p.aLaBalle() && deplacementPossible(p.getPosition(), c)) {
-            System.out.println("Déplacement!");
-
             p.deplacer(c);
 
-            //historique.ecraserFinHistorique(this.tour, this.numAction);
             historique.addAction(action);
 
             this.getJoueurActuel().moinsAction(action);
             this.numAction++;
-            //if (!this.getJoueurActuel().moinsAction(Joueur.ACTION_DEPLACEMENT)) {
-            //    avancerTour();
-            //}
 
             preparerJoueur();
 
-            updateListeners(CHANGEMENT_INFOS);
+            updateListeners(SignalUpdate.INFOS);
 
             return true;
         } else {
@@ -292,7 +285,6 @@ public class Jeu extends Observable {
 
         return terrain.getDeplacementsPossibles(pion);
     }
-
     public ArrayList<Pion> getPassesPossibles(Pion pion) {
         if (!getJoueurActuel().peutPasser()) return new ArrayList<>();
 
@@ -356,21 +348,16 @@ public class Jeu extends Observable {
         Pion receptionneur = action.getCaseApres().getPion();
 
         if (envoyeur.aLaBalle() && passePossible(envoyeur, receptionneur)) {
-            System.out.println("Passe!");
-
             envoyeur.passe(receptionneur);
 
             historique.addAction(action);
 
             this.getJoueurActuel().moinsAction(action);
             this.numAction++;
-            //if (!this.getJoueurActuel().moinsAction(Joueur.ACTION_PASSE)) {
-            //    avancerTour();
-            //}
 
             preparerJoueur();
 
-            updateListeners(CHANGEMENT_INFOS);
+            updateListeners(SignalUpdate.INFOS);
 
             return true;
         } else {
@@ -414,7 +401,7 @@ public class Jeu extends Observable {
 
     // Change le tour actuel (change aussi le joueur actuel)
     public void avancerTour() {
-        historique.ecraserInutile(tour, numAction);
+        historique.ecraserInutile();
         historique.ajouterTour();
         getJoueurActuel().reset_actions();
         this.tour++;
@@ -422,7 +409,7 @@ public class Jeu extends Observable {
         joueurActuel = ++joueurActuel % Jeu.NOMBRE_JOUEURS;
         preparerJoueur();
 
-        updateListeners(CHANGEMENT_TOUR);
+        updateListeners(SignalUpdate.TOUR);
 
         /*if (getJoueurActuel() instanceof JoueurIA)
             ((JoueurIA) getJoueurActuel()).jouerIA();*/
@@ -442,7 +429,7 @@ public class Jeu extends Observable {
 
         preparerJoueur();
 
-        updateListeners(CHANGEMENT_TOUR);
+        updateListeners(SignalUpdate.TOUR);
     }
 
     public Joueur getJoueurActuel() {
@@ -467,7 +454,7 @@ public class Jeu extends Observable {
         Action a = historique.getActionTourNum(this.tour, this.numAction - 1);
 
         if (a == null) {
-            if (cp.multijoueur)
+            if (getConfigurationPartie().estMultijoueur())
                 return;
 
             if (this.tour > 1)
@@ -480,9 +467,9 @@ public class Jeu extends Observable {
 
         this.executerAction(a, true);
 
-        if (cp.multijoueur) {
+        if (getConfigurationPartie().estMultijoueur()) {
             a.setInverse(true);
-            diaballik.reseau.envoyerAction(a);
+            sceneJeu.getReseau().envoyerAction(a);
         }
     }
     public void refaire() {
@@ -491,7 +478,7 @@ public class Jeu extends Observable {
         Action a = historique.getActionTourNum(this.tour, this.numAction);
 
         if (a == null) {
-            if (cp.multijoueur)
+            if (getConfigurationPartie().estMultijoueur())
                 return;
 
             if (this.historique.tourExiste(tour + 1))
@@ -504,16 +491,12 @@ public class Jeu extends Observable {
 
         this.executerAction(a, false);
 
-        if (cp.multijoueur)
-            diaballik.reseau.envoyerAction(a);
+        if (getConfigurationPartie().estMultijoueur())
+            sceneJeu.getReseau().envoyerAction(a);
     }
 
     public int getNumAction() {
         return numAction;
-    }
-
-    public boolean joueurActuelReseau() {
-        return cp.multijoueur && getJoueurActuel() instanceof JoueurReseau;
     }
 
     // Execute l'action passée en paramètre, et ajoute une action au joueur actuel si defaire = true (enlève si defaire = false)
@@ -551,10 +534,10 @@ public class Jeu extends Observable {
             else
                 getJoueurActuel().moinsAction(a);
 
-        if (cp.multijoueur)
+        if (getConfigurationPartie().estMultijoueur())
             preparerJoueur();
 
-        updateListeners(CHANGEMENT_GLOBAL);
+        updateListeners(SignalUpdate.GLOBAL);
     }
 
     public boolean pionAllie(Pion pion) {
@@ -564,5 +547,13 @@ public class Jeu extends Observable {
     public void mapperDepuisReseau(Action a) {
         a.setCaseAvant(terrain.getCaseSur(a.getCaseAvant().getPoint()));
         a.setCaseApres(terrain.getCaseSur(a.getCaseApres().getPoint()));
+    }
+
+    public SceneJeu getSceneJeu() {
+        return sceneJeu;
+    }
+
+    public ConfigurationPartie getConfigurationPartie() {
+        return configurationPartie;
     }
 }

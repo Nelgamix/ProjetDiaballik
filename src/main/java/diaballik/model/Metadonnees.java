@@ -5,6 +5,7 @@ public class Metadonnees {
     public Joueur joueurVert;
     public Joueur joueurRouge;
     public Terrain terrain;
+    public String version;
 
     @Override
     public String toString() {

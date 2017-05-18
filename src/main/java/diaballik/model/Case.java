@@ -7,21 +7,15 @@ public class Case extends Observable implements Serializable {
     private final Point point;
     transient private Pion pion;
 
-    public Case(Point point) {
+    Case(Point point) {
         this(point, null);
     }
-
-    public Case(Point point, Pion pion) {
+    private Case(Point point, Pion pion) {
         this.point = point;
         this.pion = pion;
     }
 
-    public void setMarque(boolean marque) {
-        setChanged();
-        notifyObservers();
-    }
-
-    public boolean pionPresent() {
+    boolean pionPresent() {
         return pion != null;
     }
 
@@ -32,7 +26,6 @@ public class Case extends Observable implements Serializable {
     public Pion getPion() {
         return pion;
     }
-
     public Point getPoint() {
         return point;
     }

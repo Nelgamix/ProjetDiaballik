@@ -10,7 +10,6 @@ public class Point implements Serializable {
         this.x = x;
         this.y = y;
     }
-
     public Point(String s) {
         String parts[];
         parts = s.split(";");

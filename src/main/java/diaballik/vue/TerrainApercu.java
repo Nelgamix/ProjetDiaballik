@@ -12,15 +12,12 @@ import javafx.scene.layout.StackPane;
 import javafx.scene.shape.Circle;
 
 public class TerrainApercu extends StackPane {
-    StackPane[][] cases = new StackPane[Terrain.HAUTEUR][Terrain.LARGEUR];
+    private StackPane[][] cases = new StackPane[Terrain.HAUTEUR][Terrain.LARGEUR];
 
     TerrainApercu() {
         super();
 
         getStyleClass().add("apercuTerrain");
-        //Circle[][] pions = new PionVue[Jeu.NOMBRE_JOUEURS][Joueur.NOMBRE_PIONS];
-        //this.setStyle("-fx-background-color: #88bfcd");
-
         getStylesheets().add(getClass().getResource(Diaballik.CSS_JEU).toExternalForm());
     }
 
@@ -69,7 +66,6 @@ public class TerrainApercu extends StackPane {
                     pv = new Circle(8);
 
                 pv.getStyleClass().add(i == 0 ? "couleurJoueurVert" : "couleurJoueurRouge");
-                //pions[i][j] = pv;
                 cases[p.getY()][p.getX()].getChildren().add(pv);
             }
         }

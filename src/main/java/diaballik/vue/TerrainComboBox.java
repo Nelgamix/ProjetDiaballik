@@ -8,10 +8,12 @@ import javafx.util.StringConverter;
 import java.util.Map;
 
 public class TerrainComboBox extends ComboBox<Map.Entry<String, String>> {
+    private Map<String, String> mapTerrainsDispo;
+
     TerrainComboBox() {
         super();
 
-        Map<String, String> mapTerrainsDispo = Utils.getTerrainsDisponibles();
+        mapTerrainsDispo = Utils.getTerrainsDisponibles();
 
         this.getItems().addAll(mapTerrainsDispo.entrySet());
         this.getSelectionModel().selectFirst();
@@ -57,5 +59,18 @@ public class TerrainComboBox extends ComboBox<Map.Entry<String, String>> {
 
     public String getTerrainSelectionnePath() {
         return getSelectionModel().getSelectedItem().getKey();
+    }
+
+    public void selectionTerrain(String terrain) {
+        if (terrain.equals("")) {
+            getSelectionModel().selectFirst();
+            return;
+        }
+
+        for (Map.Entry<String, String> e : mapTerrainsDispo.entrySet()) {
+            if (e.getKey().equals(terrain)) {
+                getSelectionModel().select(e);
+            }
+        }
     }
 }

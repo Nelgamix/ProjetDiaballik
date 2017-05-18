@@ -14,38 +14,10 @@ import java.net.UnknownHostException;
 import java.util.*;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class Utils {
-    private final static ArrayList<String> nomsDisponibles = new ArrayList<>();
-    private final static Random r = new Random();
-
-    private final static String CHEMIN_NOM_DISPONIBLES = "/nomsDisponibles.txt";
-
-    private static void initNomsDisponibles() {
-        try (BufferedReader br = new BufferedReader(new InputStreamReader(Utils.class.getResourceAsStream((CHEMIN_NOM_DISPONIBLES))))) {
-            String sCurrentLine;
-            while ((sCurrentLine = br.readLine()) != null) {
-                nomsDisponibles.add(sCurrentLine);
-            }
-        } catch (IOException ioe) {
-            ioe.printStackTrace();
-        }
-    }
-
-    public static String getNomAleatoire() {
-        if (nomsDisponibles.isEmpty()) initNomsDisponibles();
-
-        String nomChoisi = "";
-        int idx = 0;
-        while (!nomValide(nomChoisi)) {
-            idx = r.nextInt(nomsDisponibles.size());
-            nomChoisi = nomsDisponibles.get(idx);
-        }
-
-        nomsDisponibles.remove(idx);
-        return nomChoisi;
-    }
-
     public static boolean nomValide(String nom) {
         return nom.length() >= 3 && nom.length() <= 30;
     }
@@ -72,31 +44,34 @@ public class Utils {
         return br;
     }
 
+    public static String getSaveVersion(String line) {
+        String version = "";
+        Pattern p = Pattern.compile("((\\d+)\\.)+\\d+");
+        Matcher m = p.matcher(line);
+        if (m.find()) {
+            version = m.group();
+        }
+
+        return version;
+    }
+
     public static Metadonnees getMetadonneesSauvegarde(String fichier) {
         Metadonnees md = new Metadonnees();
 
-        try (BufferedReader i = new BufferedReader(new FileReader(Diaballik.DOSSIER_SAUVEGARDES + "/" + fichier + Diaballik.EXTENSION_SAUVEGARDE))) {
+        try (BufferedReader br = new BufferedReader(new FileReader(Diaballik.DOSSIER_SAUVEGARDES + "/" + fichier + Diaballik.EXTENSION_SAUVEGARDE))) {
             String sCurrentLine;
-            if ((sCurrentLine = i.readLine()) != null) { // tour
+            if ((sCurrentLine = br.readLine()) != null) { // version
+                md.version = Utils.getSaveVersion(sCurrentLine);
+            }
+
+            if ((sCurrentLine = br.readLine()) != null) { // tour
                 md.tour = Integer.parseInt(sCurrentLine.split(":")[0]);
             }
 
-            if ((sCurrentLine = i.readLine()) != null) { // joueur vert
-                md.joueurVert = new JoueurLocal(Joueur.VERT, sCurrentLine);
-            }
+            md.joueurVert = new JoueurLocal(Joueur.VERT, br);
+            md.joueurRouge = new JoueurLocal(Joueur.ROUGE, br);
 
-            if ((sCurrentLine = i.readLine()) != null) { // joueur rouge
-                md.joueurRouge = new JoueurLocal(Joueur.ROUGE, sCurrentLine);
-            }
-
-            int n = 0;
-            StringBuilder ts = new StringBuilder();
-            while (n < Terrain.HAUTEUR + 1 && (sCurrentLine = i.readLine()) != null) {
-                ts.append(sCurrentLine).append("\n");
-                n++;
-            }
-
-            md.terrain = new Terrain(ts.toString());
+            md.terrain = new Terrain(br);
 
             return md;
         } catch (IOException ignored) {}
@@ -193,7 +168,6 @@ public class Utils {
 
         return "inconnue";
     }
-
     public static String getInternalIp() {
         try {
             return InetAddress.getLocalHost().getHostAddress();

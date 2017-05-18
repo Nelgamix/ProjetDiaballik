@@ -1,9 +1,9 @@
 package diaballik.vue;
 
-import diaballik.model.Jeu;
 import diaballik.model.Joueur;
 import diaballik.model.Pion;
 import diaballik.model.Point;
+import diaballik.model.SignalUpdate;
 import javafx.animation.KeyFrame;
 import javafx.animation.KeyValue;
 import javafx.animation.Timeline;
@@ -55,7 +55,7 @@ public class PionVue extends Circle implements Observer {
 
         this.setStroke(Color.BLACK);
 
-        this.update(this.pion, Jeu.CHANGEMENT_INIT);
+        this.update(this.pion, SignalUpdate.INIT);
     }
 
     // Gestion du survol à la souris
@@ -71,12 +71,12 @@ public class PionVue extends Circle implements Observer {
 
     @Override
     public void update(Observable o, Object arg) {
-        if ((int)arg == Jeu.CHANGEMENT_POSITION)
+        if (arg == SignalUpdate.POSITION)
             deplacerPionAnimated();
 
         this.updateStyleClass();
 
-        if ((int)arg == Jeu.CHANGEMENT_PASSE)
+        if (arg == SignalUpdate.PASSE)
             passe();
         else
             this.setRayon();
@@ -155,7 +155,7 @@ public class PionVue extends Circle implements Observer {
             deplacerPion(cvDestination);
             this.setTranslateX(0);
             this.setTranslateY(0);
-            terrainVue.getTerrainControleur().diaballik.setCurseurNormal(terrainVue.getTerrainControleur().diaballik.getSceneJeu());
+            terrainVue.getTerrainControleur().sceneJeu.getDiaballik().setCurseurNormal();
         });
 
         transitionDeplacement.play();
@@ -174,13 +174,16 @@ public class PionVue extends Circle implements Observer {
 
         if (!actif) {
             this.getStyleClass().add(pion.getCouleur() == Joueur.VERT ? "couleurJoueurVertInactif" : "couleurJoueurRougeInactif");
-            //this.getStyleClass().add("couleurAdversaire");
         } else if (survol) {
-            this.getStyleClass().add(pion.getCouleur() == Joueur.VERT ? "couleurJoueurVertSurvol" : "couleurJoueurRougeSurvol");
-            //this.getStyleClass().add("couleurSurvol");
+            if (isSelectionne())
+                this.getStyleClass().add("couleurSelectionSurvol");
+            else if (isMarque())
+                this.getStyleClass().add("couleurMarquageSurvol");
+            else
+                this.getStyleClass().add(pion.getCouleur() == Joueur.VERT ? "couleurJoueurVertSurvol" : "couleurJoueurRougeSurvol");
         } else if (isSelectionne()) {
             this.getStyleClass().add("couleurSelection");
-        } else if (isMarque() && terrainVue.getTerrainControleur().getJeu().cp.isAidePasse()) {
+        } else if (isMarque() && terrainVue.getTerrainControleur().getJeu().getConfigurationPartie().isAidePasse()) {
             this.getStyleClass().add("couleurMarquage");
         } else {
             if (pion.getCouleur() == Joueur.VERT)
@@ -194,23 +197,20 @@ public class PionVue extends Circle implements Observer {
     public void desactiver() {
         this.actif = false;
         reinitialiserStatut();
-        update(this.pion, Jeu.CHANGEMENT_GLOBAL);
+        update(this.pion, SignalUpdate.GLOBAL);
     }
-
     public void activer() {
         this.actif = true;
-        update(this.pion, Jeu.CHANGEMENT_GLOBAL);
+        update(this.pion, SignalUpdate.GLOBAL);
     }
 
     // GETTERS objets
     public Pion getPion() {
         return pion;
     }
-
     public CaseVue getCaseVue() {
         return caseVue;
     }
-
     private double getRayon() {
         return (this.pion.aLaBalle() ? rayonBase * 1.5 : rayonBase);
     }
@@ -219,7 +219,6 @@ public class PionVue extends Circle implements Observer {
     public boolean isMarque() {
         return marque;
     }
-
     public boolean isSelectionne() {
         return selectionne;
     }
@@ -231,14 +230,12 @@ public class PionVue extends Circle implements Observer {
             updateStyleClass();
         }
     }
-
     public void setSelectionne(boolean selectionne) {
         if (selectionne != this.selectionne) {
             this.selectionne = selectionne;
             updateStyleClass();
         }
     }
-
     public void setMarque(boolean marque) {
         if (marque != this.marque) {
             this.marque = marque;

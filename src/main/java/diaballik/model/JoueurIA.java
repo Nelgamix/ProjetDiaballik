@@ -129,6 +129,7 @@ public class JoueurIA extends Joueur {
 
     private void enumConfigs(Terrain configCourante) {
         //ArrayList<Pion> pp;
+        int couleur = getCouleur();
         HashMap<String, String> H;
         Terrain c3, c2, configPossible;
         ArrayList<Pion> pionsNonTraites = new ArrayList<>(Arrays.asList(configCourante.getPionsDe(couleur)));

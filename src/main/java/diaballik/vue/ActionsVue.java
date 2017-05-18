@@ -149,11 +149,10 @@ public class ActionsVue extends BorderPane implements Observer {
 
         return popOverSauvegarde;
     }
-
     private PopOver getParametresPopover() {
         if (popOverParametres != null) return popOverParametres;
 
-        final ConfigurationPartie cp = actionsControleur.getJeu().cp;
+        final ConfigurationPartie cp = actionsControleur.getJeu().getConfigurationPartie();
 
         CheckBox parametre1 = new CheckBox();
         CheckBox parametre2 = new CheckBox();
@@ -334,7 +333,7 @@ public class ActionsVue extends BorderPane implements Observer {
         sauvegarde.setOnAction(e -> montrerPopupSauvegarde());
         GridPane.setMargin(sauvegarde, new Insets(18, 0, 0, 0));
         sauvegarde.setMaxWidth(Double.MAX_VALUE);
-        if (actionsControleur.getJeu().cp.multijoueur) sauvegarde.setDisable(true);
+        if (actionsControleur.getJeu().getConfigurationPartie().estMultijoueur()) sauvegarde.setDisable(true);
         gpActions.add(sauvegarde, 0, 4, 2, 1);
 
         Glyph menu = new Glyph("FontAwesome", FontAwesome.Glyph.BARS);
@@ -361,7 +360,6 @@ public class ActionsVue extends BorderPane implements Observer {
                     .add(getClass().getResource(Diaballik.CSS_POPOVER).toExternalForm());
         }
     }
-
     public void montrerPopupParametres() {
         PopOver pop = getParametresPopover();
         if (pop.isShowing())
@@ -392,7 +390,7 @@ public class ActionsVue extends BorderPane implements Observer {
         if (passRest < 1) pass.setTextFill(Color.RED);
         else pass.setTextFill(Color.BLACK);
 
-        boolean jaReseau = jeu.joueurActuelReseau();
+        boolean jaReseau = jeu.getJoueurActuel().estUnJoueurReseau();
         boolean jaIA = jeu.getJoueurActuel().estUneIA();
 
         passerTour.setDisable(jaReseau || jaIA);
@@ -401,7 +399,7 @@ public class ActionsVue extends BorderPane implements Observer {
         annuler.setDisable(jaReseau || jaIA || !jeu.historique.peutDefaire());
         refaire.setDisable(jaReseau || jaIA || !jeu.historique.peutRefaire());
 
-        if (!actionsControleur.getJeu().cp.multijoueur) sauvegarde.setDisable(jaIA);
+        if (!actionsControleur.getJeu().getConfigurationPartie().estMultijoueur()) sauvegarde.setDisable(jaIA);
         aideCoup.setDisable(jaReseau || jaIA);
     }
 }

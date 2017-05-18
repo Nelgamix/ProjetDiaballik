@@ -2,24 +2,23 @@ package diaballik.controleur;
 
 import diaballik.Diaballik;
 import diaballik.model.Jeu;
+import diaballik.scene.SceneJeu;
 import diaballik.vue.ActionsVue;
 import diaballik.vue.Dialogs;
 
 import java.io.File;
 
 public class ActionsControleur {
-    private final Jeu jeu;
     private final ActionsVue actionsVue;
-    private final Diaballik diaballik;
+    private final SceneJeu sceneJeu;
 
-    public ActionsControleur(Diaballik diaballik) {
-        this.diaballik = diaballik;
-        this.jeu = diaballik.getJeu();
+    public ActionsControleur(SceneJeu sceneJeu) {
+        this.sceneJeu = sceneJeu;
         this.actionsVue = new ActionsVue(this);
     }
 
     public Jeu getJeu() {
-        return jeu;
+        return sceneJeu.getJeu();
     }
 
     public ActionsVue getActionsVue() {
@@ -27,15 +26,13 @@ public class ActionsControleur {
     }
 
     public void actionFinTour() {
-        jeu.getJoueurActuel().finTour();
+        getJeu().getJoueurActuel().finTour();
     }
-
     public void actionAccueil() {
         if (Dialogs.dialogConfirmation("Vous allez quitter le jeu. La partie sera perdue. Voulez-vous continuer?")) {
-            diaballik.showSceneMenu();
+            sceneJeu.retourMenu();
         }
     }
-
     public void actionSauvegarderJeu(String filename) {
         final File saveDir = new File(Diaballik.DOSSIER_SAUVEGARDES);
         if (!saveDir.exists())
@@ -45,24 +42,20 @@ public class ActionsControleur {
             filename += Diaballik.EXTENSION_SAUVEGARDE;
 
         System.out.println("Sauvegarde vers " + filename);
-        this.jeu.sauvegarde(Diaballik.DOSSIER_SAUVEGARDES + "/" + filename);
+        getJeu().sauvegarde(Diaballik.DOSSIER_SAUVEGARDES + "/" + filename);
     }
-
     public void actionAntijeu() {
-        String resAJ = jeu.antijeu();
+        String resAJ = getJeu().antijeu();
         if (!resAJ.isEmpty())
             Dialogs.montrerAntijeu(resAJ);
     }
-
     public void actionParametres() {
         actionsVue.montrerPopupParametres();
     }
-
     public void actionDefaire() {
-        jeu.defaire();
+        getJeu().defaire();
     }
-
     public void actionRefaire() {
-        jeu.refaire();
+        getJeu().refaire();
     }
 }

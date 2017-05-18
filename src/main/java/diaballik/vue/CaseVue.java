@@ -60,22 +60,22 @@ public class CaseVue extends StackPane implements Observer {
 
     private void survoler(boolean enter) {
         // selection pion alliés, puis cases dispos
-        Diaballik d = terrainVue.getTerrainControleur().diaballik;
+        Diaballik d = terrainVue.getTerrainControleur().sceneJeu.getDiaballik();
 
         if (this.pionVue != null && terrainVue.getTerrainControleur().getJeu().pionAllie(pionVue.getPion())) {
             this.pionVue.survoler(enter);
             if (enter)
-                d.setCurseurSelection(d.getSceneJeu());
+                d.setCurseurSelection();
             else
-                d.setCurseurNormal(d.getSceneJeu());
+                d.setCurseurNormal();
             survol = false;
         } else if (terrainVue.getTerrainControleur().caseEstMarquee(this)) {
             survol = enter;
             if (enter) {
-                d.setCurseurSelection(d.getSceneJeu());
+                d.setCurseurSelection();
                 this.toFront();
             } else {
-                d.setCurseurNormal(d.getSceneJeu());
+                d.setCurseurNormal();
             }
         } else {
             survol = false;
@@ -101,8 +101,8 @@ public class CaseVue extends StackPane implements Observer {
         this.getStyleClass().clear();
 
         if (survol)
-            this.getStyleClass().add("couleurSurvol");
-        else if (isMarque() && terrainVue.getTerrainControleur().getJeu().cp.isAideDeplacement())
+            this.getStyleClass().add("couleurMarquageSurvol");
+        else if (isMarque() && terrainVue.getTerrainControleur().getJeu().getConfigurationPartie().isAideDeplacement())
             this.getStyleClass().add("couleurMarquage");
         else if (pair)
             this.getStyleClass().add("couleurCasePair");

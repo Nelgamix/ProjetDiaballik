@@ -1,6 +1,8 @@
 package diaballik;
 
 import diaballik.model.Action;
+import diaballik.model.Jeu;
+import diaballik.scene.SceneJeu;
 import javafx.application.Platform;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Dialog;
@@ -14,7 +16,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 public class Reseau {
-    private final Diaballik diaballik;
+    private final SceneJeu sceneJeu;
     public Dialog<Void> d;
 
     public enum Tache {
@@ -37,12 +39,16 @@ public class Reseau {
     private ObjectInputStream ois;
     private ObjectOutputStream oos;
 
-    Reseau(Diaballik diaballik) {
-        this.diaballik = diaballik;
+    public Reseau(SceneJeu sceneJeu) {
+        this.sceneJeu = sceneJeu;
         this.running = false;
     }
 
-    boolean estOccupe() {
+    private Jeu getJeu() {
+        return sceneJeu.getJeu();
+    }
+
+    private boolean estOccupe() {
         return reseauThread != null && !reseauThread.isTerminated();
     }
 
@@ -84,11 +90,10 @@ public class Reseau {
                 ois = new ObjectInputStream(clientSocket.getInputStream());
                 setTacheActuelle(Tache.IDLE);
                 Platform.runLater(d::close);
-                Platform.runLater(() -> diaballik.reseau.preconfigServeur(nom, terrain));
+                Platform.runLater(() -> sceneJeu.getReseau().preconfigServeur(nom, terrain));
             } catch (IOException io) {}
         });
     }
-
     public void client(String nom, String remote) {
         reseauThread = Executors.newSingleThreadExecutor();
         this.running = true;
@@ -100,7 +105,7 @@ public class Reseau {
                 ois = new ObjectInputStream(clientSocket.getInputStream());
                 setTacheActuelle(Tache.IDLE);
                 Platform.runLater(d::close);
-                Platform.runLater(() -> diaballik.reseau.preconfigClient(nom));
+                Platform.runLater(() -> sceneJeu.getReseau().preconfigClient(nom));
             } catch (IOException io) {}
         });
     }
@@ -113,12 +118,11 @@ public class Reseau {
                 oos.writeObject(a);
                 if (a.isInverse()) a.setInverse(false);
             } catch (IOException io) {
-                Platform.runLater(diaballik.reseau::deconnecte);
+                Platform.runLater(sceneJeu.getReseau()::deconnecte);
             }
             setTacheActuelle(Tache.IDLE);
         });
     }
-
     public void recevoirAction() {
         reseauThread.execute(() -> {
             setTacheActuelle(Tache.ATTENTE_ACTION);
@@ -126,7 +130,7 @@ public class Reseau {
                 Action a = (Action)ois.readObject();
                 Platform.runLater(() -> actionRecue(a));
             } catch (Exception e) {
-                Platform.runLater(diaballik.reseau::deconnecte);
+                Platform.runLater(sceneJeu.getReseau()::deconnecte);
             }
             setTacheActuelle(Tache.IDLE);
         });
@@ -141,13 +145,12 @@ public class Reseau {
                 oos.writeObject(nom);
                 oos.writeObject(terrain);
 
-                Platform.runLater(() -> diaballik.nouveauJeuReseau(1, nom, nomClient, terrain));
+                Platform.runLater(() -> sceneJeu.nouveauJeuReseau(1, nom, nomClient, terrain));
             } catch (Exception e) {
                 e.printStackTrace();
             }
         });
     }
-
     public void preconfigClient(String nom) {
         reseauThread.execute(() -> {
             try {
@@ -157,7 +160,7 @@ public class Reseau {
                 String nomServ = (String)ois.readObject();
                 String terrain = (String)ois.readObject();
 
-                Platform.runLater(() -> diaballik.nouveauJeuReseau(0, nomServ, nom, terrain));
+                Platform.runLater(() -> sceneJeu.nouveauJeuReseau(0, nomServ, nom, terrain));
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -167,19 +170,19 @@ public class Reseau {
     private void actionRecue(Action a) {
         switch (a.getAction()) {
             case Action.FINTOUR:
-                diaballik.getJeu().avancerTour();
+                getJeu().avancerTour();
                 break;
             case Action.ANTIJEU:
-                Platform.runLater(diaballik.getJeu()::antijeu);
+                Platform.runLater(getJeu()::antijeu);
                 break;
             default:
                 if (a.isInverse()) {
-                    diaballik.getJeu().mapperDepuisReseau(a);
-                    diaballik.getJeu().executerAction(a, true);
+                    getJeu().mapperDepuisReseau(a);
+                    getJeu().executerAction(a, true);
                 } else {
-                    diaballik.getJeu().mapperDepuisReseau(a);
-                    diaballik.getJeu().getJoueurActuel().setActionAJouer(a);
-                    diaballik.getJeu().getJoueurActuel().jouer();
+                    getJeu().mapperDepuisReseau(a);
+                    getJeu().getJoueurActuel().setActionAJouer(a);
+                    getJeu().getJoueurActuel().jouer();
                 }
         }
     }
@@ -195,6 +198,6 @@ public class Reseau {
 
         alert.showAndWait();
 
-        diaballik.showSceneMenu();
+        sceneJeu.retourMenu();
     }
 }

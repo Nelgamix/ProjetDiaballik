@@ -1,22 +1,25 @@
 package diaballik.model;
 
-import static diaballik.model.Jeu.VICTOIRE_NORMALE;
+import diaballik.scene.SceneJeu;
+
+import java.io.BufferedReader;
+import java.io.IOException;
 
 public abstract class Joueur {
     protected final Jeu jeu;
-    protected String nom;
-    protected int couleur;
-    protected int deplacementsRestants;
-    protected int passesRestantes;
+    private String nom;
+    private int couleur;
+    private int deplacementsRestants;
+    private int passesRestantes;
 
-    protected final static int DEPLACEMENTS_MAX = 2;
-    protected final static int PASSES_MAX = 1;
+    final static int DEPLACEMENTS_MAX = 2;
+    final static int PASSES_MAX = 1;
 
     public final static int NOMBRE_PIONS = 7;
 
-    protected int type; // 0 = humain
+    int type; // 0 = humain
 
-    protected Action actionAJouer;
+    Action actionAJouer;
 
     // Joueurs et couleurs
     public final static int VERT = 0; // J vert
@@ -31,16 +34,21 @@ public abstract class Joueur {
 
         reset_actions();
     }
-    public Joueur(int couleur, String line) {
-        this(null, couleur, line);
+    public Joueur(int couleur, BufferedReader br) {
+        this(null, couleur, br);
     }
-    public Joueur(Jeu jeu, int couleur, String line) {
+    public Joueur(Jeu jeu, int couleur, BufferedReader br) {
         this(jeu, couleur);
 
-        String[] parts = line.split(":");
+        String sCurrentLine, parts[];
+        try {
+            if ((sCurrentLine = br.readLine()) != null) {
+                parts = sCurrentLine.split(":");
 
-        this.setNom(parts[0]);
-        this.setType(Integer.parseInt(parts[1]));
+                this.setNom(parts[0]);
+                this.setType(Integer.parseInt(parts[1]));
+            }
+        } catch (IOException ioe) {}
     }
 
     // Nom
@@ -88,6 +96,9 @@ public abstract class Joueur {
     public boolean estUneIA() {
         return false;
     }
+    public boolean estUnJoueurReseau() {
+        return false;
+    }
 
     public abstract boolean preparerJouer();
     public boolean jouer() {
@@ -110,7 +121,7 @@ public abstract class Joueur {
     protected void finAction() {
         if (jeu.partieTerminee()) {
             // la partie est terminée (le vainqueur est joueurActuel())
-            jeu.diaballik.finJeu(jeu.getJoueurActuel(), VICTOIRE_NORMALE);
+            getSceneJeu().finJeu(jeu.getJoueurActuel(), Jeu.VICTOIRE_NORMALE);
         }
     }
 
@@ -156,13 +167,6 @@ public abstract class Joueur {
         }
     }
 
-    void setDeplacementsRestants(int deplacementsRestants) {
-        this.deplacementsRestants = deplacementsRestants;
-    }
-    void setPassesRestantes(int passesRestantes) {
-        this.passesRestantes = passesRestantes;
-    }
-
     void reset_actions() {
         this.deplacementsRestants = DEPLACEMENTS_MAX;
         this.passesRestantes = PASSES_MAX;
@@ -180,6 +184,10 @@ public abstract class Joueur {
     }
     int getType() {
         return type;
+    }
+
+    SceneJeu getSceneJeu() {
+        return jeu.getSceneJeu();
     }
 
     String getSaveString() {
