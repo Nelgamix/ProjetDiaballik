@@ -40,7 +40,7 @@ public class SceneJeu {
     }
 
     public void retourMenu() {
-        diaballik.showSceneMenu();
+        diaballik.showSceneMenu(true);
     }
 
     public void initShow(ConfigurationPartie cp) {

@@ -32,7 +32,10 @@ public class Diaballik extends Application {
     }
     public void showSceneMenu() {
         stage.setScene(sceneMenu.getScene());
-        //sizeStage();
+    }
+    public void showSceneMenu(boolean fromJeu) {
+        showSceneMenu();
+        sizeStage();
     }
 
     private void sizeStage() {

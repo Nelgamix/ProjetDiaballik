@@ -243,6 +243,16 @@ public class Dialogs {
     private Optional<String> getDialogChoisirFichier(String directory) {
         ObservableList<String> obs = FXCollections.observableArrayList(Utils.getFichiersDansDossier(directory, Diaballik.EXTENSION_SAUVEGARDE, false));
 
+        if (obs.size() < 1) {
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setTitle("Aucune sauvegarde");
+            alert.setHeaderText("Pas de sauvegarde trouvée");
+            alert.setContentText("Aucune sauvegarde n'a été trouvée.\nImpossible d'afficher cette fenêtre.");
+
+            alert.showAndWait();
+            return null;
+        }
+
         Dialog<String> dialog = new Dialog<>();
         dialog.setTitle("Charger une partie");
 

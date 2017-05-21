@@ -403,8 +403,8 @@ public class ActionsVue extends BorderPane implements Observer {
         passerTour.setDisable(jaReseau || jaIA);
         antijeu.setDisable(jaReseau || jaIA);
 
-        annuler.setDisable(jaReseau || jaIA || !jeu.historique.peutDefaire());
-        refaire.setDisable(jaReseau || jaIA || !jeu.historique.peutRefaire());
+        annuler.setDisable(jaReseau || jaIA || !jeu.getHistorique().peutDefaire());
+        refaire.setDisable(jaReseau || jaIA || !jeu.getHistorique().peutRefaire());
 
         if (!actionsControleur.getJeu().getConfigurationPartie().estMultijoueur()) sauvegarde.setDisable(jaIA);
         aideCoup.setDisable(jaReseau || jaIA);

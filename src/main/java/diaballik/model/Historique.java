@@ -10,6 +10,7 @@ public class Historique {
 
     Historique(Jeu jeu) {
         this.jeu = jeu;
+        this.tours.add(new ArrayList<>());
     }
     Historique(Jeu jeu, BufferedReader br) throws IOException {
         this(jeu);
@@ -37,7 +38,7 @@ public class Historique {
     }
 
     // écrase toutes les actions inutiles à la fin du tour lorsqu'on a rollback
-    void ecraserInutile() {
+    public void ecraserInutile() {
         ArrayList<Action> a = getActions(jeu.getTour());
         if (a == null) return;
         int i = jeu.getNumAction();
@@ -78,7 +79,7 @@ public class Historique {
         return getActions(tour).get(num - 1);
     }
 
-    private ArrayList<Action> getActions(int tour) {
+    public ArrayList<Action> getActions(int tour) {
         if (tour < 1 || this.tours.size() < tour) return null;
         return tours.get(tour - 1);
     }
@@ -96,7 +97,7 @@ public class Historique {
     }
 
     // écrase la fin de l'historique (par rapport au tour de jeu et numAction actuels)
-    private void ecraserFinHistorique() {
+    public void ecraserFinHistorique() {
         int tour = jeu.getTour(), num = jeu.getNumAction();
 
         if (tour < 1 || num < 1) return;

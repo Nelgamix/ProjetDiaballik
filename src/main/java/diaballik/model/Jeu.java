@@ -16,7 +16,7 @@ public class Jeu extends Observable {
 
     private final ConfigurationPartie configurationPartie;
 
-    public Historique historique;
+    private Historique historique;
 
     private final ArrayList<Point> arriveeJoueurVert = new ArrayList<>();
     private final ArrayList<Point> arriveeJoueurRouge = new ArrayList<>();
@@ -251,7 +251,8 @@ public class Jeu extends Observable {
             this.getJoueurActuel().moinsAction(action);
             this.numAction++;
 
-            preparerJoueur();
+            if (getConfigurationPartie().estMultijoueur())
+                preparerJoueur();
 
             updateListeners(SignalUpdate.INFOS);
 
@@ -355,7 +356,8 @@ public class Jeu extends Observable {
             this.getJoueurActuel().moinsAction(action);
             this.numAction++;
 
-            preparerJoueur();
+            if (getConfigurationPartie().estMultijoueur())
+                preparerJoueur();
 
             updateListeners(SignalUpdate.INFOS);
 
@@ -407,12 +409,16 @@ public class Jeu extends Observable {
         this.tour++;
         this.numAction = 1;
         joueurActuel = ++joueurActuel % Jeu.NOMBRE_JOUEURS;
-        preparerJoueur();
 
         updateListeners(SignalUpdate.TOUR);
 
-        /*if (getJoueurActuel() instanceof JoueurIA)
-            ((JoueurIA) getJoueurActuel()).jouerIA();*/
+        ArrayList<Action> actionsTA;
+
+        if (getJoueurActuel().estUneIA() && (actionsTA = historique.getActions(tour)).size() > 0) {
+            ((JoueurIA) getJoueurActuel()).rejouer(actionsTA);
+        } else {
+            preparerJoueur();
+        }
     }
     public void reculerTour() {
         this.tour--;
@@ -552,8 +558,10 @@ public class Jeu extends Observable {
     public SceneJeu getSceneJeu() {
         return sceneJeu;
     }
-
     public ConfigurationPartie getConfigurationPartie() {
         return configurationPartie;
+    }
+    public Historique getHistorique() {
+        return historique;
     }
 }

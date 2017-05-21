@@ -26,6 +26,7 @@ public class ActionsControleur {
     }
 
     public void actionFinTour() {
+        getJeu().getHistorique().ecraserFinHistorique();
         getJeu().getJoueurActuel().finTour();
     }
     public void actionAccueil() {

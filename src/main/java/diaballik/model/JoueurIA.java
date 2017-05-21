@@ -11,6 +11,7 @@ import java.util.Random;
 
 public class JoueurIA extends Joueur {
     private final JoueurIA t;
+    private ArrayList<Action> actionsARejouer = new ArrayList<>();
 
     private final Random r = new Random();
 
@@ -26,12 +27,38 @@ public class JoueurIA extends Joueur {
                 protected Void call() throws Exception {
                     Thread.sleep(1500);
 
-                    for (int i = 0; i < r.nextInt(DEPLACEMENTS_MAX + PASSES_MAX) + 1; i++) {
+                    //for (int i = 0; i < r.nextInt(DEPLACEMENTS_MAX + PASSES_MAX) + 1; i++) {
+                    for (int i = 0; i < 3; i++) {
                         jouerFacile();
                         Thread.sleep(1000);
                     }
 
                     Platform.runLater(t::finTour);
+                    return null;
+                }
+            };
+        }
+    };
+
+    private Service<Void> sRejouer = new Service<Void>() {
+        @Override
+        protected Task<Void> createTask() {
+            return new Task<Void>() {
+                @Override
+                protected Void call() throws Exception {
+                    Thread.sleep(1500);
+
+                    for (Action a : actionsARejouer) {
+                        setActionAJouer(a);
+                        Platform.runLater(() -> {
+                            t.jouer();
+                            t.finAction();
+                        });
+                        Thread.sleep(1000);
+                    }
+
+                    Platform.runLater(t::finTour);
+                    actionsARejouer.clear();
                     return null;
                 }
             };
@@ -55,6 +82,12 @@ public class JoueurIA extends Joueur {
             default:
                 return "inconnu";
         }
+    }
+
+    public void rejouer(ArrayList<Action> actions) {
+        actionsARejouer.addAll(actions);
+
+        sRejouer.restart();
     }
 
     @Override
