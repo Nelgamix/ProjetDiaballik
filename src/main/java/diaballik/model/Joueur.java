@@ -119,7 +119,7 @@ public abstract class Joueur {
         return succes;
     }
     protected void finAction() {
-        if (jeu.partieTerminee()) {
+        if (jeu.getTerrain().partieTerminee(couleur)) {
             // la partie est terminée (le vainqueur est joueurActuel())
             getSceneJeu().finJeu(jeu.getJoueurActuel(), Jeu.VICTOIRE_NORMALE);
         }

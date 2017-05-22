@@ -18,9 +18,6 @@ public class Jeu extends Observable {
 
     private Historique historique;
 
-    private final ArrayList<Point> arriveeJoueurVert = new ArrayList<>();
-    private final ArrayList<Point> arriveeJoueurRouge = new ArrayList<>();
-
     private int tour;
     private int numAction;
     private int joueurActuel;
@@ -38,8 +35,6 @@ public class Jeu extends Observable {
         this.sceneJeu = sceneJeu;
         this.configurationPartie = configurationPartie;
 
-        initArrivee();
-
         this.joueurs = new Joueur[NOMBRE_JOUEURS];
 
         charger();
@@ -47,14 +42,6 @@ public class Jeu extends Observable {
         getJoueurActuel().preparerJouer();
 
         updateListeners(SignalUpdate.GLOBAL);
-    }
-
-    // Initialise les lignes d'arrivées
-    private void initArrivee() {
-        for (int i = 0; i < Terrain.LARGEUR; i++) {
-            arriveeJoueurVert.add(new Point(i, 0));
-            arriveeJoueurRouge.add(new Point(i, 6));
-        }
     }
 
     // charge le jeu (avec la config qui contient le chemin du terrain & save)
@@ -262,28 +249,6 @@ public class Jeu extends Observable {
         }
     }
 
-    public boolean deplacementPossible(Point p, Point p2) {
-        // On cherche un point commun (x ou y)
-        if (p.getY() == p2.getY()) {
-            if (Math.abs(p.getX() - p2.getX()) == 1) { // il faut un différentiel de 1 pour qu'il soit à côté
-                return true;
-            }
-        } else if (p.getX() == p2.getX()) {
-            if (Math.abs(p.getY() - p2.getY()) == 1) { // il faut un différentiel de 1 pour qu'il soit à côté
-                return true;
-            }
-        }
-
-        return false;
-    }
-    // Vérifie la possibilité d'un déplacement (uniquement par rapport aux coordonnées)
-    private boolean deplacementPossible(Case c1, Case c2) {
-        Point p = c1.getPoint();
-        Point p2 = c2.getPoint();
-
-        return deplacementPossible(p, p2);
-    }
-
     public ArrayList<Case> getDeplacementsPossibles(Pion pion) {
         if (!getJoueurActuel().peutDeplacer()) return new ArrayList<>();
 
@@ -295,58 +260,19 @@ public class Jeu extends Observable {
         return terrain.getPassesPossibles(pion);
     }
 
-    public boolean passePossible(Point pEnvoyeur, Point pReceptionneur) {
-        // check alignement
-        if (pEnvoyeur.getX() == pReceptionneur.getX()) { // en ligne
-            int yMax = Math.max(pEnvoyeur.getY(), pReceptionneur.getY());
-            int yMin = Math.min(pEnvoyeur.getY(), pReceptionneur.getY());
-
-            for (int y = yMax - 1; y > yMin; y--) {
-                Pion pionPresent = getTerrain().getCaseSur(new Point(pEnvoyeur.getX(), y)).getPion();
-                if (pionPresent != null && pionPresent.getCouleur() != getJoueurActuel().getCouleur()) {
-                    return false;
-                }
-            }
-        } else if (pEnvoyeur.getY() == pReceptionneur.getY()) { // colonne
-            int xMax = Math.max(pEnvoyeur.getX(), pReceptionneur.getX());
-            int xMin = Math.min(pEnvoyeur.getX(), pReceptionneur.getX());
-
-            for (int x = xMax - 1; x > xMin; x--) {
-                Pion pionPresent = getTerrain().getCaseSur(new Point(x, pEnvoyeur.getY())).getPion();
-                if (pionPresent != null && pionPresent.getCouleur() != getJoueurActuel().getCouleur()) {
-                    return false;
-                }
-            }
-        } else if (Math.abs(pEnvoyeur.getX() - pReceptionneur.getX()) == Math.abs(pEnvoyeur.getY() - pReceptionneur.getY())) { // diagonale
-            int xMax = pReceptionneur.getX();
-            int yMax = pReceptionneur.getY();
-            int x = pEnvoyeur.getX();
-            int y = pEnvoyeur.getY();
-            Pion pionPresent;
-            do {
-                if (pReceptionneur.getX() > x) x++;
-                else x--;
-
-                if (pReceptionneur.getY() > y) y++;
-                else y--;
-
-                pionPresent = getTerrain().getCaseSur(new Point(x, y)).getPion();
-
-                if (pionPresent != null && pionPresent.getCouleur() != getJoueurActuel().getCouleur())
-                    return false;
-            } while (x != xMax && y != yMax);
-        } else {
-            return false;
-        }
-
-        return true;
-    }
     // Vérifie la possibilité d'une passe (uniquement dans les axes, la couleur n'est pas vérifiée, ...)
     private boolean passePossible(Pion envoyeur, Pion receptionneur) {
         Point pEnvoyeur = envoyeur.getPosition().getPoint();
         Point pReceptionneur = receptionneur.getPosition().getPoint();
 
-        return passePossible(pEnvoyeur, pReceptionneur);
+        return terrain.passePossible(pEnvoyeur, pReceptionneur, getJoueurActuel().getCouleur());
+    }
+    // Vérifie la possibilité d'un déplacement (uniquement par rapport aux coordonnées)
+    private boolean deplacementPossible(Case c1, Case c2) {
+        Point p = c1.getPoint();
+        Point p2 = c2.getPoint();
+
+        return terrain.deplacementPossible(p, p2);
     }
 
     // Effectue une passe d'un pion p vers un pion positionné sur une case c
@@ -371,36 +297,6 @@ public class Jeu extends Observable {
         } else {
             return false;
         }
-    }
-
-    // retourne vrai si la partie est terminée (le vainqueur est le joueur actuel)
-    private boolean partieTerminee(Pion pion) {
-        Point p = pion.getPosition().getPoint();
-
-        if (this.getJoueurActuel().getCouleur() == Joueur.VERT) {
-            for (Point e : arriveeJoueurRouge) {
-                if (e.getX() == p.getX() && e.getY() == p.getY()) {
-                    return true;
-                }
-            }
-        } else {
-            for (Point e : arriveeJoueurVert) {
-                if (e.getX() == p.getX() && e.getY() == p.getY()) {
-                    return true;
-                }
-            }
-        }
-
-        return false;
-    }
-    public boolean partieTerminee() {
-        for (Pion p : this.terrain.getPions()[getJoueurActuel().getCouleur()]) {
-            if (p.aLaBalle() && partieTerminee(p)) {
-                return true;
-            }
-        }
-
-        return false;
     }
 
     public void preparerJoueur() {

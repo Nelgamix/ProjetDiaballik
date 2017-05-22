@@ -13,11 +13,16 @@ public class Terrain {
     private final Case cases[][];
     private final Pion pions[][];
 
+    private final ArrayList<Point> arriveeJoueurVert = new ArrayList<>();
+    private final ArrayList<Point> arriveeJoueurRouge = new ArrayList<>();
+
     public final static int HAUTEUR = 7;
     public final static int LARGEUR = 7;
 
     // Constructeur par copie
     public Terrain(Terrain t) {
+        initArrivee();
+
         this.cases = new Case[HAUTEUR][LARGEUR];
         this.pions = new Pion[Jeu.NOMBRE_JOUEURS][Joueur.NOMBRE_PIONS];
 
@@ -49,6 +54,8 @@ public class Terrain {
 
     // Constructeur depuis un flux d'entrée (eg fichier)
     public Terrain(BufferedReader br) {
+        initArrivee();
+
         this.cases = new Case[HAUTEUR][LARGEUR];
         this.pions = new Pion[Jeu.NOMBRE_JOUEURS][Joueur.NOMBRE_PIONS];
 
@@ -236,7 +243,6 @@ public class Terrain {
 
         return ret;
     }
-
     ArrayList<Case> getDeplacementsPossibles(Pion pion) {
         ArrayList<Case> ret = new ArrayList<>();
 
@@ -253,6 +259,108 @@ public class Terrain {
         if (ca != null && ca.getPion() == null) ret.add(ca);
 
         return ret;
+    }
+
+    public boolean passePossible(Point pEnvoyeur, Point pReceptionneur, int couleur) {
+        if (!pEnvoyeur.estDansTerrain() || !pReceptionneur.estDansTerrain()) return false;
+
+        // check alignement
+        if (pEnvoyeur.getX() == pReceptionneur.getX()) { // en ligne
+            int yMax = Math.max(pEnvoyeur.getY(), pReceptionneur.getY());
+            int yMin = Math.min(pEnvoyeur.getY(), pReceptionneur.getY());
+
+            for (int y = yMax - 1; y > yMin; y--) {
+                Pion pionPresent = getCaseSur(new Point(pEnvoyeur.getX(), y)).getPion();
+                if (pionPresent != null && pionPresent.getCouleur() != couleur) {
+                    return false;
+                }
+            }
+        } else if (pEnvoyeur.getY() == pReceptionneur.getY()) { // colonne
+            int xMax = Math.max(pEnvoyeur.getX(), pReceptionneur.getX());
+            int xMin = Math.min(pEnvoyeur.getX(), pReceptionneur.getX());
+
+            for (int x = xMax - 1; x > xMin; x--) {
+                Pion pionPresent = getCaseSur(new Point(x, pEnvoyeur.getY())).getPion();
+                if (pionPresent != null && pionPresent.getCouleur() != couleur) {
+                    return false;
+                }
+            }
+        } else if (Math.abs(pEnvoyeur.getX() - pReceptionneur.getX()) == Math.abs(pEnvoyeur.getY() - pReceptionneur.getY())) { // diagonale
+            int xMax = pReceptionneur.getX();
+            int yMax = pReceptionneur.getY();
+            int x = pEnvoyeur.getX();
+            int y = pEnvoyeur.getY();
+            Pion pionPresent;
+            do {
+                if (pReceptionneur.getX() > x) x++;
+                else x--;
+
+                if (pReceptionneur.getY() > y) y++;
+                else y--;
+
+                pionPresent = getCaseSur(new Point(x, y)).getPion();
+
+                if (pionPresent != null && pionPresent.getCouleur() != couleur)
+                    return false;
+            } while (x != xMax && y != yMax);
+        } else {
+            return false;
+        }
+
+        return true;
+    }
+    public boolean deplacementPossible(Point p, Point p2) {
+        if (!p.estDansTerrain() || !p2.estDansTerrain()) return false;
+
+        // On cherche un point commun (x ou y)
+        if (p.getY() == p2.getY()) {
+            if (Math.abs(p.getX() - p2.getX()) == 1) { // il faut un différentiel de 1 pour qu'il soit à côté
+                return true;
+            }
+        } else if (p.getX() == p2.getX()) {
+            if (Math.abs(p.getY() - p2.getY()) == 1) { // il faut un différentiel de 1 pour qu'il soit à côté
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    // Initialise les lignes d'arrivées
+    private void initArrivee() {
+        for (int i = 0; i < Terrain.LARGEUR; i++) {
+            arriveeJoueurVert.add(new Point(i, 0));
+            arriveeJoueurRouge.add(new Point(i, 6));
+        }
+    }
+    // retourne vrai si la partie est terminée (le vainqueur est le joueur actuel)
+    private boolean partieTerminee(Pion pion, int couleur) {
+        Point p = pion.getPosition().getPoint();
+
+        if (couleur == Joueur.VERT) {
+            for (Point e : arriveeJoueurRouge) {
+                if (e.getX() == p.getX() && e.getY() == p.getY()) {
+                    return true;
+                }
+            }
+        } else {
+            for (Point e : arriveeJoueurVert) {
+                if (e.getX() == p.getX() && e.getY() == p.getY()) {
+                    return true;
+                }
+            }
+        }
+
+        return false;
+    }
+    public boolean partieTerminee(int couleur) {
+        for (Pion p : getPionsDe(couleur)) {
+            if (p.aLaBalle() && partieTerminee(p, couleur)) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     Pion getPionALaBalle(int joueur) {

@@ -91,9 +91,7 @@ public class Dialogs {
         // Row joueur 1
         TextField nomJoueur1 = new TextField("Joueur 1");
         nomJoueur1.setPromptText("Nom");
-        nomJoueur1.textProperty().addListener((o, ov, nv) -> {
-            boutonJouer.setDisable(nv.trim().length() < 3);
-        });
+        nomJoueur1.textProperty().addListener((o, ov, nv) -> boutonJouer.setDisable(nv.trim().length() < 3));
         ComboBox<String> iaJoueur1 = new ComboBox<>(iaDifficultes);
         iaJoueur1.setOnAction(e -> {
             switch (iaJoueur1.getSelectionModel().getSelectedIndex()) {

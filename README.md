@@ -3,9 +3,9 @@
 voir TODO.md
 
 ## Liens
-[Site projet](http://inf362.forge.imag.fr/Projet/)
+[Site projet](http://inf362.forge.imag.fr/Projet)
 
-[Règles Diaballik](http://inf362.forge.imag.fr/Projet/Regles/diaballik/)
+[Règles Diaballik](http://inf362.forge.imag.fr/Projet/Regles/diaballik)
 
 [IHM](https://app.moqups.com/zackattack/yyQzm1eIJU/view/page/ab2de651c)
 

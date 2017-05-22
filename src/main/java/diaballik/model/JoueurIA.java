@@ -31,6 +31,10 @@ public class JoueurIA extends Joueur {
             addAction(action);
         }
 
+        boolean gagne(int couleur) {
+            return terrain.partieTerminee(couleur);
+        }
+
         int eval(int couleur) {
             int[] vals = {5, 12, 21, 32, 45, 60, 77};
             int valTotal = 0;
@@ -57,66 +61,69 @@ public class JoueurIA extends Joueur {
             if (couleur == Joueur.VERT) {
                 Point pBalle = terrain.getPionALaBalle(couleur).getPosition().getPoint();
                 Point pCase1 = new Point(pBalle.getX(), Terrain.HAUTEUR - 1);
-                Point pCase2 = new Point(pBalle.getY() + (Terrain.HAUTEUR - 1 - pBalle.getX()), Terrain.HAUTEUR - 1);
-                Point pCase3 = new Point(pBalle.getY() + (Terrain.HAUTEUR - 1 + pBalle.getX()), Terrain.HAUTEUR - 1);
+                Point pCase2 = new Point(pBalle.getX() + (Terrain.HAUTEUR - 1 - pBalle.getY()), Terrain.HAUTEUR - 1);
+                Point pCase3 = new Point(pBalle.getX() + (Terrain.HAUTEUR - 1 + pBalle.getY()), Terrain.HAUTEUR - 1);
 
                 // pour pCase1
-                for (Pion p : terrain.getPionsDe(couleur)) {
-                    if (aPorteeDe(p, pCase1))
-                        return 150;
-                }
-
-                if (pCase2.estDansTerrain()) {
+                if (terrain.passePossible(pBalle, pCase1, couleur)) {
                     for (Pion p : terrain.getPionsDe(couleur)) {
-                        if (aPorteeDe(p, pCase2))
+                        if (aPorteeDe(p, pCase1)) {
+                            System.out.println("Attaque Vert détectée");
                             return 150;
+                        }
                     }
                 }
 
-                if (pCase3.estDansTerrain()) {
+                if (pCase2.estDansTerrain() && terrain.passePossible(pBalle, pCase2, couleur)) {
                     for (Pion p : terrain.getPionsDe(couleur)) {
-                        if (aPorteeDe(p, pCase3))
+                        if (aPorteeDe(p, pCase2)) {
+                            System.out.println("Attaque Vert détectée");
                             return 150;
+                        }
                     }
                 }
 
-                /*if (terrain.getPionALaBalle(couleur).getPosition().getPoint().getY() == Terrain.HAUTEUR - 1) {
-                    System.out.println("Attaque Vert détectée");
-                    return 150;
-                } else {
-                    return 0;
-                }*/
+                if (pCase3.estDansTerrain() && terrain.passePossible(pBalle, pCase3, couleur)) {
+                    for (Pion p : terrain.getPionsDe(couleur)) {
+                        if (aPorteeDe(p, pCase3)) {
+                            System.out.println("Attaque Vert détectée");
+                            return 150;
+                        }
+                    }
+                }
+
                 return 0;
             } else {
-                /*if (terrain.getPionALaBalle(couleur).getPosition().getPoint().getY() == 0) {
-                    System.out.println("Attaque Rouge détectée");
-                    return 150;
-                } else {
-                    return 0;
-                }*/
-
                 Point pBalle = terrain.getPionALaBalle(couleur).getPosition().getPoint();
                 Point pCase1 = new Point(pBalle.getX(), 0);
                 Point pCase2 = new Point(pBalle.getY() + pBalle.getX(), 0);
                 Point pCase3 = new Point(pBalle.getY() - pBalle.getX(), 0);
 
                 // pour pCase1
-                for (Pion p : terrain.getPionsDe(couleur)) {
-                    if (aPorteeDe(p, pCase1))
-                        return 150;
-                }
-
-                if (pCase2.estDansTerrain()) {
+                if (terrain.passePossible(pBalle, pCase1, couleur)) {
                     for (Pion p : terrain.getPionsDe(couleur)) {
-                        if (aPorteeDe(p, pCase2))
+                        if (aPorteeDe(p, pCase1)) {
+                            System.out.println("Attaque Rouge détectée");
                             return 150;
+                        }
                     }
                 }
 
-                if (pCase3.estDansTerrain()) {
+                if (pCase2.estDansTerrain() && terrain.passePossible(pBalle, pCase2, couleur)) {
                     for (Pion p : terrain.getPionsDe(couleur)) {
-                        if (aPorteeDe(p, pCase3))
+                        if (aPorteeDe(p, pCase2)) {
+                            System.out.println("Attaque Rouge détectée");
                             return 150;
+                        }
+                    }
+                }
+
+                if (pCase3.estDansTerrain() && terrain.passePossible(pBalle, pCase3, couleur)) {
+                    for (Pion p : terrain.getPionsDe(couleur)) {
+                        if (aPorteeDe(p, pCase3)) {
+                            System.out.println("Attaque Rouge détectée");
+                            return 150;
+                        }
                     }
                 }
 
@@ -126,12 +133,7 @@ public class JoueurIA extends Joueur {
 
         private boolean aPorteeDe(Pion pion, Point point) {
             Point ptmp = pion.getPosition().getPoint();
-            if (Math.abs(point.getX() - ptmp.getX() + point.getY() - ptmp.getY()) <= 2) {
-                if (ptmp.getY() < point.getY() && !terrain.getCaseSur(new Point(ptmp.getX(), ptmp.getY() + 1)).pionPresent()) {
-
-                }
-            }
-            return false;
+            return Math.abs((point.getX() - ptmp.getX()) + (point.getY() - ptmp.getY())) <= 2;
         }
 
         void addAction(Action action) {
@@ -370,10 +372,16 @@ public class JoueurIA extends Joueur {
         int evalMax = Integer.MIN_VALUE;
         int evalAct;
         for (Configuration ct : cs) {
+            if (ct.gagne(Joueur.ROUGE)) {
+                max = ct;
+
+                break;
+            }
+
             evalAct = ct.eval(Joueur.ROUGE);
             evalAct -= ct.eval(Joueur.VERT);
-            /*evalAct += ct.attaque(Joueur.ROUGE);
-            evalAct -= (ct.attaque(Joueur.VERT) * 3);*/
+            evalAct += ct.attaque(Joueur.ROUGE);
+            evalAct -= (ct.attaque(Joueur.VERT) * 3);
             if (evalAct > evalMax) {
                 max = ct;
                 evalMax = evalAct;
@@ -382,8 +390,9 @@ public class JoueurIA extends Joueur {
 
         if (max == null) return false;
 
-        /*System.out.println("** Meilleur config :");
-        System.out.println(max);*/
+        System.out.println("** Meilleur config = " + evalMax);
+        System.out.println(max);
+            System.out.println(max.attaque(Joueur.VERT));
 
         for (Action a : max.actions) {
             Platform.runLater(() -> {

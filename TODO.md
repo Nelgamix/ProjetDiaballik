@@ -10,4 +10,5 @@
 * Proposer le meilleur coup au joueur
 
 # Bugs
-* Tour adverse (si IA ou réseau)
+* IA -> defaire un tour d'ia puis fin tour provoque null pointer (parfois)
+* finir une game contre ia puis lancer le dialog nouvelle partie provoque multiples erreurs
