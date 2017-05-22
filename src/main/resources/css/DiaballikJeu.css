@@ -154,8 +154,8 @@
     /*-fx-background-color: linear-gradient(to bottom right, #7857eb, #6752cd);*/
     /*-fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.5), 20, 0, 0, 0);*/
 
-    -fx-fill: linear-gradient(to bottom right, #497bff, #446ee1);
-    -fx-background-color: linear-gradient(to bottom right, #497bff, #446ee1);
+    -fx-fill: linear-gradient(to bottom right, #b2f1ff, #98d3e1);
+    -fx-background-color: linear-gradient(to bottom right, #b2f1ff, #98d3e1);
     -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.5), 20, 0, 0, 0);
 }
 

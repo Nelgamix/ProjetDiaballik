@@ -35,4 +35,9 @@ public class Case extends Observable implements Serializable {
         return this.getPion() != null ? pion.toString() : "0";
         //return this.point.toString();
     }
+
+    @Override
+    public int hashCode() {
+        return getPion() != null ? getPion().hashCode() : 0;
+    }
 }

@@ -57,6 +57,13 @@ public class Pion extends Observable {
     }
 
     @Override
+    public boolean equals(Object obj) {
+        if (obj == null) return false;
+        Pion p = (Pion) obj;
+        return p.getCouleur() == getCouleur() && p.aLaBalle() == aLaBalle();
+    }
+
+    @Override
     public String toString() {
         String s = "";
         if (aLaBalle()) s += "B";
@@ -65,5 +72,10 @@ public class Pion extends Observable {
         else s += "R";
 
         return s;
+    }
+
+    @Override
+    public int hashCode() {
+        return (getCouleur() + 1) * (aLaBalle() ? 2 : 1);
     }
 }

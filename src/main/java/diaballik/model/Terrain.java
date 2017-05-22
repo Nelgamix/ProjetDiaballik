@@ -5,6 +5,7 @@ import javafx.application.Platform;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 
 public class Terrain {
     private String nom;
@@ -35,13 +36,15 @@ public class Terrain {
                 pt = t.getPionDe(c, i);
                 ctmp = getCaseSur(pt.getPosition().getPoint());
                 p = new Pion(c, ctmp);
+                if (pt.aLaBalle()) p.setaLaBalle(true);
+                ctmp.setPion(p);
                 this.pions[c][i] = p;
             }
 
         /*System.out.println("Entrée");
         System.out.println(t);
         System.out.println("Sortie");
-        System.out.println(t);*/
+        System.out.println(this);*/
     }
 
     // Constructeur depuis un flux d'entrée (eg fichier)
@@ -259,6 +262,22 @@ public class Terrain {
     }
 
     @Override
+    public boolean equals(Object obj) {
+        Terrain toCmp = (Terrain) obj;
+        for (int i = 0; i < HAUTEUR; i++) {
+            for (int j = 0; j < LARGEUR; j++) {
+                Point p = new Point(i, j);
+                Case c = getCaseSur(p);
+                if (c.getPion() != null && !c.getPion().equals(toCmp.getCaseSur(p).getPion())) {
+                    return false;
+                }
+            }
+        }
+
+        return true;
+    }
+
+    @Override
     public String toString() {
         String s = "";
 
@@ -269,5 +288,15 @@ public class Terrain {
         }
 
         return s;
+    }
+
+    @Override
+    public int hashCode() {
+        int hash = 0;
+
+        for (Case[] c : cases)
+            hash += Arrays.hashCode(c);
+
+        return hash;
     }
 }

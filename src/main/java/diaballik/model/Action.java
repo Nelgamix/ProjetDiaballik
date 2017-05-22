@@ -16,10 +16,16 @@ public class Action implements Serializable {
     private boolean inverse; // si inverse, l'action provient de défaire
     private int tour;
 
+    public Action(Action action) {
+        this(action.caseAvant, action.getAction(), action.getCaseApres(), action.getTour());
+    }
     public Action(int action) {
         this.action = action;
         this.tour = -1;
         this.inverse = false;
+    }
+    public Action(Case caseAvant, int action, Case caseApres) {
+        this(caseAvant, action, caseApres, -1);
     }
     public Action(Case caseAvant, int action, Case caseApres, int tour) {
         this.caseAvant = caseAvant;
@@ -52,6 +58,11 @@ public class Action implements Serializable {
     }
     public boolean isInverse() {
         return inverse;
+    }
+    public void reverse() {
+        Case tmp = getCaseApres();
+        setCaseApres(getCaseAvant());
+        setCaseAvant(tmp);
     }
 
     private static String parseAction(int action) {
@@ -105,7 +116,9 @@ public class Action implements Serializable {
 
     @Override
     public String toString() {
-        return "Tour " + tour + ": " + parseAction(action) + " de " + caseAvant + " vers " + caseApres;
+        if (getTour() < 0) return parseAction(action) + " de " + caseAvant.getPoint() + " vers " + caseApres.getPoint();
+        else
+            return "Tour " + tour + ": " + parseAction(action) + " de " + caseAvant.getPoint() + " vers " + caseApres.getPoint();
     }
 
 

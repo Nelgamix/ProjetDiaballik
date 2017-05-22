@@ -262,11 +262,7 @@ public class Jeu extends Observable {
         }
     }
 
-    // Vérifie la possibilité d'un déplacement (uniquement par rapport aux coordonnées)
-    private boolean deplacementPossible(Case c1, Case c2) {
-        Point p = c1.getPoint();
-        Point p2 = c2.getPoint();
-
+    public boolean deplacementPossible(Point p, Point p2) {
         // On cherche un point commun (x ou y)
         if (p.getY() == p2.getY()) {
             if (Math.abs(p.getX() - p2.getX()) == 1) { // il faut un différentiel de 1 pour qu'il soit à côté
@@ -280,6 +276,13 @@ public class Jeu extends Observable {
 
         return false;
     }
+    // Vérifie la possibilité d'un déplacement (uniquement par rapport aux coordonnées)
+    private boolean deplacementPossible(Case c1, Case c2) {
+        Point p = c1.getPoint();
+        Point p2 = c2.getPoint();
+
+        return deplacementPossible(p, p2);
+    }
 
     public ArrayList<Case> getDeplacementsPossibles(Pion pion) {
         if (!getJoueurActuel().peutDeplacer()) return new ArrayList<>();
@@ -292,11 +295,7 @@ public class Jeu extends Observable {
         return terrain.getPassesPossibles(pion);
     }
 
-    // Vérifie la possibilité d'une passe (uniquement dans les axes, la couleur n'est pas vérifiée, ...)
-    private boolean passePossible(Pion envoyeur, Pion receptionneur) {
-        Point pEnvoyeur = envoyeur.getPosition().getPoint();
-        Point pReceptionneur = receptionneur.getPosition().getPoint();
-
+    public boolean passePossible(Point pEnvoyeur, Point pReceptionneur) {
         // check alignement
         if (pEnvoyeur.getX() == pReceptionneur.getX()) { // en ligne
             int yMax = Math.max(pEnvoyeur.getY(), pReceptionneur.getY());
@@ -341,6 +340,13 @@ public class Jeu extends Observable {
         }
 
         return true;
+    }
+    // Vérifie la possibilité d'une passe (uniquement dans les axes, la couleur n'est pas vérifiée, ...)
+    private boolean passePossible(Pion envoyeur, Pion receptionneur) {
+        Point pEnvoyeur = envoyeur.getPosition().getPoint();
+        Point pReceptionneur = receptionneur.getPosition().getPoint();
+
+        return passePossible(pEnvoyeur, pReceptionneur);
     }
 
     // Effectue une passe d'un pion p vers un pion positionné sur une case c
@@ -412,10 +418,8 @@ public class Jeu extends Observable {
 
         updateListeners(SignalUpdate.TOUR);
 
-        ArrayList<Action> actionsTA;
-
-        if (getJoueurActuel().estUneIA() && (actionsTA = historique.getActions(tour)).size() > 0) {
-            ((JoueurIA) getJoueurActuel()).rejouer(actionsTA);
+        if (getJoueurActuel().estUneIA() && historique.getActions(tour) != null && historique.getActions(tour).size() > 0) {
+            ((JoueurIA) getJoueurActuel()).refaire();
         } else {
             preparerJoueur();
         }
@@ -427,15 +431,13 @@ public class Jeu extends Observable {
 
         setNumAction();
 
-        while (getJoueurActuel().estUneIA()) {
-            defaire();
-            if (tour == 1 && numAction == 1)
-                break;
-        }
-
-        preparerJoueur();
-
         updateListeners(SignalUpdate.TOUR);
+
+        if (getJoueurActuel().estUneIA() && historique.getActions(tour) != null && historique.getActions(tour).size() > 0) {
+            ((JoueurIA) getJoueurActuel()).defaire();
+        } else {
+            preparerJoueur();
+        }
     }
 
     public Joueur getJoueurActuel() {

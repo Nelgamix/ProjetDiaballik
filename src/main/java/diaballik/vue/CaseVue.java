@@ -37,7 +37,7 @@ public class CaseVue extends StackPane implements Observer {
 
         notationCase = new BorderPane();
         char ligne = (char)(65 + getCase().getPoint().getY());
-        Label caseN = new Label(ligne + "-" + getCase().getPoint().getX());
+        Label caseN = new Label(ligne + "-" + (getCase().getPoint().getX() + 1));
         notationCase.setBottom(caseN);
         terrainVue.getTerrainControleur().getJeu().getConfigurationPartie().addObserver(this);
 
