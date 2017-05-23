@@ -418,68 +418,6 @@ public class JoueurIA extends Joueur {
         return new Action(av, action.getAction(), ap, jeu.getTour());
     }
 
-    /*private void enumConfigs(Terrain configCourante) {
-        final int couleur = getCouleur();
-        HashSet<Terrain> H = new HashSet<>();
-        Terrain c3, c2, configPossible;
-        ArrayList<Pion> pionsNonTraites = new ArrayList<>(Arrays.asList(configCourante.getPionsDe(couleur)));
-
-        for (Pion p1 : pionsNonTraites) {
-            if (p1.aLaBalle()) {
-                System.out.println("Pion balle");
-                for (Pion i : configCourante.getPassesPossibles(p1)) {
-                    configPossible = new Terrain(configCourante);
-                    passe(p1, i, configPossible);
-                    ajouter(H,configPossible);
-                    c2 = new Terrain(configPossible);
-                    for (Pion p2 : c2.getPionsDe(couleur)) {
-                        for (Case m : configPossible.getDeplacementsPossibles(p2)) {
-                            c2 = new Terrain(configPossible);
-                            deplacement(p2, m, c2);
-                            ajouter(H,c2);
-                            for (Pion p3 : c2.getPionsDe(couleur)) {
-                                for (Case m2 : c2.getDeplacementsPossibles(p3)) {
-                                    c3 = new Terrain(c2);
-                                    deplacement(p3, m2, c3);
-                                    ajouter(H,c3);
-                                }
-                            }
-                        }
-                    }
-                }
-            } else {
-                System.out.println("Pion non balle");
-                pionsNonTraites.remove(p1);
-                for (Case m : configCourante.getDeplacementsPossibles(p1)) {
-                    configPossible = new Terrain(configCourante);
-                    deplacement(p1, m, configPossible);
-                    ajouter(H,configPossible);
-                    System.out.println("If 1");
-                    if (configPossible.getPassesPossibles(configPossible.getPionALaBalle(couleur)).contains(p1)) {
-                        c2 = new Terrain(configPossible);
-                        passe(configPossible.getPionALaBalle(couleur), p1, c2);
-                        ajouter(H,c2);
-                    }
-                    System.out.println("For 1");
-                    for (Pion p2 : pionsNonTraites) {
-                        System.out.println("For 2");
-                        for (Case m2 : configPossible.getDeplacementsPossibles(p2)) {
-                            c2 = new Terrain(configPossible);
-                            deplacement(p2, m2, c2);
-                            ajouter(H,c2);
-                            System.out.println("If 2");
-                            if (c2.getPassesPossibles(c2.getPionALaBalle(couleur)).contains(p2)) {
-                                c3 = new Terrain(c2);
-                                passe(c2.getPionALaBalle(couleur), p2, c3);
-                                ajouter(H,c3);
-                            }
-                        }
-                    }
-                }
-            }
-        }
-    }*/
-
     private HashSet<Configuration> enumAll(Configuration config) {
         HashSet<Configuration> H = new HashSet<>();
         ajouter(H, config);
@@ -568,6 +506,7 @@ public class JoueurIA extends Joueur {
 
     private void ajouter(HashSet<Configuration> H, Configuration c) {
         if (!H.contains(c)) {
+            System.out.print(c);
             H.add(c);
         }
     }

@@ -398,6 +398,7 @@ public class Terrain {
         return s;
     }
 
+    // TODO: changer
     @Override
     public int hashCode() {
         int hash = 0;
