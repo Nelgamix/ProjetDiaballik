@@ -14,13 +14,6 @@ public class JoueurReseau extends Joueur {
     }
 
     @Override
-    public boolean jouer() {
-        boolean succes = super.jouer();
-        finAction();
-        return succes;
-    }
-
-    @Override
     public boolean estUnJoueurReseau() {
         return true;
     }

@@ -5,7 +5,6 @@ import javafx.application.Platform;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
 
 public class Terrain {
     private String nom;
@@ -368,15 +367,22 @@ public class Terrain {
             if (p.aLaBalle()) return p;
         return null;
     }
+    public String getNom() {
+        return nom;
+    }
 
     @Override
     public boolean equals(Object obj) {
         Terrain toCmp = (Terrain) obj;
+
+        Point p;
+        Case c, cObj;
         for (int i = 0; i < HAUTEUR; i++) {
             for (int j = 0; j < LARGEUR; j++) {
-                Point p = new Point(i, j);
-                Case c = getCaseSur(p);
-                if (c.getPion() != null && !c.getPion().equals(toCmp.getCaseSur(p).getPion())) {
+                p = new Point(i, j);
+                c = getCaseSur(p);
+                cObj = toCmp.getCaseSur(p);
+                if (!c.equals(cObj)) {
                     return false;
                 }
             }
@@ -389,6 +395,7 @@ public class Terrain {
     public String toString() {
         String s = "";
 
+        s += "Hashcode " + this.hashCode() + "\n";
         for (Case[] c : cases) {
             for (Case ci : c)
                 s += ci.toString() + "\t";
@@ -398,13 +405,17 @@ public class Terrain {
         return s;
     }
 
-    // TODO: changer
     @Override
     public int hashCode() {
         int hash = 0;
 
-        for (Case[] c : cases)
-            hash += Arrays.hashCode(c);
+        int i = 1;
+        for (Case[] c : cases) {
+            for (Case cc : c) {
+                hash += (i * cc.hashCode());
+                i++;
+            }
+        }
 
         return hash;
     }

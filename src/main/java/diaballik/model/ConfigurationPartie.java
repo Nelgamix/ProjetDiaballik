@@ -162,7 +162,35 @@ public class ConfigurationPartie extends Observable {
         return terrain;
     }
 
+    public void setNomJoueur1(String nomJoueur1) {
+        this.nomJoueur1 = nomJoueur1;
+    }
+    public void setNomJoueur2(String nomJoueur2) {
+        this.nomJoueur2 = nomJoueur2;
+    }
+    public void setTypeJoueur1(int typeJoueur1) {
+        this.typeJoueur1 = typeJoueur1;
+    }
+    public void setTypeJoueur2(int typeJoueur2) {
+        this.typeJoueur2 = typeJoueur2;
+    }
+    public void setTerrain(String terrain) {
+        this.terrain = terrain;
+    }
+
     public String getCheminFichier() {
         return cheminFichier;
+    }
+
+    @Override
+    public String toString() {
+        return "ConfigurationPartie{" +
+                "multijoueur=" + multijoueur +
+                ", dureeTimer=" + dureeTimer +
+                ", nomJoueur1='" + nomJoueur1 + '\'' +
+                ", nomJoueur2='" + nomJoueur2 + '\'' +
+                ", typeJoueur1=" + typeJoueur1 +
+                ", typeJoueur2=" + typeJoueur2 +
+                '}';
     }
 }

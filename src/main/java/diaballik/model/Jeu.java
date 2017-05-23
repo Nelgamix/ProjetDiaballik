@@ -58,7 +58,7 @@ public class Jeu extends Observable {
                     }
                 }
 
-                // tour actuel
+                // tour actuel, joueurActuel, numAction
                 if ((sCurrentLine = br.readLine()) != null) {
                     parts = sCurrentLine.split(":");
                     this.tour = Integer.parseInt(parts[0]);
@@ -70,11 +70,15 @@ public class Jeu extends Observable {
                 // joueur 1
                 if ((sCurrentLine = br.readLine()) != null) {
                     this.joueurs[0] = constructJoueur(Integer.parseInt(sCurrentLine.split(":")[1]), Joueur.VERT, sCurrentLine.split(":")[0]);
+                    getConfigurationPartie().setNomJoueur1(this.joueurs[0].getNom());
+                    getConfigurationPartie().setTypeJoueur1(this.joueurs[0].getType());
                 }
 
                 // joueur 2
                 if ((sCurrentLine = br.readLine()) != null) {
                     this.joueurs[1] = constructJoueur(Integer.parseInt(sCurrentLine.split(":")[1]), Joueur.ROUGE, sCurrentLine.split(":")[0]);
+                    getConfigurationPartie().setNomJoueur2(this.joueurs[1].getNom());
+                    getConfigurationPartie().setTypeJoueur2(this.joueurs[1].getType());
                 }
             } else {
                 this.tour = 1;
@@ -86,6 +90,7 @@ public class Jeu extends Observable {
             }
 
             terrain = new Terrain(br);
+            getConfigurationPartie().setTerrain(terrain.getNom());
 
             if (getConfigurationPartie().estUneSauvegarde()) {
                 historique = new Historique(this, br);

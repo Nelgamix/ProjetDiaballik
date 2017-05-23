@@ -162,10 +162,12 @@ public class Historique {
 
         int i = 1;
         for (ArrayList<Action> a : this.tours) {
-            sb.append("Tour ").append(i++).append(":\n");
-            for (Action b : a)
-                sb.append("\t").append(b).append("\n");
-            sb.append("\n");
+            sb.append("Tour ").append(i++).append("\n");
+            if (a.size() > 0)
+                for (Action b : a)
+                    sb.append("\t").append(b).append("\n");
+            else
+                sb.append("\tAucune action ce tour\n");
         }
 
         return sb.toString();

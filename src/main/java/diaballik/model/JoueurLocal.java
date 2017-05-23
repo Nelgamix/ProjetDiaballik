@@ -16,18 +16,6 @@ public class JoueurLocal extends Joueur {
     }
 
     @Override
-    public boolean jouer() {
-        boolean succes = super.jouer();
-
-        if (succes && jeu.getConfigurationPartie().estMultijoueur())
-            getSceneJeu().getReseau().envoyerAction(actionAJouer);
-
-        finAction();
-
-        return succes;
-    }
-
-    @Override
     public void finTour() {
         if (jeu.getConfigurationPartie().estMultijoueur())
             getSceneJeu().getReseau().envoyerAction(new Action(Action.FINTOUR));

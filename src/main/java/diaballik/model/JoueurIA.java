@@ -58,82 +58,96 @@ public class JoueurIA extends Joueur {
         }
 
         int attaque(int couleur) {
+            int pts = 0;
+            Point pBalle, pCase1, pCase2, pCase3;
+
             if (couleur == Joueur.VERT) {
-                Point pBalle = terrain.getPionALaBalle(couleur).getPosition().getPoint();
-                Point pCase1 = new Point(pBalle.getX(), Terrain.HAUTEUR - 1);
-                Point pCase2 = new Point(pBalle.getX() + (Terrain.HAUTEUR - 1 - pBalle.getY()), Terrain.HAUTEUR - 1);
-                Point pCase3 = new Point(pBalle.getX() + (Terrain.HAUTEUR - 1 + pBalle.getY()), Terrain.HAUTEUR - 1);
-
-                // pour pCase1
-                if (terrain.passePossible(pBalle, pCase1, couleur)) {
-                    for (Pion p : terrain.getPionsDe(couleur)) {
-                        if (aPorteeDe(p, pCase1)) {
-                            System.out.println("Attaque Vert détectée");
-                            return 150;
-                        }
-                    }
-                }
-
-                if (pCase2.estDansTerrain() && terrain.passePossible(pBalle, pCase2, couleur)) {
-                    for (Pion p : terrain.getPionsDe(couleur)) {
-                        if (aPorteeDe(p, pCase2)) {
-                            System.out.println("Attaque Vert détectée");
-                            return 150;
-                        }
-                    }
-                }
-
-                if (pCase3.estDansTerrain() && terrain.passePossible(pBalle, pCase3, couleur)) {
-                    for (Pion p : terrain.getPionsDe(couleur)) {
-                        if (aPorteeDe(p, pCase3)) {
-                            System.out.println("Attaque Vert détectée");
-                            return 150;
-                        }
-                    }
-                }
-
-                return 0;
+                pBalle = terrain.getPionALaBalle(couleur).getPosition().getPoint();
+                pCase1 = new Point(pBalle.getX(), Terrain.HAUTEUR - 1);
+                pCase2 = new Point(pBalle.getX() - (Terrain.HAUTEUR - 1 - pBalle.getY()), Terrain.HAUTEUR - 1);
+                pCase3 = new Point(pBalle.getX() + (Terrain.HAUTEUR - 1 - pBalle.getY()), Terrain.HAUTEUR - 1);
             } else {
-                Point pBalle = terrain.getPionALaBalle(couleur).getPosition().getPoint();
-                Point pCase1 = new Point(pBalle.getX(), 0);
-                Point pCase2 = new Point(pBalle.getY() + pBalle.getX(), 0);
-                Point pCase3 = new Point(pBalle.getY() - pBalle.getX(), 0);
+                pBalle = terrain.getPionALaBalle(couleur).getPosition().getPoint();
+                pCase1 = new Point(pBalle.getX(), 0);
+                pCase2 = new Point(pBalle.getX() + pBalle.getY(), 0);
+                pCase3 = new Point(pBalle.getX() - pBalle.getY(), 0);
+            }
 
-                // pour pCase1
-                if (terrain.passePossible(pBalle, pCase1, couleur)) {
-                    for (Pion p : terrain.getPionsDe(couleur)) {
-                        if (aPorteeDe(p, pCase1)) {
-                            System.out.println("Attaque Rouge détectée");
-                            return 150;
-                        }
+            // pour pCase1
+            if (
+                        terrain.passePossible(pBalle, pCase1, couleur)
+                    &&  checkPorteeDe(pCase1, couleur)
+            ) {
+                pts = 150;
+            }
+
+            if (
+                        pCase2.estDansTerrain()
+                    &&  terrain.passePossible(pBalle, pCase2, couleur)
+                    &&  checkPorteeDe(pCase2, couleur)
+            ) {
+                pts = 150;
+            }
+
+            if (
+                        pCase3.estDansTerrain()
+                    &&  terrain.passePossible(pBalle, pCase3, couleur)
+                    &&  checkPorteeDe(pCase3, couleur)
+            ) {
+                pts = 150;
+            }
+
+            return pts;
+        }
+
+        private boolean aPorteeDe(Pion pion, Point point, int couleur) {
+            Point pPion = pion.getPosition().getPoint();
+            Case objectif = terrain.getCaseSur(point);
+            int distance = Math.abs(point.getX() - pPion.getX()) + Math.abs(point.getY() - pPion.getY());
+
+            switch (distance) {
+                case 0:
+                    return true;
+                case 1:
+                    return !(objectif.getPion() != null && objectif.getPion().getCouleur() != couleur);
+                case 2:
+                    if (objectif.getPion() != null && objectif.getPion().getCouleur() != couleur) return false;
+
+                    Point tmp = new Point(pPion);
+                    ArrayList<Point> pts = new ArrayList<>();
+
+                    if (tmp.getX() > point.getX()) {
+                        pts.add(new Point(tmp.getX() - 1, tmp.getY()));
+                    } else if (tmp.getX() < point.getX()) {
+                        pts.add(new Point(tmp.getX() + 1, tmp.getY()));
                     }
-                }
 
-                if (pCase2.estDansTerrain() && terrain.passePossible(pBalle, pCase2, couleur)) {
-                    for (Pion p : terrain.getPionsDe(couleur)) {
-                        if (aPorteeDe(p, pCase2)) {
-                            System.out.println("Attaque Rouge détectée");
-                            return 150;
-                        }
+                    if (tmp.getY() > point.getY()) {
+                        pts.add(new Point(tmp.getX(), tmp.getY() - 1));
+                    } else if (tmp.getY() < point.getY()) {
+                        pts.add(new Point(tmp.getY(), tmp.getY() + 1));
                     }
-                }
 
-                if (pCase3.estDansTerrain() && terrain.passePossible(pBalle, pCase3, couleur)) {
-                    for (Pion p : terrain.getPionsDe(couleur)) {
-                        if (aPorteeDe(p, pCase3)) {
-                            System.out.println("Attaque Rouge détectée");
-                            return 150;
-                        }
-                    }
-                }
-
-                return 0;
+                    for (Point p : pts)
+                        if (terrain.getCaseSur(p).getPion() == null)
+                            return true;
+                    return false;
+                default: // Distance > 2
+                    return false;
             }
         }
 
-        private boolean aPorteeDe(Pion pion, Point point) {
-            Point ptmp = pion.getPosition().getPoint();
-            return Math.abs((point.getX() - ptmp.getX()) + (point.getY() - ptmp.getY())) <= 2;
+        private boolean checkPorteeDe(Point point, int couleur) {
+            if (terrain.getCaseSur(point).getPion() != null && terrain.getCaseSur(point).getPion().getCouleur() != couleur)
+                return false;
+
+            for (Pion p : terrain.getPionsDe(couleur)) {
+                if (!p.aLaBalle() && aPorteeDe(p, point, couleur)) {
+                    return true;
+                }
+            }
+
+            return false;
         }
 
         void addAction(Action action) {
@@ -163,6 +177,11 @@ public class JoueurIA extends Joueur {
         }
 
         @Override
+        public boolean equals(Object obj) {
+            return terrain.equals(((Configuration)obj).terrain);
+        }
+
+        @Override
         public int hashCode() {
             return terrain.hashCode();
         }
@@ -174,7 +193,6 @@ public class JoueurIA extends Joueur {
     }
 
     private final JoueurIA t;
-    private ArrayList<Action> actionsAJouer = new ArrayList<>();
 
     private final Random r = new Random();
 
@@ -192,12 +210,30 @@ public class JoueurIA extends Joueur {
             return new Task<Void>() {
                 @Override
                 protected Void call() throws Exception {
-                    for (int i = 0; i < 3; i++) {
-                        jouerFacile();
-                        Thread.sleep(ATTENTE_ACTION);
-                    }
+                    jouerFacile();
 
-                    Platform.runLater(t::finTour);
+                    Platform.runLater(() -> {
+                        jeu.antijeu();
+                        t.finTour();
+                    });
+                    return null;
+                }
+            };
+        }
+    };
+
+    private Service<Void> sJouerMoyen = new Service<Void>() {
+        @Override
+        protected Task<Void> createTask() {
+            return new Task<Void>() {
+                @Override
+                protected Void call() throws Exception {
+                    jouerMoyen();
+
+                    Platform.runLater(() -> {
+                        jeu.antijeu();
+                        t.finTour();
+                    });
                     return null;
                 }
             };
@@ -212,31 +248,10 @@ public class JoueurIA extends Joueur {
                 protected Void call() throws Exception {
                     jouerDifficile();
 
-                    Platform.runLater(t::finTour);
-                    return null;
-                }
-            };
-        }
-    };
-
-    private Service<Void> sJouer = new Service<Void>() {
-        @Override
-        protected Task<Void> createTask() {
-            return new Task<Void>() {
-                @Override
-                protected Void call() throws Exception {
-                    for (Action a : actionsAJouer) {
-                        System.out.println(a);
-                        setActionAJouer(a);
-                        Platform.runLater(() -> {
-                            t.jouer();
-                            t.finAction();
-                        });
-                        Thread.sleep(ATTENTE_ACTION);
-                    }
-
-                    Platform.runLater(t::finTour);
-                    actionsAJouer.clear();
+                    Platform.runLater(() -> {
+                        jeu.antijeu();
+                        t.finTour();
+                    });
                     return null;
                 }
             };
@@ -249,9 +264,11 @@ public class JoueurIA extends Joueur {
             return new Task<Void>() {
                 @Override
                 protected Void call() throws Exception {
-                    while (jeu.getJoueurActuel().estUneIA()) {
-                        Platform.runLater(defaire ? jeu::defaire : jeu::refaire);
+                    int n = jeu.getHistorique().nombreActions(jeu.getTour()) + 1;
+                    int i = 0;
+                    while (i++ < n) {
                         Thread.sleep(ATTENTE_ACTION);
+                        Platform.runLater(defaire ? jeu::defaire : jeu::refaire);
                     }
 
                     return null;
@@ -288,12 +305,6 @@ public class JoueurIA extends Joueur {
         sFaire.restart();
     }
 
-    public void jouer(ArrayList<Action> actions) {
-        actionsAJouer.addAll(actions);
-
-        sJouer.restart();
-    }
-
     @Override
     public boolean estUneIA() {
         return true;
@@ -309,13 +320,13 @@ public class JoueurIA extends Joueur {
         return true;
     }
 
-    void jouerIA() {
+    private void jouerIA() {
         switch (type) {
             case DIFFICULTE_FACILE:
                 sJouerFacile.restart();
                 break;
             case DIFFICULTE_MOYEN:
-                // ??
+                sJouerMoyen.restart();
                 break;
             case DIFFICULTE_DIFFICILE:
                 // minimax
@@ -327,44 +338,39 @@ public class JoueurIA extends Joueur {
         }
     }
 
-    private boolean jouerFacile() {
-        boolean valide = false;
-        Pion a = null;
+    private void jouerFacile() {
+        Pion a;
         Case b;
-        int aType;
+        int action;
 
-        while (!valide) {
+        for (int i = 0; i < 3; i++) {
             a = jeu.getTerrain().getPionDe(getCouleur(), r.nextInt(NOMBRE_PIONS));
-            valide = true;
-            if (a.aLaBalle() && !peutPasser()) {
-                valide = false;
-            } else if (!a.aLaBalle() && !peutDeplacer()) {
-                valide = false;
+            if (a.aLaBalle()) {
+                ArrayList<Pion> pp = jeu.getPassesPossibles(a);
+                if (pp.size() < 1) continue;
+
+                b = pp.get(r.nextInt(pp.size())).getPosition();
+                action = Action.PASSE;
+            } else {
+                ArrayList<Case> pp = jeu.getDeplacementsPossibles(a);
+                if (pp.size() < 1) continue;
+
+                b = pp.get(r.nextInt(pp.size()));
+                action = Action.DEPLACEMENT;
+            }
+
+            setActionAJouer(new Action(a.getPosition(), action, b, jeu.getTour()));
+
+            Platform.runLater(t::jouer);
+
+            try {
+                Thread.sleep(ATTENTE_ACTION);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
             }
         }
-
-        if (a.aLaBalle()) {
-            ArrayList<Pion> pp = jeu.getPassesPossibles(a);
-            b = pp.get(r.nextInt(pp.size())).getPosition();
-            aType = Action.PASSE;
-        } else {
-            ArrayList<Case> pp = jeu.getDeplacementsPossibles(a);
-            b = pp.get(r.nextInt(pp.size()));
-            aType = Action.DEPLACEMENT;
-        }
-
-        Action action = new Action(a.getPosition(), aType, b, jeu.getTour());
-
-        setActionAJouer(action);
-
-        Platform.runLater(() -> {
-            t.jouer();
-            t.finAction();
-        });
-
-        return true;
     }
-    private boolean jouerDifficile() {
+    private void jouerMoyen() {
         Configuration c = new Configuration(jeu.getTerrain(), new Action(Action.FINTOUR));
 
         HashSet<Configuration> cs = enumAll(c);
@@ -388,18 +394,12 @@ public class JoueurIA extends Joueur {
             }
         }
 
-        if (max == null) return false;
-
         System.out.println("** Meilleur config = " + evalMax);
         System.out.println(max);
-            System.out.println(max.attaque(Joueur.VERT));
 
         for (Action a : max.actions) {
-            Platform.runLater(() -> {
-                setActionAJouer(convert(a, jeu.getTerrain()));
-                t.jouer();
-                t.finAction();
-            });
+            setActionAJouer(convert(a, jeu.getTerrain()));
+            Platform.runLater(t::jouer);
 
             try {
                 Thread.sleep(ATTENTE_ACTION);
@@ -407,11 +407,12 @@ public class JoueurIA extends Joueur {
                 e.printStackTrace();
             }
         }
-
-        return true;
+    }
+    private void jouerDifficile() {
+        jouerMoyen();
     }
 
-    Action convert(Action action, Terrain terrain) {
+    private Action convert(Action action, Terrain terrain) {
         Case av = terrain.getCaseSur(action.getCaseAvant().getPoint());
         Case ap = terrain.getCaseSur(action.getCaseApres().getPoint());
 
@@ -420,56 +421,52 @@ public class JoueurIA extends Joueur {
 
     private HashSet<Configuration> enumAll(Configuration config) {
         HashSet<Configuration> H = new HashSet<>();
-        ajouter(H, config);
+        H.add(config);
 
         // Déplacement en 1
         for (Configuration c : enumDeplacements(config)) {
-            ajouter(H, c);
+            H.add(c);
 
             // Passe en 2
             for (Configuration c2 : enumPasses(c)) {
-                ajouter(H, c2);
+                H.add(c2);
 
                 // Déplacement en 3
-                for (Configuration c3 : enumDeplacements(c2)) {
-                    ajouter(H, c3);
-                }
+                H.addAll(enumDeplacements(c2));
             }
 
             // Déplacement en 2
             for (Configuration c2 : enumDeplacements(c)) {
-                ajouter(H, c2);
+                H.add(c2);
 
                 // Passe en 3
-                for (Configuration c3 : enumPasses(c2)) {
-                    ajouter(H, c3);
-                }
+                H.addAll(enumPasses(c2));
             }
         }
 
         // Passe en 1
         for (Configuration c : enumPasses(config)) {
-            ajouter(H, c);
+            H.add(c);
 
             // Déplacement en 2
             for (Configuration c2 : enumDeplacements(c)) {
-                ajouter(H, c2);
+                H.add(c2);
 
                 // Déplacement en 3
-                for (Configuration c3 : enumDeplacements(c2)) {
-                    ajouter(H, c3);
-                }
+                H.addAll(enumDeplacements(c2));
             }
         }
 
         System.out.println(H.size() + " configurations trouvées");
+        /*for (Configuration c : H) {
+            System.out.println(c);
+        }*/
 
         return H;
     }
-
-    private HashSet<Configuration> enumDeplacements(Configuration config) {
+    private ArrayList<Configuration> enumDeplacements(Configuration config) {
         Terrain terrain = config.terrain;
-        HashSet<Configuration> tmp = new HashSet<>();
+        ArrayList<Configuration> tmp = new ArrayList<>();
 
         Configuration c;
         for (Pion p : terrain.getPionsDe(getCouleur())) {
@@ -478,16 +475,16 @@ public class JoueurIA extends Joueur {
                     c = new Configuration(config);
                     c.addAction(new Action(p.getPosition(), Action.DEPLACEMENT, m));
                     c.deplacement();
-                    ajouter(tmp, c);
+                    tmp.add(c);
                 }
             }
         }
 
         return tmp;
     }
-    private HashSet<Configuration> enumPasses(Configuration config) {
+    private ArrayList<Configuration> enumPasses(Configuration config) {
         Terrain terrain = config.terrain;
-        HashSet<Configuration> tmp = new HashSet<>();
+        ArrayList<Configuration> tmp = new ArrayList<>();
 
         Configuration c;
         for (Pion p : terrain.getPionsDe(getCouleur())) {
@@ -496,18 +493,11 @@ public class JoueurIA extends Joueur {
                     c = new Configuration(config);
                     c.addAction(new Action(p.getPosition(), Action.PASSE, p2.getPosition()));
                     c.passe();
-                    ajouter(tmp, c);
+                    tmp.add(c);
                 }
             }
         }
 
         return tmp;
-    }
-
-    private void ajouter(HashSet<Configuration> H, Configuration c) {
-        if (!H.contains(c)) {
-            System.out.print(c);
-            H.add(c);
-        }
     }
 }

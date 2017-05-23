@@ -116,9 +116,14 @@ public abstract class Joueur {
             }
         }
 
+        if (succes && jeu.getJoueurAdverse().estUnJoueurReseau())
+            getSceneJeu().getReseau().envoyerAction(actionAJouer);
+
+        finAction();
+
         return succes;
     }
-    protected void finAction() {
+    private void finAction() {
         if (jeu.getTerrain().partieTerminee(couleur)) {
             // la partie est terminée (le vainqueur est joueurActuel())
             getSceneJeu().finJeu(jeu.getJoueurActuel(), Jeu.VICTOIRE_NORMALE);

@@ -65,8 +65,8 @@ public class Dialogs {
         ColumnConstraints ccNom = new ColumnConstraints();
         ColumnConstraints ccIA = new ColumnConstraints();
         ccJoueur.setPercentWidth(20);
-        ccNom.setPercentWidth(50);
-        ccIA.setPercentWidth(30);
+        ccNom.setPercentWidth(45);
+        ccIA.setPercentWidth(35);
         configJoueurs.getColumnConstraints().addAll(ccJoueur, ccNom, ccIA);
         configJoueurs.setId("dialogNewGame");
         configJoueurs.setHgap(15);
@@ -93,6 +93,7 @@ public class Dialogs {
         nomJoueur1.setPromptText("Nom");
         nomJoueur1.textProperty().addListener((o, ov, nv) -> boutonJouer.setDisable(nv.trim().length() < 3));
         ComboBox<String> iaJoueur1 = new ComboBox<>(iaDifficultes);
+        iaJoueur1.setMaxWidth(Double.MAX_VALUE);
         iaJoueur1.setOnAction(e -> {
             switch (iaJoueur1.getSelectionModel().getSelectedIndex()) {
                 case 0:
@@ -120,10 +121,9 @@ public class Dialogs {
         // Row joueur 2
         TextField nomJoueur2 = new TextField("Joueur 2");
         nomJoueur2.setPromptText("Nom");
-        nomJoueur2.textProperty().addListener((o, ov, nv) -> {
-            boutonJouer.setDisable(nv.trim().length() < 3);
-        });
+        nomJoueur2.textProperty().addListener((o, ov, nv) -> boutonJouer.setDisable(nv.trim().length() < 3));
         ComboBox<String> iaJoueur2 = new ComboBox<>(iaDifficultes);
+        iaJoueur2.setMaxWidth(Double.MAX_VALUE);
         iaJoueur2.setOnAction(e -> {
             switch (iaJoueur2.getSelectionModel().getSelectedIndex()) {
                 case 0:
