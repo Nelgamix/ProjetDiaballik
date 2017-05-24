@@ -68,7 +68,7 @@ public class TerrainComboBox extends ComboBox<Map.Entry<String, String>> {
         }
 
         for (Map.Entry<String, String> e : mapTerrainsDispo.entrySet()) {
-            if (e.getKey().equals(terrain)) {
+            if (e.getKey().equals(terrain) || e.getValue().equals(terrain)) {
                 getSelectionModel().select(e);
             }
         }

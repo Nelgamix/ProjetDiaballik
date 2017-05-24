@@ -10,5 +10,5 @@
 * Proposer le meilleur coup au joueur
 
 # Bugs
-* IA joue 2 fois (rare)
+* IA joue 2 fois (rare) (peut-être résolu)
 * Si on passe vite après IA, désynchro (bloquage écran inactif, ...)

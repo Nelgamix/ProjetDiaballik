@@ -14,6 +14,8 @@ public class JoueurIA extends Joueur {
         Terrain terrain;
         ArrayList<Action> actions;
 
+        Integer[] eval = new Integer[Jeu.NOMBRE_JOUEURS];
+
         Configuration(Configuration configuration) {
             terrain = new Terrain(configuration.terrain);
             actions = new ArrayList<>();
@@ -56,7 +58,6 @@ public class JoueurIA extends Joueur {
 
             return valTotal;
         }
-
         int attaque(int couleur) {
             int pts = 0;
             Point pBalle, pCase1, pCase2, pCase3;
@@ -78,6 +79,7 @@ public class JoueurIA extends Joueur {
                         terrain.passePossible(pBalle, pCase1, couleur)
                     &&  checkPorteeDe(pCase1, couleur)
             ) {
+                //System.out.println("Attaque case " + pCase1);
                 pts = 150;
             }
 
@@ -86,6 +88,7 @@ public class JoueurIA extends Joueur {
                     &&  terrain.passePossible(pBalle, pCase2, couleur)
                     &&  checkPorteeDe(pCase2, couleur)
             ) {
+                //System.out.println("Attaque case " + pCase2);
                 pts = 150;
             }
 
@@ -94,6 +97,7 @@ public class JoueurIA extends Joueur {
                     &&  terrain.passePossible(pBalle, pCase3, couleur)
                     &&  checkPorteeDe(pCase3, couleur)
             ) {
+                //System.out.println("Attaque case " + pCase3);
                 pts = 150;
             }
 
@@ -136,7 +140,6 @@ public class JoueurIA extends Joueur {
                     return false;
             }
         }
-
         private boolean checkPorteeDe(Point point, int couleur) {
             if (terrain.getCaseSur(point).getPion() != null && terrain.getCaseSur(point).getPion().getCouleur() != couleur)
                 return false;
@@ -174,6 +177,12 @@ public class JoueurIA extends Joueur {
             Pion p2 = action.getCaseApres().getPion();
 
             p.passe(p2);
+        }
+
+        int getEval(int couleur) {
+            if (eval[couleur] == null)
+                return (eval[couleur] = eval(couleur));
+            else return eval[couleur];
         }
 
         @Override
@@ -216,6 +225,7 @@ public class JoueurIA extends Joueur {
                         jeu.antijeu();
                         t.finTour();
                     });
+
                     return null;
                 }
             };
@@ -234,6 +244,7 @@ public class JoueurIA extends Joueur {
                         jeu.antijeu();
                         t.finTour();
                     });
+
                     return null;
                 }
             };
@@ -252,6 +263,7 @@ public class JoueurIA extends Joueur {
                         jeu.antijeu();
                         t.finTour();
                     });
+
                     return null;
                 }
             };
@@ -371,33 +383,35 @@ public class JoueurIA extends Joueur {
         }
     }
     private void jouerMoyen() {
-        Configuration c = new Configuration(jeu.getTerrain(), new Action(Action.FINTOUR));
+        Configuration c = new Configuration(jeu.getTerrain());
 
         HashSet<Configuration> cs = enumAll(c);
-        Configuration max = null;
+        ArrayList<Configuration> max = new ArrayList<>();
         int evalMax = Integer.MIN_VALUE;
         int evalAct;
         for (Configuration ct : cs) {
             if (ct.gagne(Joueur.ROUGE)) {
-                max = ct;
+                max.clear();
+                max.add(ct);
 
                 break;
             }
 
-            evalAct = ct.eval(Joueur.ROUGE);
-            evalAct -= ct.eval(Joueur.VERT);
-            evalAct += ct.attaque(Joueur.ROUGE);
-            evalAct -= (ct.attaque(Joueur.VERT) * 3);
+            evalAct = evalConfig(ct, getCouleur());
             if (evalAct > evalMax) {
-                max = ct;
+                max.clear();
+                max.add(ct);
                 evalMax = evalAct;
-            }
+            } else if (evalAct == evalMax)
+                max.add(ct);
         }
 
-        System.out.println("** Meilleur config = " + evalMax);
-        System.out.println(max);
+        Configuration confChoisie = max.get(r.nextInt(max.size()));
 
-        for (Action a : max.actions) {
+        /*System.out.println("** Meilleur config = " + evalMax);
+        System.out.println(confChoisie);*/
+
+        for (Action a : confChoisie.actions) {
             setActionAJouer(convert(a, jeu.getTerrain()));
             Platform.runLater(t::jouer);
 
@@ -409,7 +423,27 @@ public class JoueurIA extends Joueur {
         }
     }
     private void jouerDifficile() {
-        jouerMoyen();
+        Configuration c = new Configuration(jeu.getTerrain());
+
+        System.out.println("Début minimax w/ alpha-beta cutoff...");
+        Configuration cMax;
+        cMax = max(c, 0, 2, Integer.MAX_VALUE, (getCouleur()+1)%2);
+        System.out.println(cMax);
+        System.out.println("End.");
+
+        int n = 0;
+        for (Action a : cMax.actions) {
+            if (n++ == 3) break;
+
+            setActionAJouer(convert(a, jeu.getTerrain()));
+            Platform.runLater(t::jouer);
+
+            try {
+                Thread.sleep(ATTENTE_ACTION);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
     }
 
     private Action convert(Action action, Terrain terrain) {
@@ -417,6 +451,68 @@ public class JoueurIA extends Joueur {
         Case ap = terrain.getCaseSur(action.getCaseApres().getPoint());
 
         return new Action(av, action.getAction(), ap, jeu.getTour());
+    }
+
+    private int evalConfig(Configuration c, int couleur) {
+        int eval;
+        int couleurAdv = (couleur + 1) % 2;
+
+        eval = c.eval(couleur);
+        eval -= c.eval(couleurAdv);
+        eval += c.attaque(couleur);
+        eval -= (c.attaque(couleurAdv) * 3);
+
+        return eval;
+    }
+    private Configuration min(Configuration config, int depth, int maxDepth, int valMin, int couleur) {
+        Configuration min = null, tmp;
+        int evalMin = Integer.MAX_VALUE, evalAct;
+        int couleurAct = (couleur+1)%2;
+
+        if (depth == maxDepth || config.gagne(couleurAct))
+            return config;
+
+        for (Configuration c : enumAll(config)) {
+            tmp = max(c, depth + 1, maxDepth, evalMin, couleurAct);
+            evalAct = evalConfig(tmp, couleurAct);
+
+            if (evalAct < evalMin) { // si on trouve une config avec une valeur inférieure
+                evalMin = evalAct;
+                min = tmp;
+            }
+
+            if (evalMin < valMin) { // cutoff si la val trouvée est inférieure au min
+                //System.out.println("Cutoff min");
+                return min;
+            }
+        }
+
+        return min;
+    }
+    private Configuration max(Configuration config, int depth, int maxDepth, int valMax, int couleur) {
+        Configuration max = null, tmp;
+        int evalMax = Integer.MIN_VALUE, evalAct;
+        int couleurAct = (couleur+1)%2;
+
+        if (depth == maxDepth || config.gagne(couleurAct))
+            return config;
+
+        for (Configuration c : enumAll(config)) {
+            tmp = min(c, depth + 1, maxDepth, evalMax, couleurAct);
+            evalAct = evalConfig(tmp, couleurAct);
+
+            if (evalAct > evalMax) {
+                evalMax = evalAct;
+                max = tmp;
+            }
+
+            if (valMax < evalMax) {
+                //System.out.println("Cutoff max");
+                return max;
+            }
+        }
+
+        return max;
     }
 
     private HashSet<Configuration> enumAll(Configuration config) {
@@ -457,7 +553,7 @@ public class JoueurIA extends Joueur {
             }
         }
 
-        System.out.println(H.size() + " configurations trouvées");
+        //System.out.println(H.size() + " configurations trouvées");
         /*for (Configuration c : H) {
             System.out.println(c);
         }*/

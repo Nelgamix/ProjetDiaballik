@@ -48,7 +48,9 @@ public class AffichageVue extends StackPane implements Observer {
         timerMouvement.setNode(timerVue);
         timerMouvement.setDuration(Duration.seconds(dureeTimer));
         timerMouvement.setInterpolator(Interpolator.LINEAR);
+        timerMouvement.setFromX(0);
         timerMouvement.setOnFinished(e -> {
+            System.out.println("AffichageVue.affichageControlleur.finTour()");
             affichageControleur.finTour();
             timerVue.setTranslateX(0);
         });
@@ -68,17 +70,19 @@ public class AffichageVue extends StackPane implements Observer {
         this.getStyleClass().clear();
         this.getStyleClass().add(jeu.getJoueurActuel().getCouleur() == Joueur.VERT ? "couleurJoueurVert" : "couleurJoueurRouge");
 
-        if (dureeTimer > 0 && (arg == SignalUpdate.TOUR || arg == SignalUpdate.INIT_DONE))
+        if (dureeTimer > 0 && (arg == SignalUpdate.TOUR || arg == SignalUpdate.INIT_DONE)) {
             lancerTimerVue();
+        }
     }
 
     private void lancerTimerVue() {
         if (this.getWidth() < 1) return;
 
-        timerMouvement.setByX(this.getWidth() * -1);
-
-        timerVue.setTranslateX(0);
-        timerMouvement.stop();
+        timerMouvement.setToX(this.getWidth() * -1);
         timerMouvement.playFromStart();
+    }
+
+    public void stopperTimerVue() {
+        timerMouvement.stop();
     }
 }
