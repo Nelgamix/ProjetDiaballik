@@ -13,6 +13,7 @@ import java.util.Observable;
 public class Jeu extends Observable {
     private Terrain terrain;
     private final Joueur[] joueurs;
+    public boolean running = false;
 
     private final ConfigurationPartie configurationPartie;
 
@@ -99,6 +100,8 @@ public class Jeu extends Observable {
             } else {
                 historique = new Historique(this);
             }
+
+            running = true;
         } catch (IOException ioe) {
             System.err.println("(Jeu.<init>) Erreur de lecture dans le flux d'entrée");
             throw ioe;
@@ -447,6 +450,10 @@ public class Jeu extends Observable {
             preparerJoueur();
 
         updateListeners(SignalUpdate.GLOBAL);
+    }
+
+    public boolean isRunning() {
+        return running;
     }
 
     public boolean pionAllie(Pion pion) {

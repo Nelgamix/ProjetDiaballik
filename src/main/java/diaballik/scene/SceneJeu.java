@@ -41,6 +41,7 @@ public class SceneJeu {
 
     public void retourMenu() {
         affichageControleur.getAffichageVue().stopperTimerVue();
+        jeu.running = false;
         diaballik.showSceneMenu(true);
     }
 

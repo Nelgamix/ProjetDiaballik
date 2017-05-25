@@ -40,7 +40,8 @@ public class SceneMenu {
         newGameNetwork.setOnAction(e -> diaballik.getSceneJeu().dialogNouveauJeuReseau());
 
         Button regles = new Button("Règles");
-        regles.setOnAction(e -> diaballik.getHostServices().showDocument("http://inf362.forge.imag.fr/Projet/Regles/diaballik"));
+        //regles.setOnAction(e -> diaballik.getHostServices().showDocument("http://inf362.forge.imag.fr/Projet/Regles/diaballik"));
+        regles.setOnAction(e -> Dialogs.montrerRegles());
 
         Button credits = new Button("Crédits");
         credits.setOnAction(e -> Dialogs.montrerCredits());

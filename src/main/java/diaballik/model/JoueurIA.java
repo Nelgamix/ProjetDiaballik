@@ -324,7 +324,7 @@ public class JoueurIA extends Joueur {
 
     @Override
     public boolean preparerJouer() {
-        if (!sJouerFacile.isRunning())
+        if (!sJouerFacile.isRunning() && !sJouerMoyen.isRunning() && !sJouerDifficile.isRunning() && !sFaire.isRunning() && jeu.isRunning())
             jouerIA();
         else
             return false;
@@ -341,7 +341,6 @@ public class JoueurIA extends Joueur {
                 sJouerMoyen.restart();
                 break;
             case DIFFICULTE_DIFFICILE:
-                // minimax
                 sJouerDifficile.restart();
                 break;
             default:
@@ -385,7 +384,7 @@ public class JoueurIA extends Joueur {
     private void jouerMoyen() {
         Configuration c = new Configuration(jeu.getTerrain());
 
-        HashSet<Configuration> cs = enumAll(c);
+        HashSet<Configuration> cs = enumAll(c, getCouleur());
         ArrayList<Configuration> max = new ArrayList<>();
         int evalMax = Integer.MIN_VALUE;
         int evalAct;
@@ -397,7 +396,7 @@ public class JoueurIA extends Joueur {
                 break;
             }
 
-            evalAct = evalConfig(ct, getCouleur());
+            evalAct = evalConfig(ct);
             if (evalAct > evalMax) {
                 max.clear();
                 max.add(ct);
@@ -431,11 +430,13 @@ public class JoueurIA extends Joueur {
         System.out.println(cMax);
         System.out.println("End.");
 
-        int n = 0;
+        Action converted;
         for (Action a : cMax.actions) {
-            if (n++ == 3) break;
+            converted = convert(a, jeu.getTerrain());
 
-            setActionAJouer(convert(a, jeu.getTerrain()));
+            if (converted.getCaseAvant().getPion().getCouleur() != getCouleur()) break;
+
+            setActionAJouer(converted);
             Platform.runLater(t::jouer);
 
             try {
@@ -453,8 +454,9 @@ public class JoueurIA extends Joueur {
         return new Action(av, action.getAction(), ap, jeu.getTour());
     }
 
-    private int evalConfig(Configuration c, int couleur) {
+    private int evalConfig(Configuration c) {
         int eval;
+        int couleur = getCouleur();
         int couleurAdv = (couleur + 1) % 2;
 
         eval = c.eval(couleur);
@@ -472,9 +474,9 @@ public class JoueurIA extends Joueur {
         if (depth == maxDepth || config.gagne(couleurAct))
             return config;
 
-        for (Configuration c : enumAll(config)) {
+        for (Configuration c : enumAll(config, couleurAct)) {
             tmp = max(c, depth + 1, maxDepth, evalMin, couleurAct);
-            evalAct = evalConfig(tmp, couleurAct);
+            evalAct = evalConfig(tmp);
 
             if (evalAct < evalMin) { // si on trouve une config avec une valeur inférieure
                 evalMin = evalAct;
@@ -497,9 +499,9 @@ public class JoueurIA extends Joueur {
         if (depth == maxDepth || config.gagne(couleurAct))
             return config;
 
-        for (Configuration c : enumAll(config)) {
+        for (Configuration c : enumAll(config, couleurAct)) {
             tmp = min(c, depth + 1, maxDepth, evalMax, couleurAct);
-            evalAct = evalConfig(tmp, couleurAct);
+            evalAct = evalConfig(tmp);
 
             if (evalAct > evalMax) {
                 evalMax = evalAct;
@@ -515,41 +517,41 @@ public class JoueurIA extends Joueur {
         return max;
     }
 
-    private HashSet<Configuration> enumAll(Configuration config) {
+    private HashSet<Configuration> enumAll(Configuration config, int couleur) {
         HashSet<Configuration> H = new HashSet<>();
         H.add(config);
 
         // Déplacement en 1
-        for (Configuration c : enumDeplacements(config)) {
+        for (Configuration c : enumDeplacements(config, couleur)) {
             H.add(c);
 
             // Passe en 2
-            for (Configuration c2 : enumPasses(c)) {
+            for (Configuration c2 : enumPasses(c, couleur)) {
                 H.add(c2);
 
                 // Déplacement en 3
-                H.addAll(enumDeplacements(c2));
+                H.addAll(enumDeplacements(c2, couleur));
             }
 
             // Déplacement en 2
-            for (Configuration c2 : enumDeplacements(c)) {
+            for (Configuration c2 : enumDeplacements(c, couleur)) {
                 H.add(c2);
 
                 // Passe en 3
-                H.addAll(enumPasses(c2));
+                H.addAll(enumPasses(c2, couleur));
             }
         }
 
         // Passe en 1
-        for (Configuration c : enumPasses(config)) {
+        for (Configuration c : enumPasses(config, couleur)) {
             H.add(c);
 
             // Déplacement en 2
-            for (Configuration c2 : enumDeplacements(c)) {
+            for (Configuration c2 : enumDeplacements(c, couleur)) {
                 H.add(c2);
 
                 // Déplacement en 3
-                H.addAll(enumDeplacements(c2));
+                H.addAll(enumDeplacements(c2, couleur));
             }
         }
 
@@ -560,12 +562,12 @@ public class JoueurIA extends Joueur {
 
         return H;
     }
-    private ArrayList<Configuration> enumDeplacements(Configuration config) {
+    private ArrayList<Configuration> enumDeplacements(Configuration config, int couleur) {
         Terrain terrain = config.terrain;
         ArrayList<Configuration> tmp = new ArrayList<>();
 
         Configuration c;
-        for (Pion p : terrain.getPionsDe(getCouleur())) {
+        for (Pion p : terrain.getPionsDe(couleur)) {
             if (!p.aLaBalle()) {
                 for (Case m : terrain.getDeplacementsPossibles(p)) {
                     c = new Configuration(config);
@@ -578,12 +580,12 @@ public class JoueurIA extends Joueur {
 
         return tmp;
     }
-    private ArrayList<Configuration> enumPasses(Configuration config) {
+    private ArrayList<Configuration> enumPasses(Configuration config, int couleur) {
         Terrain terrain = config.terrain;
         ArrayList<Configuration> tmp = new ArrayList<>();
 
         Configuration c;
-        for (Pion p : terrain.getPionsDe(getCouleur())) {
+        for (Pion p : terrain.getPionsDe(couleur)) {
             if (p.aLaBalle()) {
                 for (Pion p2 : terrain.getPassesPossibles(p)) {
                     c = new Configuration(config);

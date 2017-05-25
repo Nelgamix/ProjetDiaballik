@@ -13,6 +13,7 @@ import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.control.*;
+import javafx.scene.image.ImageView;
 import javafx.scene.layout.*;
 import javafx.scene.text.Font;
 import javafx.util.Pair;
@@ -355,6 +356,21 @@ public class Dialogs {
         dialog.getDialogPane().setPrefSize(640, 440);
 
         return dialog.showAndWait();
+    }
+
+    public static void montrerRegles() {
+        Dialog<Void> d = new Dialog<>();
+        d.getDialogPane().getButtonTypes().add(ButtonType.CLOSE);
+
+        HBox images = new HBox(10);
+
+        ImageView img1 = new ImageView(Dialogs.class.getResource(Diaballik.DOSSIER_IMAGES + "/regles1.png").toExternalForm());
+        ImageView img2 = new ImageView(Dialogs.class.getResource(Diaballik.DOSSIER_IMAGES + "/regles2.png").toExternalForm());
+
+        images.getChildren().addAll(img1, img2);
+
+        d.getDialogPane().setContent(images);
+        d.showAndWait();
     }
 
     public static void montrerFinJeu(Joueur gagnant, int victoireType) {
