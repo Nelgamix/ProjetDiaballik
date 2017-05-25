@@ -14,11 +14,13 @@ import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.control.*;
 import javafx.scene.image.ImageView;
+import javafx.scene.input.KeyCode;
 import javafx.scene.layout.*;
 import javafx.scene.text.Font;
 import javafx.util.Pair;
 import javafx.util.StringConverter;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Optional;
@@ -304,6 +306,7 @@ public class Dialogs {
         infosSave.add(ta, 1, 3);
 
         // Partie de gauche (liste de saves)
+        BorderPane bp = new BorderPane();
         ListView<String> filesView = new ListView<>(obs);
         filesView.setMaxWidth(Double.MAX_VALUE);
         filesView.setMaxHeight(Double.MAX_VALUE);
@@ -311,6 +314,16 @@ public class Dialogs {
             if (e.getClickCount() == 2) {
                 dialog.setResult(filesView.getSelectionModel().getSelectedItem() + Diaballik.EXTENSION_SAUVEGARDE);
                 dialog.close();
+            }
+        });
+        filesView.setOnKeyPressed(e -> {
+            String item = filesView.getSelectionModel().getSelectedItem();
+            if (e.getCode() == KeyCode.DELETE && item != null) {
+                if (supprimerFichier(item)) {
+                    obs.clear();
+                    obs.setAll(Utils.getFichiersDansDossier(directory, Diaballik.EXTENSION_SAUVEGARDE, false));
+                    if (obs.size() < 1) dialog.close();
+                }
             }
         });
         filesView.getSelectionModel().selectedItemProperty().addListener(e -> {
@@ -328,10 +341,26 @@ public class Dialogs {
         });
         filesView.getSelectionModel().selectFirst();
 
+        bp.setCenter(filesView);
+        Button del = new Button("Supprimer");
+        del.setMaxWidth(Double.MAX_VALUE);
+        BorderPane.setMargin(del, new Insets(10, 0, 0, 0));
+        del.setOnAction(e -> {
+            String item = filesView.getSelectionModel().getSelectedItem();
+            if (item != null) {
+                if (supprimerFichier(item)) {
+                    obs.clear();
+                    obs.setAll(Utils.getFichiersDansDossier(directory, Diaballik.EXTENSION_SAUVEGARDE, false));
+                    if (obs.size() < 1) dialog.close();
+                }
+            }
+        });
+        bp.setBottom(del);
+
         // setup content
         content.setId("dialogLoadName");
         content.add(new Label("Sauvegardes"), 0, 0);
-        content.add(filesView, 0, 1);
+        content.add(bp, 0, 1);
         content.add(new Label("Sauvegarde sélectionnée"), 1, 0);
         content.add(infosSave, 1, 1);
 
@@ -356,6 +385,17 @@ public class Dialogs {
         dialog.getDialogPane().setPrefSize(640, 440);
 
         return dialog.showAndWait();
+    }
+
+    private boolean supprimerFichier(String nom) {
+        File f = new File(Diaballik.DOSSIER_SAUVEGARDES + "/" + nom + Diaballik.EXTENSION_SAUVEGARDE);
+        System.out.println("Suppression de " + f.getAbsolutePath());
+        if (f.exists() && f.delete()) {
+            return true;
+        } else {
+            System.err.println("(Dialogs.getDialogChoisirFichier) Erreur de suppression de sauvegarde");
+            return false;
+        }
     }
 
     public static void montrerRegles() {

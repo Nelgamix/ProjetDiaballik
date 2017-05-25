@@ -20,6 +20,9 @@ public class ActionsControleur {
     public Jeu getJeu() {
         return sceneJeu.getJeu();
     }
+    public SceneJeu getSceneJeu() {
+        return sceneJeu;
+    }
 
     public ActionsVue getActionsVue() {
         return actionsVue;

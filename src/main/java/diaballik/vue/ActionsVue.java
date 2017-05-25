@@ -204,7 +204,10 @@ public class ActionsVue extends BorderPane implements Observer {
         popOverSauvegarde = new PopOver();
         popOverSauvegarde.setDetachable(false);
         popOverSauvegarde.setArrowLocation(PopOver.ArrowLocation.TOP_CENTER);
-        popOverSauvegarde.setOnHidden(e -> popOverSauvegarde.setContentNode(contentSave));
+        popOverSauvegarde.setOnHidden(e -> {
+            popOverSauvegarde.setContentNode(contentSave);
+            actionsControleur.getSceneJeu().getAffichageControleur().getAffichageVue().requestFocus();
+        });
 
         // Déclarations
         // contentSave
@@ -302,6 +305,7 @@ public class ActionsVue extends BorderPane implements Observer {
             parametre2.setSelected(cp.isAidePasse());
             parametre3.setSelected(cp.isAutoSelectionPion());
             parametre4.setSelected(cp.isNotationsCase());
+            actionsControleur.getSceneJeu().getAffichageControleur().getAffichageVue().requestFocus();
         });
 
         BorderPane content = new BorderPane();
