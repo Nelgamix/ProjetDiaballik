@@ -30,6 +30,8 @@ public class Jeu extends Observable {
     public final static int VICTOIRE_NORMALE = 1;
     public final static int VICTOIRE_ANTIJEU = 2;
 
+    private final static int NB_PIONS_ANTIJEU = 3;
+
     private final static String VERSION_SAUVEGARDE = "0.1.1";
 
     public Jeu(SceneJeu sceneJeu, ConfigurationPartie configurationPartie) throws OutdatedSave, IOException {
@@ -164,7 +166,7 @@ public class Jeu extends Observable {
         Pion[] tab = new Pion[7]; // on se souvient de la ligne des pions
         for (Pion p : getTerrain().getPions()[getJoueurAdverse().getCouleur()]) { // pour chaque pion du joueur adversaire
             if (tab[p.getPosition().getPoint().getX()] != null) {
-                return "étape 1 non valide (pions adverses ne prennent pas la largeur du terrain)";
+                return "Etape 1 non valide\nRaison: les pions adverses ne prennent pas la largeur du terrain";
             } else {
                 tab[p.getPosition().getPoint().getX()] = p;
             }
@@ -175,7 +177,7 @@ public class Jeu extends Observable {
         Pion p1 = tab[0], p2 = tab[i];
         while (++i < 7) {
             if (Math.abs(p1.getPosition().getPoint().getY() - p2.getPosition().getPoint().getY()) > 1) {
-                return "étape 2 non valide (pions adverses non collés)";
+                return "Etape 2 non valide\nRaison: pions adverses non collés";
             }
 
             p1 = p2;
@@ -189,7 +191,7 @@ public class Jeu extends Observable {
         for (Pion p : getTerrain().getPions()[getJoueurActuel().getCouleur()]) { // pour chaque pion du joueur actuel
             po = p.getPosition().getPoint();
 
-            if (n >= 3) break;
+            if (n >= NB_PIONS_ANTIJEU) break;
 
             // vérif case de gauche
             c = getTerrain().getCaseSur(new Point(po.getX() - 1, po.getY()));
@@ -219,7 +221,7 @@ public class Jeu extends Observable {
             }
         }
 
-        if (n >= 3) {
+        if (n >= NB_PIONS_ANTIJEU) {
             if (getConfigurationPartie().estMultijoueur()) {
                 Action aj = new Action(Action.ANTIJEU);
                 sceneJeu.getReseau().envoyerAction(aj);
@@ -229,7 +231,7 @@ public class Jeu extends Observable {
 
             return "";
         } else {
-            return "étape 3 non valide (pions alliés collés à la ligne adverse = " + n + "/3)";
+            return "Etape 3 non valide\nRaison: il manque des pions alliés collés à la ligne adverse\n\tIl y en a actuellement " + n + " / " + NB_PIONS_ANTIJEU;
         }
     }
 

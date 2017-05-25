@@ -27,7 +27,7 @@ public class CaseVue extends StackPane implements Observer {
     public final static int HAUTEUR = 80;
     public final static int LARGEUR = 80;
 
-    public CaseVue(TerrainVue terrainVue, Case c) {
+    CaseVue(TerrainVue terrainVue, Case c) {
         super();
 
         this.terrainVue = terrainVue;
@@ -53,7 +53,7 @@ public class CaseVue extends StackPane implements Observer {
         update(terrainVue.getTerrainControleur().getJeu().getConfigurationPartie(), SignalUpdate.INIT);
     }
 
-    public void setPionVue(PionVue pionVue) {
+    void setPionVue(PionVue pionVue) {
         if (pionVue != null) {
             this.getChildren().add(pionVue);
             if (survol)
@@ -64,7 +64,7 @@ public class CaseVue extends StackPane implements Observer {
         this.pionVue = pionVue;
     }
 
-    public void reinitialiserEtat() {
+    void reinitialiserEtat() {
         this.setMarque(false);
         this.survol = false;
         updateStyleClass();
@@ -123,7 +123,7 @@ public class CaseVue extends StackPane implements Observer {
             this.getStyleClass().add("couleurCaseImpair");
     }
 
-    public void setMontrerNumCase(boolean in) {
+    private void setMontrerNumCase(boolean in) {
         if (in && !this.getChildren().contains(notationCase)) {
             this.getChildren().add(notationCase);
         } else if (!in && this.getChildren().contains(notationCase)) {
@@ -136,6 +136,10 @@ public class CaseVue extends StackPane implements Observer {
     }
 
     public void setMarque(boolean marque) {
+        if (getPionVue() != null) {
+            getPionVue().setMarque(marque);
+        }
+
         if (marque != this.marque) {
             this.marque = marque;
             this.toFront();

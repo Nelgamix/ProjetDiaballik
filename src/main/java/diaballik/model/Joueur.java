@@ -48,7 +48,7 @@ public abstract class Joueur {
                 this.setNom(parts[0]);
                 this.setType(Integer.parseInt(parts[1]));
             }
-        } catch (IOException ioe) {}
+        } catch (IOException ignored) {}
     }
 
     // Nom
@@ -77,7 +77,7 @@ public abstract class Joueur {
         return this.deplacementsRestants > 0;
     }
     // Le joueur peut il FAIRE UNE PASSE? (pas passer le tour)
-    public boolean peutPasser() {
+    boolean peutPasser() {
         return this.passesRestantes > 0;
     }
 
@@ -160,7 +160,7 @@ public abstract class Joueur {
                 System.err.println("Action non reconnue");
         }
     }
-    void plusAction(int action) {
+    private void plusAction(int action) {
         switch (action) {
             case Action.PASSE:
                 this.passesRestantes++;

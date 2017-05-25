@@ -3,7 +3,7 @@ package diaballik.model;
 import java.io.BufferedReader;
 
 public class JoueurLocal extends Joueur {
-    public JoueurLocal(Jeu jeu, int couleur) {
+    JoueurLocal(Jeu jeu, int couleur) {
         super(jeu, couleur);
     }
     public JoueurLocal(int couleur, BufferedReader br) {

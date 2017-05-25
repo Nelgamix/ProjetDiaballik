@@ -22,7 +22,7 @@ public class Point implements Serializable {
         this.y = Integer.parseInt(parts[1]);
     }
 
-    public String getSaveString() {
+    String getSaveString() {
         return this.getX() + ";" + this.getY();
     }
 
@@ -50,8 +50,7 @@ public class Point implements Serializable {
 
         Point point = (Point) o;
 
-        if (x != point.x) return false;
-        return y == point.y;
+        return x == point.x && y == point.y;
     }
 
     @Override
@@ -61,7 +60,7 @@ public class Point implements Serializable {
         return result;
     }
 
-    public boolean estDansTerrain() {
+    boolean estDansTerrain() {
         return x >= 0 && y >= 0 && x < Terrain.LARGEUR && y < Terrain.HAUTEUR;
     }
 }

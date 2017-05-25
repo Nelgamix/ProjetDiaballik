@@ -1,7 +1,7 @@
 package diaballik.model;
 
 public class JoueurReseau extends Joueur {
-    public final static int TYPE_RESEAU = 4;
+    final static int TYPE_RESEAU = 4;
 
     JoueurReseau(Jeu jeu, int couleur) {
         super(jeu, couleur);

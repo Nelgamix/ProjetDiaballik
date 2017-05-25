@@ -30,7 +30,7 @@ public class Dialogs {
         alert.setContentText(message);
 
         Optional<ButtonType> result = alert.showAndWait();
-        return result.get() == ButtonType.OK;
+        return result.filter(buttonType -> buttonType == ButtonType.OK).isPresent();
     }
 
     public static Optional<ConfigurationPartie> montrerDialogNouvellePartie(ConfigurationPartie cp) {
@@ -259,7 +259,7 @@ public class Dialogs {
         ButtonType boutonAnnulerType = new ButtonType("Annuler", ButtonBar.ButtonData.CANCEL_CLOSE);
         dialog.getDialogPane().getButtonTypes().addAll(boutonOuvrirType, boutonAnnulerType);
         Node boutonJouer = dialog.getDialogPane().lookupButton(boutonOuvrirType);
-        Node boutonAnnuler = dialog.getDialogPane().lookupButton(boutonAnnulerType);
+        //Node boutonAnnuler = dialog.getDialogPane().lookupButton(boutonAnnulerType);
         boutonJouer.setDisable(true);
 
         BorderPane contentWrapper = new BorderPane();

@@ -162,7 +162,7 @@ public class ConfigurationTerrain {
     void deplacement() {
         deplacement(actions.get(actions.size() - 1));
     }
-    void deplacement(Action action) {
+    private void deplacement(Action action) {
         Pion p = action.getCaseAvant().getPion();
 
         p.deplacer(action.getCaseApres());
@@ -171,7 +171,7 @@ public class ConfigurationTerrain {
     void passe() {
         passe(actions.get(actions.size() - 1));
     }
-    void passe(Action action) {
+    private void passe(Action action) {
         Pion p = action.getCaseAvant().getPion();
         Pion p2 = action.getCaseApres().getPion();
 
@@ -214,7 +214,7 @@ public class ConfigurationTerrain {
 
     @Override
     public boolean equals(Object obj) {
-        return terrain.equals(((ConfigurationTerrain)obj).terrain);
+        return obj instanceof ConfigurationTerrain && terrain.equals(((ConfigurationTerrain) obj).terrain);
     }
 
     @Override

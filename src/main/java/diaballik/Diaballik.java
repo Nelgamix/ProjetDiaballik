@@ -21,7 +21,7 @@ public class Diaballik extends Application {
     public final static String CSS_DIALOG = DOSSIER_CSS + "/DiaballikDialogs.css";
     public final static String CSS_POPOVER = DOSSIER_CSS + "/DiaballikPopover.css";
 
-    public final static String NOM_JEU = "Diaballik";
+    private final static String NOM_JEU = "Diaballik";
 
     private SceneJeu sceneJeu;
     private SceneMenu sceneMenu;
@@ -31,11 +31,12 @@ public class Diaballik extends Application {
         sizeStage();
     }
     public void showSceneMenu() {
-        stage.setScene(sceneMenu.getScene());
+        showSceneMenu(false);
     }
     public void showSceneMenu(boolean fromJeu) {
-        showSceneMenu();
-        sizeStage();
+        stage.setScene(sceneMenu.getScene());
+        if (fromJeu)
+            sizeStage();
     }
 
     private void sizeStage() {

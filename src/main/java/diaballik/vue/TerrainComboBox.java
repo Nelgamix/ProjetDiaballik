@@ -7,7 +7,7 @@ import javafx.util.StringConverter;
 
 import java.util.Map;
 
-public class TerrainComboBox extends ComboBox<Map.Entry<String, String>> {
+class TerrainComboBox extends ComboBox<Map.Entry<String, String>> {
     private Map<String, String> mapTerrainsDispo;
 
     TerrainComboBox() {
@@ -57,11 +57,11 @@ public class TerrainComboBox extends ComboBox<Map.Entry<String, String>> {
         });
     }
 
-    public String getTerrainSelectionnePath() {
+    String getTerrainSelectionnePath() {
         return getSelectionModel().getSelectedItem().getKey();
     }
 
-    public void selectionTerrain(String terrain) {
+    void selectionTerrain(String terrain) {
         if (terrain.equals("")) {
             getSelectionModel().selectFirst();
             return;

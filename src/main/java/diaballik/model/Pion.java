@@ -27,7 +27,7 @@ public class Pion extends Observable {
         return position;
     }
 
-    public void deplacer(Case nouvellePosition) {
+    void deplacer(Case nouvellePosition) {
         if (nouvellePosition.getPion() != null) { // prérequis: la case où on va doit être libre
             System.err.println("Pion (deplacer): Case destination non libre");
             return;
@@ -47,7 +47,7 @@ public class Pion extends Observable {
         //updateListeneners(Jeu.CHANGEMENT_POSITION);
     }
 
-    public boolean pionAllie(Pion p) {
+    boolean pionAllie(Pion p) {
         return p.couleur == this.couleur;
     }
 
@@ -58,7 +58,7 @@ public class Pion extends Observable {
 
     @Override
     public boolean equals(Object obj) {
-        if (obj == null) return false;
+        if (obj == null || !(obj instanceof Pion)) return false;
 
         Pion p = (Pion) obj;
 

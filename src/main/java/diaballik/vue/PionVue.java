@@ -194,12 +194,12 @@ public class PionVue extends Circle implements Observer {
     }
 
     // Actif / inactif (quand les pions ne sont pas jouables)
-    public void desactiver() {
+    void desactiver() {
         this.actif = false;
         reinitialiserStatut();
         update(this.pion, SignalUpdate.GLOBAL);
     }
-    public void activer() {
+    void activer() {
         this.actif = true;
         update(this.pion, SignalUpdate.GLOBAL);
     }
@@ -216,10 +216,10 @@ public class PionVue extends Circle implements Observer {
     }
 
     // GETTERS booleens
-    public boolean isMarque() {
+    private boolean isMarque() {
         return marque;
     }
-    public boolean isSelectionne() {
+    private boolean isSelectionne() {
         return selectionne;
     }
 

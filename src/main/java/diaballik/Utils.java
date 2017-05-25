@@ -28,7 +28,7 @@ public class Utils {
         if (estSauvegarde) {
             try {
                 br = new BufferedReader(new FileReader(fichier));
-            } catch (IOException e) {}
+            } catch (IOException ignored) {}
         } else {
             final File jarFile = new File(Utils.class.getProtectionDomain().getCodeSource().getLocation().getPath());
 
@@ -164,14 +164,14 @@ public class Utils {
                     whatismyip.openStream()));
 
             return in.readLine();
-        } catch (Exception e) {}
+        } catch (Exception ignored) {}
 
         return "inconnue";
     }
     public static String getInternalIp() {
         try {
             return InetAddress.getLocalHost().getHostAddress();
-        } catch (UnknownHostException uhe) {}
+        } catch (UnknownHostException ignored) {}
 
         return "inconnue";
     }

@@ -5,6 +5,7 @@ import diaballik.scene.SceneJeu;
 import diaballik.vue.CaseVue;
 import diaballik.vue.PionVue;
 import diaballik.vue.TerrainVue;
+import javafx.scene.control.Alert;
 
 import java.util.ArrayList;
 
@@ -95,6 +96,40 @@ public class TerrainControleur {
         pionVue.setSelectionne(true);
         this.pionSelectionne = pionVue;
         calculActionsPossibles(pionVue.getPion());
+    }
+
+    void montrerMeilleurCoup() {
+        Joueur ja = getJeu().getJoueurActuel();
+        ConfigurationTerrain act = new ConfigurationTerrain(getJeu().getTerrain());
+        ConfigurationTerrain ct = IA.meilleurTour(act, ja.getCouleur(), ja.getDeplacementsRestants(), ja.getPassesRestantes());
+
+        if (ct.getActions().size() > 0) {
+            finSelection();
+
+            Action a = ct.getActions().get(0);
+
+            this.modeActionDeplacement = (a.getAction() == Action.PASSE);
+
+            PionVue pv = getTerrainVue().getCaseSur(a.getCaseAvant().getPoint()).getPionVue();
+            pv.setSelectionne(true);
+            this.pionSelectionne = pv;
+
+            if (!this.modeActionDeplacement) {
+                CaseVue cv = getTerrainVue().getCaseSur(ct.getActions().get(0).getCaseApres().getPoint());
+                casesMarquees.add(cv);
+                cv.setMarque(true);
+            } else {
+                PionVue pv2 = getTerrainVue().getCaseSur(a.getCaseApres().getPoint()).getPionVue();
+                pionsMarques.add(pv2);
+                pv2.setMarque(true);
+            }
+        } else {
+            Alert a = new Alert(Alert.AlertType.INFORMATION);
+            a.setTitle("Aucune action restante");
+            a.setHeaderText(null);
+            a.setContentText("Il ne reste aucune action optimale à effectuer.\nVous pouvez passer votre tour, ou défaire votre dernière action.");
+            a.showAndWait();
+        }
     }
 
     private void calculActionsPossibles(Pion pionClique) {

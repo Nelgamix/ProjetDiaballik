@@ -1,10 +1,7 @@
 package diaballik.controleur;
 
 import diaballik.Diaballik;
-import diaballik.model.ConfigurationTerrain;
-import diaballik.model.IA;
 import diaballik.model.Jeu;
-import diaballik.model.Joueur;
 import diaballik.scene.SceneJeu;
 import diaballik.vue.ActionsVue;
 import diaballik.vue.Dialogs;
@@ -40,7 +37,10 @@ public class ActionsControleur {
     public void actionSauvegarderJeu(String filename) {
         final File saveDir = new File(Diaballik.DOSSIER_SAUVEGARDES);
         if (!saveDir.exists())
-            saveDir.mkdir();
+            if (saveDir.mkdir()) {
+                System.err.println("(ActionControleur.actionSauvegarderJeu) Impossible de créer le répertoire de sauvegarde.");
+                return;
+            }
 
         if (!filename.endsWith(Diaballik.EXTENSION_SAUVEGARDE))
             filename += Diaballik.EXTENSION_SAUVEGARDE;
@@ -63,13 +63,6 @@ public class ActionsControleur {
         getJeu().refaire();
     }
     public void actionMeilleurCoup() {
-        Joueur ja = getJeu().getJoueurActuel();
-        ConfigurationTerrain act = new ConfigurationTerrain(getJeu().getTerrain());
-        ConfigurationTerrain ct = IA.meilleurTour(act, ja.getCouleur(), ja.getDeplacementsRestants(), ja.getPassesRestantes());
-
-        if (ct.getActions().size() > 0)
-            System.out.println("La meilleure action est " + ct.getActions().get(0));
-        else
-            System.out.println("Aucune action restante, passer le tour.");
+        sceneJeu.getTerrainControleur().montrerMeilleurCoup();
     }
 }

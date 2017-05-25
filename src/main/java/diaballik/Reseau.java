@@ -74,7 +74,7 @@ public class Reseau {
     public Tache getTacheActuelle() {
         return tacheActuelle;
     }
-    public void setTacheActuelle(Tache tacheActuelle) {
+    private void setTacheActuelle(Tache tacheActuelle) {
         this.tacheActuelle = tacheActuelle;
     }
 
@@ -91,7 +91,7 @@ public class Reseau {
                 setTacheActuelle(Tache.IDLE);
                 Platform.runLater(d::close);
                 Platform.runLater(() -> sceneJeu.getReseau().preconfigServeur(nom, terrain));
-            } catch (IOException io) {}
+            } catch (IOException ignored) {}
         });
     }
     public void client(String nom, String remote) {
@@ -106,7 +106,7 @@ public class Reseau {
                 setTacheActuelle(Tache.IDLE);
                 Platform.runLater(d::close);
                 Platform.runLater(() -> sceneJeu.getReseau().preconfigClient(nom));
-            } catch (IOException io) {}
+            } catch (IOException ignored) {}
         });
     }
 
@@ -136,7 +136,7 @@ public class Reseau {
         });
     }
 
-    public void preconfigServeur(String nom, String terrain) {
+    private void preconfigServeur(String nom, String terrain) {
         reseauThread.execute(() -> {
             try {
                 String nomClient = (String)ois.readObject();
@@ -151,7 +151,7 @@ public class Reseau {
             }
         });
     }
-    public void preconfigClient(String nom) {
+    private void preconfigClient(String nom) {
         reseauThread.execute(() -> {
             try {
                 oos.reset();

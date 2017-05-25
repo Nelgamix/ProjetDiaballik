@@ -16,7 +16,7 @@ public class JoueurIA extends Joueur {
     public final static int DIFFICULTE_MOYEN = 2;
     public final static int DIFFICULTE_DIFFICILE = 3;
 
-    public final static int ATTENTE_ACTION = 1000;
+    private final static int ATTENTE_ACTION = 1000;
 
     private boolean defaire;
 
@@ -96,7 +96,7 @@ public class JoueurIA extends Joueur {
         }
     };
 
-    public JoueurIA(Jeu jeu, int couleur, int difficulte) {
+    JoueurIA(Jeu jeu, int couleur, int difficulte) {
         super(jeu, couleur);
         t = this;
         this.setType(difficulte);
@@ -115,11 +115,11 @@ public class JoueurIA extends Joueur {
         }
     }
 
-    public void refaire() {
+    void refaire() {
         defaire = false;
         sFaire.restart();
     }
-    public void defaire() {
+    void defaire() {
         defaire = true;
         sFaire.restart();
     }

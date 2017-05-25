@@ -45,7 +45,7 @@ public class SceneJeu {
         diaballik.showSceneMenu(true);
     }
 
-    public void initShow(ConfigurationPartie cp) {
+    private void initShow(ConfigurationPartie cp) {
         try {
             jeu = new Jeu(this, cp);
         } catch (OutdatedSave os) {
@@ -90,25 +90,25 @@ public class SceneJeu {
         affichageControleur.getAffichageVue().update(null, SignalUpdate.INIT_DONE);
     }
 
-    public void dialogNouveauJeu() {
+    void dialogNouveauJeu() {
         Optional<ConfigurationPartie> cp = Dialogs.montrerDialogNouvellePartie(getJeu() != null ? getJeu().getConfigurationPartie() : null);
         cp.ifPresent(this::nouveauJeu);
     }
-    public void nouveauJeu(ConfigurationPartie cp) {
+    private void nouveauJeu(ConfigurationPartie cp) {
         initShow(cp);
     }
 
-    public void dialogChargerJeu() {
+    void dialogChargerJeu() {
         Optional<String> ofilename = Dialogs.montrerDialogChoisirFichier(Diaballik.DOSSIER_SAUVEGARDES);
         if (ofilename != null)
             ofilename.ifPresent(s -> chargerJeu(Diaballik.DOSSIER_SAUVEGARDES + "/" + s));
     }
-    public void chargerJeu(String fichier) {
+    private void chargerJeu(String fichier) {
         ConfigurationPartie cp = new ConfigurationPartie(fichier, true);
         initShow(cp);
     }
 
-    public void dialogNouveauJeuReseau() {
+    void dialogNouveauJeuReseau() {
         if (reseau == null)
             reseau = new Reseau(this);
         else if (reseau.isRunning()) {

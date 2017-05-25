@@ -38,7 +38,7 @@ public class Historique {
     }
 
     // écrase toutes les actions inutiles à la fin du tour lorsqu'on a rollback
-    public void ecraserInutile() {
+    void ecraserInutile() {
         ArrayList<Action> a = getActions(jeu.getTour());
         if (a == null) return;
         int i = jeu.getNumAction();
@@ -79,7 +79,7 @@ public class Historique {
         return getActions(tour).get(num - 1);
     }
 
-    public ArrayList<Action> getActions(int tour) {
+    ArrayList<Action> getActions(int tour) {
         if (tour < 1 || this.tours.size() < tour) return null;
         return tours.get(tour - 1);
     }
@@ -124,7 +124,7 @@ public class Historique {
         ArrayList<Action> a = getActions(tour);
         return a == null ? 0 : a.size();
     }
-    int nombreActionsTotal() {
+    private int nombreActionsTotal() {
         int n = 0;
         for (ArrayList<Action> aa : this.tours)
             n += aa.size();

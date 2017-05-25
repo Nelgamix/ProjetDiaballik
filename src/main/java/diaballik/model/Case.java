@@ -37,12 +37,12 @@ public class Case extends Observable implements Serializable {
 
     @Override
     public boolean equals(Object obj) {
+        if (!(obj instanceof Case))
+            return false;
+
         Case toCmp = (Case) obj;
 
-        if (getPion() == null && toCmp.getPion() == null)
-            return true;
-        else
-            return getPion() != null && toCmp.getPion() != null && getPion().equals(toCmp.getPion());
+        return getPion() == null && toCmp.getPion() == null || getPion() != null && toCmp.getPion() != null && getPion().equals(toCmp.getPion());
     }
 
     @Override

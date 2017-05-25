@@ -17,7 +17,6 @@ import java.util.Observer;
 
 public class TerrainVue extends StackPane implements Observer {
     private final TerrainControleur terrainControleur;
-    private final Terrain terrain;
 
     private final FadeTransition ft;
 
@@ -50,7 +49,7 @@ public class TerrainVue extends StackPane implements Observer {
         ft.setNode(tourAdverse);
 
         this.terrainControleur = terrainControleur;
-        this.terrain = terrainControleur.getJeu().getTerrain();
+        Terrain terrain = terrainControleur.getJeu().getTerrain();
         terrainControleur.getJeu().addObserver(this);
         root.setId("terrainView");
         root.setPrefSize(Terrain.LARGEUR * 80, Terrain.LARGEUR * 80);
@@ -89,7 +88,7 @@ public class TerrainVue extends StackPane implements Observer {
         PionVue pv;
         for (int i = 0; i < Jeu.NOMBRE_JOUEURS; i++) {
             for (int j = 0; j < Joueur.NOMBRE_PIONS; j++) {
-                pv = new PionVue(this, this.terrain.getPionDe(i, j));
+                pv = new PionVue(this, terrain.getPionDe(i, j));
                 this.pions[i][j] = pv;
             }
         }

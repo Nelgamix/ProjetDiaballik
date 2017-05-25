@@ -7,7 +7,7 @@ import java.util.Random;
 public class IA {
     private final static int MAX_DEPTH = 2;
 
-    public static ConfigurationTerrain minimax(ConfigurationTerrain c, int couleur) {
+    static ConfigurationTerrain minimax(ConfigurationTerrain c, int couleur) {
         return max(c, Integer.MAX_VALUE, couleur, 0, MAX_DEPTH);
     }
     public static ConfigurationTerrain meilleurTour(ConfigurationTerrain c, int couleur, int deplacementsRestants, int passesRestantes) {
@@ -36,7 +36,7 @@ public class IA {
 
         return max.get(r.nextInt(max.size()));
     }
-    public static ConfigurationTerrain meilleurTour(ConfigurationTerrain c, int couleur) {
+    static ConfigurationTerrain meilleurTour(ConfigurationTerrain c, int couleur) {
         return meilleurTour(c, couleur, Joueur.DEPLACEMENTS_MAX, Joueur.PASSES_MAX);
     }
 

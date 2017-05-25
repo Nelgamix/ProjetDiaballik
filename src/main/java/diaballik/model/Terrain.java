@@ -142,7 +142,7 @@ public class Terrain {
         return point.getX() >= 0 && point.getX() < LARGEUR && point.getY() >= 0 && point.getY() < HAUTEUR;
     }
 
-    String getPionRepresentation(Pion pion) {
+    private String getPionRepresentation(Pion pion) {
         String res = "";
 
         if (pion == null)
@@ -179,7 +179,7 @@ public class Terrain {
         return sb.toString();
     }
 
-    public Pion[][] getPions() {
+    Pion[][] getPions() {
         return pions;
     }
     public Case[][] getCases() {
@@ -260,7 +260,7 @@ public class Terrain {
         return ret;
     }
 
-    public boolean passePossible(Point pEnvoyeur, Point pReceptionneur, int couleur) {
+    boolean passePossible(Point pEnvoyeur, Point pReceptionneur, int couleur) {
         if (!pEnvoyeur.estDansTerrain() || !pReceptionneur.estDansTerrain()) return false;
 
         // check alignement
@@ -308,7 +308,7 @@ public class Terrain {
 
         return true;
     }
-    public boolean deplacementPossible(Point p, Point p2) {
+    boolean deplacementPossible(Point p, Point p2) {
         if (!p.estDansTerrain() || !p2.estDansTerrain()) return false;
 
         // On cherche un point commun (x ou y)
@@ -352,7 +352,7 @@ public class Terrain {
 
         return false;
     }
-    public boolean partieTerminee(int couleur) {
+    boolean partieTerminee(int couleur) {
         for (Pion p : getPionsDe(couleur)) {
             if (p.aLaBalle() && partieTerminee(p, couleur)) {
                 return true;
@@ -367,12 +367,14 @@ public class Terrain {
             if (p.aLaBalle()) return p;
         return null;
     }
-    public String getNom() {
+    String getNom() {
         return nom;
     }
 
     @Override
     public boolean equals(Object obj) {
+        if (!(obj instanceof Terrain)) return false;
+
         Terrain toCmp = (Terrain) obj;
 
         Point p;
@@ -393,16 +395,16 @@ public class Terrain {
 
     @Override
     public String toString() {
-        String s = "";
+        StringBuilder s = new StringBuilder();
 
-        s += "Hashcode " + this.hashCode() + "\n";
+        s.append("Hashcode ").append(this.hashCode()).append("\n");
         for (Case[] c : cases) {
             for (Case ci : c)
-                s += ci.toString() + "\t";
-            s += "\n";
+                s.append(ci.toString()).append("\t");
+            s.append("\n");
         }
 
-        return s;
+        return s.toString();
     }
 
     @Override

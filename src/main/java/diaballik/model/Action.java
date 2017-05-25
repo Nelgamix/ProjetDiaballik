@@ -79,18 +79,14 @@ public class Action implements Serializable {
     }
 
     String getSaveString() {
-        StringBuilder sb = new StringBuilder();
-
-        sb.append(this.tour)
-                .append(":")
-                .append(this.caseAvant.getPoint().getSaveString())
-                .append(":")
-                .append(action)
-                .append(":")
-                .append(this.caseApres.getPoint().getSaveString())
-                .append("\n");
-
-        return sb.toString();
+        return String.valueOf(this.tour) +
+                ":" +
+                this.caseAvant.getPoint().getSaveString() +
+                ":" +
+                action +
+                ":" +
+                this.caseApres.getPoint().getSaveString() +
+                "\n";
     }
 
     public int getAction() {
@@ -107,10 +103,10 @@ public class Action implements Serializable {
         return caseAvant;
     }
 
-    public void setCaseAvant(Case caseAvant) {
+    void setCaseAvant(Case caseAvant) {
         this.caseAvant = caseAvant;
     }
-    public void setCaseApres(Case caseApres) {
+    void setCaseApres(Case caseApres) {
         this.caseApres = caseApres;
     }
 
