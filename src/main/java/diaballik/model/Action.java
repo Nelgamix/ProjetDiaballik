@@ -15,6 +15,7 @@ public class Action implements Serializable {
     private Case caseApres;
     private boolean inverse; // si inverse, l'action provient de défaire
     private int tour;
+    private int cout;
 
     public Action(Action action) {
         this(action.caseAvant, action.getAction(), action.getCaseApres(), action.getTour());
@@ -28,10 +29,14 @@ public class Action implements Serializable {
         this(caseAvant, action, caseApres, -1);
     }
     public Action(Case caseAvant, int action, Case caseApres, int tour) {
+        this(caseAvant, action, caseApres, tour, 1);
+    }
+    public Action(Case caseAvant, int action, Case caseApres, int tour, int cout) {
         this.caseAvant = caseAvant;
         this.action = action;
         this.caseApres = caseApres;
         this.tour = tour;
+        this.cout = cout;
         this.inverse = false;
     }
     public Action(Jeu jeu, BufferedReader br) throws IOException {
@@ -45,6 +50,7 @@ public class Action implements Serializable {
                 this.action = Integer.parseInt(parts[2]);
                 Point pointCaseApres = new Point(parts[3]);
                 this.caseApres = jeu.getTerrain().getCaseSur(pointCaseApres);
+                this.cout = Integer.parseInt(parts[4]);
                 this.inverse = false;
             }
         } catch (IOException ioe) {
@@ -63,6 +69,10 @@ public class Action implements Serializable {
         Case tmp = getCaseApres();
         setCaseApres(getCaseAvant());
         setCaseAvant(tmp);
+    }
+
+    int getCout() {
+        return cout;
     }
 
     private static String parseAction(int action) {
@@ -86,6 +96,8 @@ public class Action implements Serializable {
                 action +
                 ":" +
                 this.caseApres.getPoint().getSaveString() +
+                ":" +
+                this.cout +
                 "\n";
     }
 

@@ -42,7 +42,7 @@ public class Case extends Observable implements Serializable {
 
         Case toCmp = (Case) obj;
 
-        return getPion() == null && toCmp.getPion() == null || getPion() != null && toCmp.getPion() != null && getPion().equals(toCmp.getPion());
+        return getPoint().equals(toCmp.getPoint()) && getPion() == null && toCmp.getPion() == null || getPion() != null && toCmp.getPion() != null && getPion().equals(toCmp.getPion());
     }
 
     @Override

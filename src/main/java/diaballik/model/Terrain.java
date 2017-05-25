@@ -5,6 +5,7 @@ import javafx.application.Platform;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Iterator;
 
 public class Terrain {
     private String nom;
@@ -369,6 +370,61 @@ public class Terrain {
     }
     String getNom() {
         return nom;
+    }
+
+    ArrayList<Deplacement> dijkstra(Pion pion, int deplacementsRestants) {
+        ArrayList<Point> points = new ArrayList<>();
+        Integer[][] dijkstra = new Integer[HAUTEUR][LARGEUR];
+        for (int i = 0; i < HAUTEUR; i++)
+            for (int j = 0; j < LARGEUR; j++)
+                dijkstra[i][j] = Integer.MAX_VALUE;
+
+        points.add(pion.getPosition().getPoint());
+        dijkstra[pion.getPosition().getPoint().getX()][pion.getPosition().getPoint().getY()] = 0;
+
+        Point u;
+        while (!points.isEmpty()) {
+            u = points.get(0);
+            for (Point p : points) {
+                if (dijkstra[p.getX()][p.getY()] < dijkstra[u.getX()][u.getY()]) {
+                    u = p;
+                }
+            }
+            points.remove(u);
+
+            for (Point v : getVoisins(u)) {
+                if (dijkstra[u.getX()][u.getY()] + 1 < dijkstra[v.getX()][v.getY()]) {
+                    dijkstra[v.getX()][v.getY()] = dijkstra[u.getX()][u.getY()] + 1;
+                    points.add(v);
+                }
+            }
+        }
+
+        ArrayList<Deplacement> testDisks = new ArrayList<>();
+        for (int i = 0; i < HAUTEUR; i++)
+            for (int j = 0; j < LARGEUR; j++)
+                if (dijkstra[i][j] > 0 && dijkstra[i][j] <= deplacementsRestants)
+                    testDisks.add(new Deplacement(getCaseSur(new Point(i, j)), dijkstra[i][j]));
+
+        return testDisks;
+    }
+
+    private ArrayList<Point> getVoisins(Point p) {
+        ArrayList<Point> voisins = new ArrayList<>();
+
+        voisins.add(new Point(p.getX() + 1, p.getY()));
+        voisins.add(new Point(p.getX() - 1, p.getY()));
+        voisins.add(new Point(p.getX(), p.getY() + 1));
+        voisins.add(new Point(p.getX(), p.getY() - 1));
+
+        Iterator<Point> it = voisins.iterator();
+        Point pt;
+
+        while (it.hasNext() && (pt = it.next()) != null)
+            if (!pt.estDansTerrain() || getCaseSur(pt).pionPresent())
+                it.remove();
+
+        return voisins;
     }
 
     @Override

@@ -32,7 +32,7 @@ public class Jeu extends Observable {
 
     private final static int NB_PIONS_ANTIJEU = 3;
 
-    private final static String VERSION_SAUVEGARDE = "0.1.1";
+    private final static String VERSION_SAUVEGARDE = "0.1.2";
 
     public Jeu(SceneJeu sceneJeu, ConfigurationPartie configurationPartie) throws OutdatedSave, IOException {
         this.sceneJeu = sceneJeu;
@@ -236,11 +236,12 @@ public class Jeu extends Observable {
     }
 
     // Effectue un déplacement (le pion p se déplace sur la case c)
-    public boolean deplacement(Action action) {
+    boolean deplacement(Action action) {
         Pion p = action.getCaseAvant().getPion();
         Case c = action.getCaseApres();
 
-        if (!p.aLaBalle() && deplacementPossible(p.getPosition(), c)) {
+        //if (!p.aLaBalle() && deplacementPossible(p.getPosition(), c)) {
+        if (!p.aLaBalle()) {
             p.deplacer(c);
 
             historique.addAction(action);
@@ -259,10 +260,9 @@ public class Jeu extends Observable {
         }
     }
 
-    public ArrayList<Case> getDeplacementsPossibles(Pion pion) {
+    public ArrayList<Deplacement> getDeplacementsPossibles(Pion pion) {
         if (!getJoueurActuel().peutDeplacer()) return new ArrayList<>();
-
-        return terrain.getDeplacementsPossibles(pion);
+        return terrain.dijkstra(pion, getJoueurActuel().getDeplacementsRestants());
     }
     public ArrayList<Pion> getPassesPossibles(Pion pion) {
         if (!getJoueurActuel().peutPasser()) return new ArrayList<>();

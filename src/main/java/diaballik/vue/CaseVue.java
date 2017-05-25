@@ -114,13 +114,11 @@ public class CaseVue extends StackPane implements Observer {
         this.getStyleClass().clear();
 
         if (survol)
-            this.getStyleClass().add("couleurMarquageSurvol");
+            this.getStyleClass().add(pair ? "couleurMarquageSurvolPair" : "couleurMarquageSurvolImpair");
         else if (isMarque() && terrainVue.getTerrainControleur().getJeu().getConfigurationPartie().isAideDeplacement())
-            this.getStyleClass().add("couleurMarquage");
-        else if (pair)
-            this.getStyleClass().add("couleurCasePair");
+            this.getStyleClass().add(pair ? "couleurMarquagePair" : "couleurMarquageImpair");
         else
-            this.getStyleClass().add("couleurCaseImpair");
+            this.getStyleClass().add(pair ? "couleurCasePair" : "couleurCaseImpair");
     }
 
     private void setMontrerNumCase(boolean in) {
@@ -142,7 +140,7 @@ public class CaseVue extends StackPane implements Observer {
 
         if (marque != this.marque) {
             this.marque = marque;
-            this.toFront();
+            //this.toFront();
             updateStyleClass();
         }
     }

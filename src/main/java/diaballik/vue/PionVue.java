@@ -33,7 +33,7 @@ public class PionVue extends Circle implements Observer {
     private final TranslateTransition transitionPasse;
 
     private final static int DUREE_TRANSITION_PASSE = 500;
-    private final static int DUREE_TRANSITION_DEPLACEMENT = 200;
+    private final static int DUREE_TRANSITION_DEPLACEMENT = 500;
 
     PionVue(TerrainVue terrainVue, Pion pion) {
         super(20);

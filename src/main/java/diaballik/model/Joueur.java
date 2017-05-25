@@ -142,31 +142,37 @@ public abstract class Joueur {
     // décrémente le compteur correspondant à action.
     // si aucun compteur > 0 à la fin, renvoie false sinon renvoie true
     void moinsAction(Action action) {
-        moinsAction(action.getAction());
+        moinsAction(action.getAction(), action.getCout());
     }
     void plusAction(Action action) {
-        plusAction(action.getAction());
+        plusAction(action.getAction(), action.getCout());
     }
 
     void moinsAction(int action) {
+        moinsAction(action, 1);
+    }
+    private void moinsAction(int action, int cout) {
         switch (action) {
             case Action.PASSE:
-                this.passesRestantes--;
+                this.passesRestantes -= cout;
                 break;
             case Action.DEPLACEMENT:
-                this.deplacementsRestants--;
+                this.deplacementsRestants -= cout;
                 break;
             default:
                 System.err.println("Action non reconnue");
         }
     }
-    private void plusAction(int action) {
+    void plusAction(int action) {
+        plusAction(action, 1);
+    }
+    private void plusAction(int action, int cout) {
         switch (action) {
             case Action.PASSE:
-                this.passesRestantes++;
+                this.passesRestantes += cout;
                 break;
             case Action.DEPLACEMENT:
-                this.deplacementsRestants++;
+                this.deplacementsRestants += cout;
                 break;
             default:
                 System.err.println("Action non reconnue");

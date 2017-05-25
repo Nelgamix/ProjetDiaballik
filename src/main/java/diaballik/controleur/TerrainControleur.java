@@ -8,6 +8,7 @@ import diaballik.vue.TerrainVue;
 import javafx.scene.control.Alert;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 public class TerrainControleur {
     public final SceneJeu sceneJeu;
@@ -17,6 +18,7 @@ public class TerrainControleur {
     private PionVue pionSelectionne;
     private boolean modeActionDeplacement = false; // false si le mode est un deplacement, true si c'est une passe
 
+    private HashMap<Point, Deplacement> casesPossibles = new HashMap<>();
     private ArrayList<CaseVue> casesMarquees = new ArrayList<>();
     private ArrayList<PionVue> pionsMarques = new ArrayList<>();
 
@@ -72,15 +74,19 @@ public class TerrainControleur {
                 } else {
                     pionVueCorrespondant = this.pionSelectionne;
 
-                    Action a = new Action(pionSelectionne.getPion().getPosition(), Action.DEPLACEMENT, caseCliquee.getCase(), getJeu().getTour());
-                    JoueurLocal j = (JoueurLocal)getJeu().getJoueurActuel();
-                    j.setActionAJouer(a);
+                    Deplacement t = casesPossibles.get(caseCliquee.getCase().getPoint());
+                    if (t != null) {
+                        Action a = new Action(pionSelectionne.getPion().getPosition(), Action.DEPLACEMENT, caseCliquee.getCase(), getJeu().getTour(), t.getDistance());
+                        JoueurLocal j = (JoueurLocal)getJeu().getJoueurActuel();
+                        j.setActionAJouer(a);
 
-                    if (j.jouer()) { // on tente le déplacement
-                        // si on a réussi
-                        if (getJeu().getJoueurActuel().peutDeplacer() && getJeu().getConfigurationPartie().isAutoSelectionPion()) {
-                            finSelection();
-                            selectionPion(pionVueCorrespondant);
+                        if (j.jouer()) { // on tente le déplacement, si on a réussi
+                            if (getJeu().getJoueurActuel().peutDeplacer() && getJeu().getConfigurationPartie().isAutoSelectionPion()) {
+                                finSelection();
+                                selectionPion(pionVueCorrespondant);
+                            } else {
+                                finSelection();
+                            }
                         } else {
                             finSelection();
                         }
@@ -107,6 +113,8 @@ public class TerrainControleur {
             finSelection();
 
             Action a = ct.getActions().get(0);
+            Deplacement d = new Deplacement(a.getCaseApres(), 1);
+            casesPossibles.put(d.getCase().getPoint(), d);
 
             this.modeActionDeplacement = (a.getAction() == Action.PASSE);
 
@@ -134,9 +142,12 @@ public class TerrainControleur {
 
     private void calculActionsPossibles(Pion pionClique) {
         if (!modeActionDeplacement) {
-            ArrayList<Case> casesPossibles = getJeu().getDeplacementsPossibles(pionClique);
+            ArrayList<Deplacement> values = getJeu().getDeplacementsPossibles(pionClique);
 
-            for (Case c : casesPossibles) casesMarquees.add(getTerrainVue().getCaseSur(c.getPoint()));
+            for (Deplacement t : values)
+                casesPossibles.put(t.getCase().getPoint(), t);
+
+            for (Deplacement c : casesPossibles.values()) casesMarquees.add(getTerrainVue().getCaseSur(c.getCase().getPoint()));
             for (CaseVue c : casesMarquees) c.setMarque(true);
         } else {
             ArrayList<Pion> pionsPossibles = getJeu().getPassesPossibles(pionClique);
@@ -151,6 +162,8 @@ public class TerrainControleur {
             this.pionSelectionne.setSelectionne(false);
             this.pionSelectionne = null;
         }
+
+        if (!casesPossibles.isEmpty()) casesPossibles.clear();
 
         for (CaseVue c : casesMarquees) c.setMarque(false);
         for (PionVue p : pionsMarques) p.setMarque(false);

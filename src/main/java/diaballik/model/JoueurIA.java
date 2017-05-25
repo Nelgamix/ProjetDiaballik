@@ -170,7 +170,10 @@ public class JoueurIA extends Joueur {
                 b = pp.get(r.nextInt(pp.size())).getPosition();
                 action = Action.PASSE;
             } else {
-                ArrayList<Case> pp = jeu.getDeplacementsPossibles(a);
+                ArrayList<Deplacement> ppt = jeu.getDeplacementsPossibles(a);
+                ArrayList<Case> pp = new ArrayList<>();
+                for (Deplacement t : ppt)
+                    pp.add(t.getCase());
                 if (pp.size() < 1) continue;
 
                 b = pp.get(r.nextInt(pp.size()));

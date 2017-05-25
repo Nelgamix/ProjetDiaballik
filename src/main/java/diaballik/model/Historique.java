@@ -57,7 +57,7 @@ public class Historique {
         int n = 0;
         for (Action b : a)
             if (b.getAction() == Action.PASSE)
-                n++;
+                n += b.getCout();
         return n;
     }
     int getNombreDeplacementRetirer(int tour) {
@@ -67,7 +67,7 @@ public class Historique {
         int n = 0;
         for (Action b : a)
             if (b.getAction() == Action.DEPLACEMENT)
-                n++;
+                n += b.getCout();
         return n;
     }
 
