@@ -1,7 +1,10 @@
 package diaballik.controleur;
 
 import diaballik.Diaballik;
+import diaballik.model.ConfigurationTerrain;
+import diaballik.model.IA;
 import diaballik.model.Jeu;
+import diaballik.model.Joueur;
 import diaballik.scene.SceneJeu;
 import diaballik.vue.ActionsVue;
 import diaballik.vue.Dialogs;
@@ -30,7 +33,7 @@ public class ActionsControleur {
         getJeu().getJoueurActuel().finTour();
     }
     public void actionAccueil() {
-        if (Dialogs.dialogConfirmation("Vous allez quitter le jeu. La partie sera perdue. Voulez-vous continuer?")) {
+        if (Dialogs.dialogConfirmation("Vous allez quitter le jeu.\nLa partie sera perdue.\nVoulez-vous revenir à l'accueil?")) {
             sceneJeu.retourMenu();
         }
     }
@@ -58,5 +61,15 @@ public class ActionsControleur {
     }
     public void actionRefaire() {
         getJeu().refaire();
+    }
+    public void actionMeilleurCoup() {
+        Joueur ja = getJeu().getJoueurActuel();
+        ConfigurationTerrain act = new ConfigurationTerrain(getJeu().getTerrain());
+        ConfigurationTerrain ct = IA.meilleurTour(act, ja.getCouleur(), ja.getDeplacementsRestants(), ja.getPassesRestantes());
+
+        if (ct.getActions().size() > 0)
+            System.out.println("La meilleure action est " + ct.getActions().get(0));
+        else
+            System.out.println("Aucune action restante, passer le tour.");
     }
 }

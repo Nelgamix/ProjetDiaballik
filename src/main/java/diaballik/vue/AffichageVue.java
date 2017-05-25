@@ -66,6 +66,11 @@ public class AffichageVue extends StackPane implements Observer {
 
     @Override
     public void update(Observable o, Object arg) {
+        if (!affichageControleur.getJeu().isRunning()) {
+            stopperTimerVue();
+            return;
+        }
+
         joueurActuel.setText(jeu.getJoueurActuel().getNom());
         this.getStyleClass().clear();
         this.getStyleClass().add(jeu.getJoueurActuel().getCouleur() == Joueur.VERT ? "couleurJoueurVert" : "couleurJoueurRouge");

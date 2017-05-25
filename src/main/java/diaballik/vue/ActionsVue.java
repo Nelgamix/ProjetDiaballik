@@ -59,6 +59,141 @@ public class ActionsVue extends BorderPane implements Observer {
         return ValidationResult.fromMessageIf(control, "file exists", Severity.ERROR, saveExists);
     }
 
+    public ActionsVue(ActionsControleur actionsControleur) {
+        super();
+
+        // Infos
+        VBox vBoxInfos = new VBox(20);
+        vBoxInfos.setAlignment(Pos.CENTER);
+        vBoxInfos.setPadding(new Insets(20, 20, 10, 20));
+
+        VBox vBoxInfosDepl = new VBox();
+        VBox vBoxInfosPass = new VBox();
+        vBoxInfosDepl.getStyleClass().add("vBoxIndicateurs");
+        vBoxInfosPass.getStyleClass().add("vBoxIndicateurs");
+        depl = new Label();
+        depl.getStyleClass().add("indicateurActionsRestantes");
+        deplInd = new Label();
+        pass = new Label();
+        pass.getStyleClass().add("indicateurActionsRestantes");
+        passInd = new Label();
+
+        vBoxInfosDepl.getChildren().add(depl);
+        vBoxInfosDepl.getChildren().add(deplInd);
+        vBoxInfosPass.getChildren().add(pass);
+        vBoxInfosPass.getChildren().add(passInd);
+
+        Label sectionInd = new Label("Actions restantes");
+        sectionInd.setStyle("-fx-font-size: 18px; -fx-font-style: italic");
+        vBoxInfos.getChildren().add(sectionInd);
+        vBoxInfos.getChildren().add(vBoxInfosDepl);
+        vBoxInfos.getChildren().add(vBoxInfosPass);
+
+        GridPane gpActions = new GridPane();
+        gpActions.setAlignment(Pos.CENTER);
+        gpActions.setVgap(10);
+        gpActions.setHgap(5);
+        gpActions.setPadding(new Insets(20));
+        ColumnConstraints cc1 = new ColumnConstraints();
+        ColumnConstraints cc2 = new ColumnConstraints();
+        cc1.setPercentWidth(50);
+        cc2.setPercentWidth(50);
+        gpActions.getColumnConstraints().addAll(cc1, cc2);
+
+        VBox vBoxActions = new VBox(10);
+        vBoxActions.setAlignment(Pos.CENTER);
+        vBoxActions.setPadding(new Insets(20));
+
+        this.setId("actionsView");
+
+        this.actionsControleur = actionsControleur;
+        this.jeu = actionsControleur.getJeu();
+
+        this.jeu.addObserver(this);
+
+        double glyphFontSize = 22f;
+
+        Glyph next = new Glyph("FontAwesome", FontAwesome.Glyph.ARROW_RIGHT);
+        next.setFontSize(glyphFontSize);
+        next.setPadding(new Insets(0, 6, 2, 0));
+        passerTour = new Button("Fin tour", next);
+        passerTour.setOnAction(e -> actionsControleur.actionFinTour());
+        passerTour.setMaxWidth(Double.MAX_VALUE);
+        passerTour.setId("passerTour");
+        passerTour.setTooltip(new Tooltip("Passer le tour"));
+        gpActions.add(passerTour, 0, 0, 2, 1);
+
+        Glyph flag = new Glyph("FontAwesome", FontAwesome.Glyph.FLAG);
+        flag.setFontSize(glyphFontSize);
+        flag.setPadding(new Insets(0, 6, 2, 0));
+        antijeu = new Button("Antijeu", flag);
+        antijeu.setOnAction(e -> actionsControleur.actionAntijeu());
+        antijeu.setMaxWidth(Double.MAX_VALUE);
+        antijeu.setTooltip(new Tooltip("Déclarer un antijeu"));
+        gpActions.add(antijeu, 0, 1, 2, 1);
+
+        Glyph undo = new Glyph("FontAwesome", FontAwesome.Glyph.UNDO);
+        undo.setFontSize(glyphFontSize);
+        undo.setPadding(new Insets(0, 0, 1, 0));
+        annuler = new Button("", undo);
+        annuler.setOnAction(e -> actionsControleur.actionDefaire());
+        annuler.setMaxWidth(Double.MAX_VALUE);
+        annuler.setTooltip(new Tooltip("Défaire la dernière action"));
+        gpActions.add(annuler, 0, 2);
+
+        Glyph repeat = new Glyph("FontAwesome", FontAwesome.Glyph.REPEAT);
+        repeat.setFontSize(glyphFontSize);
+        repeat.setPadding(new Insets(0, 0, 1, 0));
+        refaire = new Button("", repeat);
+        refaire.setOnAction(e -> actionsControleur.actionRefaire());
+        refaire.setMaxWidth(Double.MAX_VALUE);
+        refaire.setTooltip(new Tooltip("Rejouer la dernière action"));
+        gpActions.add(refaire, 1, 2);
+
+        Glyph inte = new Glyph("FontAwesome", FontAwesome.Glyph.QUESTION);
+        inte.setFontSize(glyphFontSize);
+        inte.setPadding(new Insets(0, 0, 1, 0));
+        aideCoup = new Button("", inte);
+        aideCoup.setOnAction(e -> actionsControleur.actionMeilleurCoup());
+        aideCoup.setMaxWidth(Double.MAX_VALUE);
+        aideCoup.setTooltip(new Tooltip("Montrer le meilleur coup"));
+        gpActions.add(aideCoup, 0, 3);
+
+        Glyph roue = new Glyph("FontAwesome", FontAwesome.Glyph.COG);
+        roue.setFontSize(glyphFontSize);
+        roue.setPadding(new Insets(0, 0, 1, 0));
+        parametres = new Button("", roue);
+        parametres.setOnAction(e -> actionsControleur.actionParametres());
+        parametres.setMaxWidth(Double.MAX_VALUE);
+        parametres.setTooltip(new Tooltip("Montrer les paramètres"));
+        gpActions.add(parametres, 1, 3);
+
+        Glyph save = new Glyph("FontAwesome", FontAwesome.Glyph.FLOPPY_ALT);
+        save.setFontSize(glyphFontSize);
+        save.setPadding(new Insets(0, 6, 2, 0));
+        sauvegarde = new Button("Sauvegarder", save);
+        sauvegarde.setOnAction(e -> montrerPopupSauvegarde());
+        GridPane.setMargin(sauvegarde, new Insets(18, 0, 0, 0));
+        sauvegarde.setMaxWidth(Double.MAX_VALUE);
+        sauvegarde.setTooltip(new Tooltip("Sauvegarder l'état du jeu"));
+        if (actionsControleur.getJeu().getConfigurationPartie().estMultijoueur()) sauvegarde.setDisable(true);
+        gpActions.add(sauvegarde, 0, 4, 2, 1);
+
+        Glyph menu = new Glyph("FontAwesome", FontAwesome.Glyph.BARS);
+        menu.setFontSize(glyphFontSize);
+        menu.setPadding(new Insets(0, 6, 2, 0));
+        Button accueil = new Button("Accueil", menu);
+        accueil.setTooltip(new Tooltip("Revenir au menu"));
+        accueil.setOnAction(e -> actionsControleur.actionAccueil());
+        accueil.setMaxWidth(Double.MAX_VALUE);
+        gpActions.add(accueil, 0, 5, 2, 1);
+
+        this.setTop(vBoxInfos);
+        this.setBottom(gpActions);
+
+        update(null, null);
+    }
+
     private PopOver getSauvegarderPopover() {
         if (popOverSauvegarde != null) return popOverSauvegarde;
 
@@ -229,132 +364,6 @@ public class ActionsVue extends BorderPane implements Observer {
         popOverParametres.setContentNode(content);
 
         return popOverParametres;
-    }
-
-    public ActionsVue(ActionsControleur actionsControleur) {
-        super();
-
-        // Infos
-        VBox vBoxInfos = new VBox(20);
-        vBoxInfos.setAlignment(Pos.CENTER);
-        vBoxInfos.setPadding(new Insets(20, 20, 10, 20));
-
-        VBox vBoxInfosDepl = new VBox();
-        VBox vBoxInfosPass = new VBox();
-        vBoxInfosDepl.getStyleClass().add("vBoxIndicateurs");
-        vBoxInfosPass.getStyleClass().add("vBoxIndicateurs");
-        depl = new Label();
-        depl.getStyleClass().add("indicateurActionsRestantes");
-        deplInd = new Label();
-        pass = new Label();
-        pass.getStyleClass().add("indicateurActionsRestantes");
-        passInd = new Label();
-
-        vBoxInfosDepl.getChildren().add(depl);
-        vBoxInfosDepl.getChildren().add(deplInd);
-        vBoxInfosPass.getChildren().add(pass);
-        vBoxInfosPass.getChildren().add(passInd);
-
-        Label sectionInd = new Label("Actions restantes");
-        sectionInd.setStyle("-fx-font-size: 18px; -fx-font-style: italic");
-        vBoxInfos.getChildren().add(sectionInd);
-        vBoxInfos.getChildren().add(vBoxInfosDepl);
-        vBoxInfos.getChildren().add(vBoxInfosPass);
-
-        GridPane gpActions = new GridPane();
-        gpActions.setAlignment(Pos.CENTER);
-        gpActions.setVgap(10);
-        gpActions.setHgap(5);
-        gpActions.setPadding(new Insets(20));
-        ColumnConstraints cc1 = new ColumnConstraints();
-        ColumnConstraints cc2 = new ColumnConstraints();
-        cc1.setPercentWidth(50);
-        cc2.setPercentWidth(50);
-        gpActions.getColumnConstraints().addAll(cc1, cc2);
-
-        VBox vBoxActions = new VBox(10);
-        vBoxActions.setAlignment(Pos.CENTER);
-        vBoxActions.setPadding(new Insets(20));
-
-        this.setId("actionsView");
-
-        this.actionsControleur = actionsControleur;
-        this.jeu = actionsControleur.getJeu();
-
-        this.jeu.addObserver(this);
-
-        double glyphFontSize = 22f;
-
-        Glyph next = new Glyph("FontAwesome", FontAwesome.Glyph.ARROW_RIGHT);
-        next.setFontSize(glyphFontSize);
-        next.setPadding(new Insets(0, 6, 2, 0));
-        passerTour = new Button("Fin tour", next);
-        passerTour.setOnAction(e -> actionsControleur.actionFinTour());
-        passerTour.setMaxWidth(Double.MAX_VALUE);
-        passerTour.setId("passerTour");
-        gpActions.add(passerTour, 0, 0, 2, 1);
-
-        Glyph flag = new Glyph("FontAwesome", FontAwesome.Glyph.FLAG);
-        flag.setFontSize(glyphFontSize);
-        flag.setPadding(new Insets(0, 6, 2, 0));
-        antijeu = new Button("Antijeu", flag);
-        antijeu.setOnAction(e -> actionsControleur.actionAntijeu());
-        antijeu.setMaxWidth(Double.MAX_VALUE);
-        gpActions.add(antijeu, 0, 1, 2, 1);
-
-        Glyph undo = new Glyph("FontAwesome", FontAwesome.Glyph.UNDO);
-        undo.setFontSize(glyphFontSize);
-        undo.setPadding(new Insets(0, 0, 1, 0));
-        annuler = new Button("", undo);
-        annuler.setOnAction(e -> actionsControleur.actionDefaire());
-        annuler.setMaxWidth(Double.MAX_VALUE);
-        gpActions.add(annuler, 0, 2);
-
-        Glyph repeat = new Glyph("FontAwesome", FontAwesome.Glyph.REPEAT);
-        repeat.setFontSize(glyphFontSize);
-        repeat.setPadding(new Insets(0, 0, 1, 0));
-        refaire = new Button("", repeat);
-        refaire.setOnAction(e -> actionsControleur.actionRefaire());
-        refaire.setMaxWidth(Double.MAX_VALUE);
-        gpActions.add(refaire, 1, 2);
-
-        Glyph inte = new Glyph("FontAwesome", FontAwesome.Glyph.QUESTION);
-        inte.setFontSize(glyphFontSize);
-        inte.setPadding(new Insets(0, 0, 1, 0));
-        aideCoup = new Button("", inte);
-        aideCoup.setMaxWidth(Double.MAX_VALUE);
-        gpActions.add(aideCoup, 0, 3);
-
-        Glyph roue = new Glyph("FontAwesome", FontAwesome.Glyph.COG);
-        roue.setFontSize(glyphFontSize);
-        roue.setPadding(new Insets(0, 0, 1, 0));
-        parametres = new Button("", roue);
-        parametres.setOnAction(e -> actionsControleur.actionParametres());
-        parametres.setMaxWidth(Double.MAX_VALUE);
-        gpActions.add(parametres, 1, 3);
-
-        Glyph save = new Glyph("FontAwesome", FontAwesome.Glyph.FLOPPY_ALT);
-        save.setFontSize(glyphFontSize);
-        save.setPadding(new Insets(0, 6, 2, 0));
-        sauvegarde = new Button("Sauvegarder", save);
-        sauvegarde.setOnAction(e -> montrerPopupSauvegarde());
-        GridPane.setMargin(sauvegarde, new Insets(18, 0, 0, 0));
-        sauvegarde.setMaxWidth(Double.MAX_VALUE);
-        if (actionsControleur.getJeu().getConfigurationPartie().estMultijoueur()) sauvegarde.setDisable(true);
-        gpActions.add(sauvegarde, 0, 4, 2, 1);
-
-        Glyph menu = new Glyph("FontAwesome", FontAwesome.Glyph.BARS);
-        menu.setFontSize(glyphFontSize);
-        menu.setPadding(new Insets(0, 6, 2, 0));
-        Button accueil = new Button("Accueil", menu);
-        accueil.setOnAction(e -> actionsControleur.actionAccueil());
-        accueil.setMaxWidth(Double.MAX_VALUE);
-        gpActions.add(accueil, 0, 5, 2, 1);
-
-        this.setTop(vBoxInfos);
-        this.setBottom(gpActions);
-
-        update(null, null);
     }
 
     public void montrerPopupSauvegarde() {

@@ -43,7 +43,7 @@
 
 #actionsView > GridPane > #passerTour {
     -fx-font-weight: bold;
-    -fx-font-size: 175%;
+    -fx-font-size: 24;
 }
 
 /* AFFICHAGE VIEW */

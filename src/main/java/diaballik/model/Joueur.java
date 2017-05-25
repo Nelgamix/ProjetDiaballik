@@ -19,7 +19,7 @@ public abstract class Joueur {
 
     int type; // 0 = humain
 
-    Action actionAJouer;
+    private Action actionAJouer;
 
     // Joueurs et couleurs
     public final static int VERT = 0; // J vert
@@ -81,7 +81,7 @@ public abstract class Joueur {
         return this.passesRestantes > 0;
     }
 
-    boolean actionPossible(Action action) {
+    private boolean actionPossible(Action action) {
         switch (action.getAction()) {
             case Action.PASSE:
                 return this.peutPasser();
@@ -125,6 +125,7 @@ public abstract class Joueur {
     }
     private void finAction() {
         if (jeu.getTerrain().partieTerminee(couleur)) {
+            jeu.running = false;
             // la partie est terminée (le vainqueur est joueurActuel())
             getSceneJeu().finJeu(jeu.getJoueurActuel(), Jeu.VICTOIRE_NORMALE);
         }

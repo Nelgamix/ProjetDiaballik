@@ -419,18 +419,23 @@ public class Dialogs {
         msgTop.setAlignment(Pos.TOP_CENTER);
         msgTop.setPrefWidth(Double.MAX_VALUE);
 
-        ColumnConstraints cc = new ColumnConstraints(200);
-        table.getColumnConstraints().add(cc);
+        ColumnConstraints cc1 = new ColumnConstraints();
+        ColumnConstraints cc2 = new ColumnConstraints();
+        cc1.setPercentWidth(40);
+        cc2.setPercentWidth(60);
+        cc1.setHalignment(HPos.CENTER);
+        cc2.setHalignment(HPos.CENTER);
+        table.getColumnConstraints().addAll(cc1, cc2);
         table.setAlignment(Pos.TOP_CENTER);
         table.setPadding(new Insets(10, 0, 20, 0));
         ArrayList<Pair<String, String>> noms = new ArrayList<>(
                 Arrays.asList(
-                        new Pair<>("Nicolas Huchet", "Domaine"),
-                        new Pair<>("Loïc Houdebine", "Domaine"),
-                        new Pair<>("Paul Reynaud", "Domaine"),
-                        new Pair<>("Rana Sherif", "Domaine"),
-                        new Pair<>("Anis Belahadji", "Domaine"),
-                        new Pair<>("Mourad Idchrife", "Domaine")
+                        new Pair<>("Nicolas Huchet", "Logique et implémentation"),
+                        new Pair<>("Loïc Houdebine", "IHM"),
+                        new Pair<>("Paul Reynaud", "IA"),
+                        new Pair<>("Rana Sherif", "IA"),
+                        new Pair<>("Anis Belahadji", "IA"),
+                        new Pair<>("Mourad Idchrife", "IA")
                 )
         );
         for (Pair<String, String> p : noms) {
