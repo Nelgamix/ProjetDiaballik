@@ -309,11 +309,11 @@ public class Terrain {
 
         return true;
     }
-    boolean deplacementPossible(Point p, Point p2) {
+    boolean deplacementPossible(Point p, Point p2, int nbDepl) {
         if (!p.estDansTerrain() || !p2.estDansTerrain()) return false;
 
         // On cherche un point commun (x ou y)
-        if (p.getY() == p2.getY()) {
+        /*if (p.getY() == p2.getY()) {
             if (Math.abs(p.getX() - p2.getX()) == 1) { // il faut un différentiel de 1 pour qu'il soit à côté
                 return true;
             }
@@ -321,7 +321,10 @@ public class Terrain {
             if (Math.abs(p.getY() - p2.getY()) == 1) { // il faut un différentiel de 1 pour qu'il soit à côté
                 return true;
             }
-        }
+        }*/
+        ArrayList<Deplacement> dpls = dijkstra(getCaseSur(p).getPion(), nbDepl);
+        for (Deplacement dp : dpls)
+            if (dp.getCase().getPoint().equals(p2)) return true;
 
         return false;
     }
@@ -408,7 +411,6 @@ public class Terrain {
 
         return testDisks;
     }
-
     private ArrayList<Point> getVoisins(Point p) {
         ArrayList<Point> voisins = new ArrayList<>();
 

@@ -1,7 +1,7 @@
 package diaballik.scene;
 
 import diaballik.Diaballik;
-import diaballik.Reseau;
+import diaballik.autre.Reseau;
 import diaballik.controleur.ActionsControleur;
 import diaballik.controleur.AffichageControleur;
 import diaballik.controleur.TerrainControleur;

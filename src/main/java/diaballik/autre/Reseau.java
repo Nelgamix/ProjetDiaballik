@@ -1,4 +1,4 @@
-package diaballik;
+package diaballik.autre;
 
 import diaballik.model.Action;
 import diaballik.model.Jeu;
@@ -31,7 +31,7 @@ public class Reseau {
     private ExecutorService reseauThread;
     private boolean running;
 
-    private final static int PORT = 42698;
+    public final static int PORT = 42698;
 
     private ServerSocket serverSocket;
     private Socket clientSocket;
@@ -65,6 +65,7 @@ public class Reseau {
 
         reseauThread.shutdown();
         running = false;
+        setTacheActuelle(Tache.IDLE);
     }
 
     public boolean isRunning() {

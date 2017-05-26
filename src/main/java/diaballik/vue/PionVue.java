@@ -115,16 +115,20 @@ public class PionVue extends Circle implements Observer {
         aLaBalle = true;
         final KeyValue kv2 = new KeyValue(this.radiusProperty(), getRayon());
 
-        final KeyFrame kf = new KeyFrame(Duration.millis(500), kv);
-        final KeyFrame kf2 = new KeyFrame(Duration.millis(500), kv2);
+        final KeyFrame kf = new KeyFrame(Duration.millis(DUREE_TRANSITION_PASSE), kv);
+        final KeyFrame kf2 = new KeyFrame(Duration.millis(DUREE_TRANSITION_PASSE), kv2);
 
         transitionTaille.getKeyFrames().clear();
         transitionTaille.getKeyFrames().addAll(kf, kf2);
 
-        transitionTaille.setOnFinished(e -> envoyeur.aLaBalle = false);
-
         transitionPasse.setOnFinished(e -> envoyeur.getCaseVue().getChildren().remove(tr));
+        transitionTaille.setOnFinished(e -> {
+            envoyeur.aLaBalle = false;
+            terrainVue.getTerrainControleur().setAnimationEnCours(false);
+        });
 
+        terrainVue.getTerrainControleur().setAnimationEnCours(true);
+        
         transitionPasse.play();
         transitionTaille.play();
     }
@@ -156,8 +160,10 @@ public class PionVue extends Circle implements Observer {
             this.setTranslateX(0);
             this.setTranslateY(0);
             terrainVue.getTerrainControleur().sceneJeu.getDiaballik().setCurseurNormal();
+            terrainVue.getTerrainControleur().setAnimationEnCours(false);
         });
 
+        terrainVue.getTerrainControleur().setAnimationEnCours(true);
         transitionDeplacement.play();
     }
 

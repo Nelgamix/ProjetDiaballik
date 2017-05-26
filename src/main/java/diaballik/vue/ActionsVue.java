@@ -1,7 +1,7 @@
 package diaballik.vue;
 
 import diaballik.Diaballik;
-import diaballik.Utils;
+import diaballik.autre.Utils;
 import diaballik.controleur.ActionsControleur;
 import diaballik.model.ConfigurationPartie;
 import diaballik.model.Jeu;

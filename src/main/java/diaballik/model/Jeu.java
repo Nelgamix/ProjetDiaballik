@@ -1,6 +1,6 @@
 package diaballik.model;
 
-import diaballik.Utils;
+import diaballik.autre.Utils;
 import diaballik.scene.SceneJeu;
 
 import java.io.BufferedReader;
@@ -240,8 +240,7 @@ public class Jeu extends Observable {
         Pion p = action.getCaseAvant().getPion();
         Case c = action.getCaseApres();
 
-        //if (!p.aLaBalle() && deplacementPossible(p.getPosition(), c)) {
-        if (!p.aLaBalle()) {
+        if (!p.aLaBalle() && deplacementPossible(p.getPosition(), c)) {
             p.deplacer(c);
 
             historique.addAction(action);
@@ -282,7 +281,7 @@ public class Jeu extends Observable {
         Point p = c1.getPoint();
         Point p2 = c2.getPoint();
 
-        return terrain.deplacementPossible(p, p2);
+        return terrain.deplacementPossible(p, p2, getJoueurActuel().getDeplacementsRestants());
     }
 
     // Effectue une passe d'un pion p vers un pion positionné sur une case c
@@ -309,7 +308,7 @@ public class Jeu extends Observable {
         }
     }
 
-    public void preparerJoueur() {
+    void preparerJoueur() {
         getJoueurActuel().preparerJouer();
     }
 
@@ -330,7 +329,7 @@ public class Jeu extends Observable {
             preparerJoueur();
         }
     }
-    public void reculerTour() {
+    private void reculerTour() {
         this.tour--;
 
         joueurActuel = --joueurActuel < 0 ? Jeu.NOMBRE_JOUEURS - 1 : joueurActuel;
@@ -349,11 +348,11 @@ public class Jeu extends Observable {
     public Joueur getJoueurActuel() {
         return this.joueurs[joueurActuel % NOMBRE_JOUEURS];
     }
-    public Joueur getJoueurAdverse() {
+    Joueur getJoueurAdverse() {
         return this.joueurs[(joueurActuel + 1) % NOMBRE_JOUEURS];
     }
 
-    public void updateListeners(Object o) {
+    private void updateListeners(Object o) {
         this.setChanged();
         this.notifyObservers(o);
     }
@@ -363,7 +362,9 @@ public class Jeu extends Observable {
     }
 
     public void defaire() {
-        if (!historique.peutDefaire()) return;
+        if (!historique.peutDefaire()) {
+            return;
+        }
 
         Action a = historique.getActionTourNum(this.tour, this.numAction - 1);
 
@@ -409,7 +410,7 @@ public class Jeu extends Observable {
             sceneJeu.getReseau().envoyerAction(a);
     }
 
-    public int getNumAction() {
+    int getNumAction() {
         return numAction;
     }
 

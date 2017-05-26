@@ -1,6 +1,6 @@
 package diaballik.vue;
 
-import diaballik.Utils;
+import diaballik.autre.Utils;
 import javafx.scene.control.*;
 import javafx.util.Callback;
 import javafx.util.StringConverter;

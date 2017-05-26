@@ -157,15 +157,20 @@ public class TerrainVue extends StackPane implements Observer {
             tourAdverse.setOpacity(0);
             tourAdverse.toFront();
             ft.setToValue(1);
-            ft.setOnFinished(null);
+            ft.setOnFinished(e -> terrainControleur.setAnimationEnCours(false));
 
+            terrainControleur.setAnimationEnCours(true);
             ft.play();
 
             tourAdverseVisible = true;
         } else if (!in && tourAdverseVisible) {
             ft.setToValue(0);
-            ft.setOnFinished(e -> tourAdverse.toBack());
+            ft.setOnFinished(e -> {
+                tourAdverse.toBack();
+                terrainControleur.setAnimationEnCours(false);
+            });
 
+            terrainControleur.setAnimationEnCours(true);
             ft.play();
 
             tourAdverseVisible = false;

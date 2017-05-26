@@ -6,9 +6,9 @@
 }
 
 .button {
-    -fx-max-width: 220px;
-    -fx-max-height: 30px;
-    -fx-font-size: 20px;
+    -fx-max-width: 220;
+    -fx-max-height: 30;
+    -fx-font-size: 20;
 }
 
 .button:hover {

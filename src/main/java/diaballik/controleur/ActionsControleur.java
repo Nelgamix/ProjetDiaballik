@@ -29,6 +29,8 @@ public class ActionsControleur {
     }
 
     public void actionFinTour() {
+        if (getSceneJeu().getTerrainControleur().animationEnCours()) return;
+
         getJeu().getHistorique().ecraserFinHistorique();
         getJeu().getJoueurActuel().finTour();
     }
@@ -60,12 +62,15 @@ public class ActionsControleur {
         actionsVue.montrerPopupParametres();
     }
     public void actionDefaire() {
+        if (getSceneJeu().getTerrainControleur().animationEnCours()) return;
         getJeu().defaire();
     }
     public void actionRefaire() {
+        if (getSceneJeu().getTerrainControleur().animationEnCours()) return;
         getJeu().refaire();
     }
     public void actionMeilleurCoup() {
+        if (getSceneJeu().getTerrainControleur().animationEnCours()) return;
         sceneJeu.getTerrainControleur().montrerMeilleurCoup();
     }
 }

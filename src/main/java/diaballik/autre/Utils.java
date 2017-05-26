@@ -1,5 +1,6 @@
-package diaballik;
+package diaballik.autre;
 
+import diaballik.Diaballik;
 import diaballik.model.Joueur;
 import diaballik.model.JoueurLocal;
 import diaballik.model.Metadonnees;

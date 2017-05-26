@@ -18,6 +18,8 @@ public class TerrainControleur {
     private PionVue pionSelectionne;
     private boolean modeActionDeplacement = false; // false si le mode est un deplacement, true si c'est une passe
 
+    private boolean animationEnCours = false;
+
     private HashMap<Point, Deplacement> casesPossibles = new HashMap<>();
     private ArrayList<CaseVue> casesMarquees = new ArrayList<>();
     private ArrayList<PionVue> pionsMarques = new ArrayList<>();
@@ -40,6 +42,8 @@ public class TerrainControleur {
     }
 
     public void clicSouris(CaseVue caseCliquee) {
+        if (animationEnCours()) return;
+
         PionVue pionVueCorrespondant = caseCliquee.getPionVue();
 
         if (pionSelectionne == null) { // Si on avait pas mémorisé de pion déjà sélectionnée
@@ -169,5 +173,12 @@ public class TerrainControleur {
         for (PionVue p : pionsMarques) p.setMarque(false);
         casesMarquees.clear();
         pionsMarques.clear();
+    }
+
+    public void setAnimationEnCours(boolean anim) {
+        this.animationEnCours = anim;
+    }
+    boolean animationEnCours() {
+        return animationEnCours;
     }
 }

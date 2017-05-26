@@ -90,6 +90,7 @@ public class JoueurIA extends Joueur {
                         Platform.runLater(defaire ? jeu::defaire : jeu::refaire);
                     }
 
+                    if (jeu.getTour() == 1) Platform.runLater(jeu::preparerJoueur);
                     return null;
                 }
             };
@@ -131,11 +132,10 @@ public class JoueurIA extends Joueur {
 
     @Override
     public boolean preparerJouer() {
-        if (!sJouerFacile.isRunning() && !sJouerMoyen.isRunning() && !sJouerDifficile.isRunning() && !sFaire.isRunning() && jeu.isRunning())
-            jouerIA();
-        else
+        if (!jeu.isRunning() || (sJouerFacile.isRunning() || sJouerMoyen.isRunning() || sJouerDifficile.isRunning()))
             return false;
 
+        jouerIA();
         return true;
     }
 
@@ -213,11 +213,11 @@ public class JoueurIA extends Joueur {
     private void jouerDifficile() {
         ConfigurationTerrain c = new ConfigurationTerrain(jeu.getTerrain());
 
-        System.out.println("Début minimax w/ alpha-beta cutoff...");
+        //System.out.println("Début minimax w/ alpha-beta cutoff...");
         ConfigurationTerrain cMax;
         cMax = IA.minimax(c, getCouleur());
-        System.out.println(cMax);
-        System.out.println("End.");
+        //System.out.println(cMax);
+        //System.out.println("End.");
 
         Action converted;
         for (Action a : cMax.getActions()) {

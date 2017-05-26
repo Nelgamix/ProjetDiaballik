@@ -1,8 +1,8 @@
 package diaballik.vue;
 
 import diaballik.Diaballik;
-import diaballik.Reseau;
-import diaballik.Utils;
+import diaballik.autre.Reseau;
+import diaballik.autre.Utils;
 import diaballik.model.*;
 import diaballik.scene.SceneJeu;
 import javafx.application.Platform;
@@ -26,6 +26,8 @@ import java.util.Arrays;
 import java.util.Optional;
 
 public class Dialogs {
+    private int route = 0; //0 = aucune route, 1 = créer, 2 = rejoindre
+
     public static boolean dialogConfirmation(String message) {
         Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
         alert.setTitle("Confirmer l'action");
@@ -242,7 +244,8 @@ public class Dialogs {
         return d.getDialogChoisirFichier(directory);
     }
     private Optional<String> getDialogChoisirFichier(String directory) {
-        ObservableList<String> obs = FXCollections.observableArrayList(Utils.getFichiersDansDossier(directory, Diaballik.EXTENSION_SAUVEGARDE, false));
+        ObservableList<String> obs = FXCollections.observableArrayList();
+        reloadObs(obs, directory);
 
         if (obs.size() < 1) {
             Alert alert = new Alert(Alert.AlertType.ERROR);
@@ -287,7 +290,8 @@ public class Dialogs {
         ccis.setPercentWidth(40);
         infosSave.getColumnConstraints().addAll(ccis);
 
-        Label labelInfoTour = new Label(),
+        Label
+                labelInfoTour = new Label(),
                 labelInfoNomJoueur1 = new Label(),
                 labelInfoNomJoueur2 = new Label();
         TerrainApercu ta = new TerrainApercu();
@@ -318,11 +322,15 @@ public class Dialogs {
         });
         filesView.setOnKeyPressed(e -> {
             String item = filesView.getSelectionModel().getSelectedItem();
-            if (e.getCode() == KeyCode.DELETE && item != null) {
-                if (supprimerFichier(item)) {
-                    obs.clear();
-                    obs.setAll(Utils.getFichiersDansDossier(directory, Diaballik.EXTENSION_SAUVEGARDE, false));
-                    if (obs.size() < 1) dialog.close();
+            if (item != null) {
+                if (e.getCode() == KeyCode.DELETE) {
+                    if (supprimerFichier(item)) {
+                        reloadObs(obs, directory);
+                        if (obs.size() < 1) dialog.close();
+                    }
+                } else if (e.getCode() == KeyCode.ENTER) {
+                    dialog.setResult(filesView.getSelectionModel().getSelectedItem() + Diaballik.EXTENSION_SAUVEGARDE);
+                    dialog.close();
                 }
             }
         });
@@ -349,8 +357,7 @@ public class Dialogs {
             String item = filesView.getSelectionModel().getSelectedItem();
             if (item != null) {
                 if (supprimerFichier(item)) {
-                    obs.clear();
-                    obs.setAll(Utils.getFichiersDansDossier(directory, Diaballik.EXTENSION_SAUVEGARDE, false));
+                    reloadObs(obs, directory);
                     if (obs.size() < 1) dialog.close();
                 }
             }
@@ -387,6 +394,10 @@ public class Dialogs {
         return dialog.showAndWait();
     }
 
+    private void reloadObs(ObservableList<String> obs, String directory) {
+        if (obs.size() > 0) obs.clear();
+        obs.setAll(Utils.getFichiersDansDossier(directory, Diaballik.EXTENSION_SAUVEGARDE, false));
+    }
     private boolean supprimerFichier(String nom) {
         File f = new File(Diaballik.DOSSIER_SAUVEGARDES + "/" + nom + Diaballik.EXTENSION_SAUVEGARDE);
         System.out.println("Suppression de " + f.getAbsolutePath());
@@ -511,6 +522,9 @@ public class Dialogs {
         Dialog<Void> dialog = new Dialog<>();
         VBox choixType = new VBox(12);
 
+        GridPane clientChoix = new GridPane();
+        GridPane hostChoix = new GridPane();
+
         dialog.getDialogPane().getButtonTypes().add(ButtonType.CLOSE);
         Node closeButton = dialog.getDialogPane().lookupButton(ButtonType.CLOSE);
         closeButton.managedProperty().bind(closeButton.visibleProperty());
@@ -526,15 +540,46 @@ public class Dialogs {
         BorderPane hostAttente = new BorderPane();
         hostAttente.setMinWidth(200);
         hostAttente.setId("labelAttente");
-        Label hostLabel = new Label("Adresse IP (locale): " + adresseLocale + "\nAdresse IP (externe): " + adresseExterne);
-        BorderPane.setAlignment(hostAttente, Pos.CENTER);
+        VBox hostLabels = new VBox(2);
+        hostLabels.getChildren().addAll(
+                new Label("Adresse IP (locale): " + adresseLocale),
+                new Label("Adresse IP (externe): " + adresseExterne),
+                new Label("Port: " + Reseau.PORT)
+        );
+        hostLabels.setAlignment(Pos.CENTER);
+        BorderPane.setMargin(hostLabels, new Insets(0,0,20,0));
         Button quitter = new Button("Annuler");
         quitter.setMaxWidth(Double.MAX_VALUE);
-        quitter.setOnAction(e -> dialog.close());
-        hostAttente.setCenter(hostLabel);
+        quitter.setOnAction(e -> {
+            if (route > 0 && route <= 2) {
+                if (
+                            sceneJeu.getReseau().getTacheActuelle() == Reseau.Tache.ATTENTE_SERVEUR
+                        ||  sceneJeu.getReseau().getTacheActuelle() == Reseau.Tache.ATTENTE_CLIENT
+                ) {
+                    sceneJeu.getReseau().fermerReseau();
+                }
+
+                switch (route) {
+                    case 1:
+                        titre.setText("Partie en réseau: créer");
+                        contentWrapper.setCenter(hostChoix);
+                        break;
+                    case 2:
+                        titre.setText("Partie en réseau: rejoindre");
+                        contentWrapper.setCenter(clientChoix);
+                        break;
+                    default: // impossible normalement
+                        break;
+                }
+
+                dialog.getDialogPane().getScene().getWindow().sizeToScene();
+            } else {
+                dialog.close();
+            }
+        });
+        hostAttente.setCenter(hostLabels);
         hostAttente.setBottom(quitter);
 
-        GridPane hostChoix = new GridPane();
         hostChoix.setHgap(14);
         hostChoix.setVgap(10);
         ColumnConstraints hcc1 = new ColumnConstraints();
@@ -580,7 +625,6 @@ public class Dialogs {
         hostChoix.add(terrains, 1, 1);
         hostChoix.add(hostBoutons, 0, 2, 2, 1);
 
-        GridPane clientChoix = new GridPane();
         clientChoix.setHgap(14);
         clientChoix.setVgap(10);
         ColumnConstraints ccc1 = new ColumnConstraints();
@@ -625,11 +669,13 @@ public class Dialogs {
         clientChoix.add(clientNom, 1, 1);
         clientChoix.add(clientBoutons, 0, 2, 2, 1);
 
+        Dialogs self = this;
         choixType.setId("reseauChoix");
         choixType.setPadding(new Insets(10));
         Button choixHost = new Button("Créer une partie");
         choixHost.setMaxWidth(Double.MAX_VALUE);
         choixHost.setOnAction(e -> {
+            self.route = 1;
             titre.setText("Partie en réseau: créer");
             contentWrapper.setCenter(hostChoix);
             dialog.getDialogPane().getScene().getWindow().sizeToScene();
@@ -637,6 +683,7 @@ public class Dialogs {
         Button choixClient = new Button("Rejoindre une partie");
         choixClient.setMaxWidth(Double.MAX_VALUE);
         choixClient.setOnAction(e -> {
+            self.route = 2;
             titre.setText("Partie en réseau: rejoindre");
             contentWrapper.setCenter(clientChoix);
             dialog.getDialogPane().getScene().getWindow().sizeToScene();
