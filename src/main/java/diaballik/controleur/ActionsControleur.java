@@ -41,11 +41,10 @@ public class ActionsControleur {
     }
     public void actionSauvegarderJeu(String filename) {
         final File saveDir = new File(Diaballik.DOSSIER_SAUVEGARDES);
-        if (!saveDir.exists())
-            if (saveDir.mkdir()) {
-                System.err.println("(ActionControleur.actionSauvegarderJeu) Impossible de créer le répertoire de sauvegarde.");
-                return;
-            }
+        if (!saveDir.exists() && !saveDir.mkdir()) {
+            System.err.println("(ActionControleur.actionSauvegarderJeu) Impossible de créer le répertoire de sauvegarde.");
+            return;
+        }
 
         if (!filename.endsWith(Diaballik.EXTENSION_SAUVEGARDE))
             filename += Diaballik.EXTENSION_SAUVEGARDE;

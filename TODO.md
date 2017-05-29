@@ -1,13 +1,10 @@
 # Priorité 1
-* Minimax w/ Alpha-Beta (fonctionnel)
-* Popup des règles (améliorer?)
 
 # Priorité 2
-* Images
 
 # Priorité 3 (idées amélioration)
 * Sons
-* Proposer le meilleur coup au joueur (fonctionnel)
+* Améliorer popup des règles
 
 # Bugs
 * IA joue 2 fois (rare) (peut-être résolu)
