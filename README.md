@@ -10,7 +10,7 @@ voir TODO.md
 [IHM](https://app.moqups.com/zackattack/yyQzm1eIJU/view/page/ab2de651c)
 
 ## Images (à jour)
-IHM réalisées par Loïc Houdebine (voir lien dans la dernière section)
+IHM réalisées par Loïc (voir lien dans la dernière section)
 
 ### Menu
 ![Menu](screenshots/menu.png)
